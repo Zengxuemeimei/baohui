@@ -110,7 +110,8 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            console.log('this.redirect', this.redirect)
+            this.$router.push({ path: '/manage/staff/employee' || '/manage' })
             this.loading = false
           }).catch(() => {
             this.loading = false
