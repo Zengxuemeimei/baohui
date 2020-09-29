@@ -1,7 +1,7 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">客户管理</p>
+      <p class="title">访客管理-访客记录</p>
     </header>
     <main class="content-main">
       <div class="key-words-box flex-between">
@@ -21,7 +21,7 @@
         </div>
         <div class="btn-box flex-start">
             <add-button />
-            <edit-button />
+            <!-- <edit-button /> -->
             <del-button />
         </div>
       </div>
@@ -64,17 +64,17 @@
           </el-table-column>
           <el-table-column
             prop="address"
-            label="所属公司"
+            label="访问对象"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆信息"
+            label="访问时间"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆类型"
+            label="离开时间"
           >
           </el-table-column>
         </el-table>
@@ -84,7 +84,7 @@
         <paging />
       </div>
     </main>
-    <add-customer />
+    <add-visitor />
   </div>
 </template>
 
@@ -95,16 +95,16 @@ import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddCustomer from '@/components/AddCustomer/index'
+import AddVisitor from '@/components/AddVisitor/index'
 export default {
-  name: 'Customer',
+  name: 'VisitorRecord',
   components: {
     SearchKey,
     AddButton,
     EditButton,
     DelButton,
     Paging,
-    AddCustomer
+    AddVisitor
   },
   data() {
     return {
@@ -163,7 +163,7 @@ export default {
   mounted() {
   },
   methods: {
-    handleSelectionChange(val) {
+      handleSelectionChange(val) {
         this.multipleSelection = val;
       },
       tableRowClassName({row, rowIndex}){

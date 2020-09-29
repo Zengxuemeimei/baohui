@@ -50,6 +50,71 @@
     height: 38px;
     line-height: 38px;
 }
+.filter-label{
+    font-weight: 500;
+  }
 .mt20{
     margin-top: 20px;
+}
+.mb40{
+    margin-bottom: 40px;
+}
+.ml50{
+    margin-left: 50px;
+}
+.mr20{
+    margin-right: 20px;
+}
+.ml20{
+    margin-left: 20px;
+}
+.el-dialog__header{
+    padding: 0 0 0 20px;
+    height: 44px;
+    line-height: 44px;
+    color: #ffffff;
+    background: #4c5e79;
+}
+.el-dialog__title{
+    line-height: 44px;
+    color: #ffffff;
+}
+.el-dialog__headerbtn .el-dialog__close{
+    color: #ffffff;
+}
+.el-dialog__headerbtn{
+  top: 14px;
+}
+.el-scrollbar__wrap {
+    overflow-x: hidden!important;
+}
+.person-info-title{
+    line-height: 32px;
+    padding: 0 16px;
+    text-align: center;
+    background: #90afda;
+    display: inline-block;
+    color: #333333;
+    margin-bottom: 20px;
+}
+.person-table{
+    border-collapse: collapse;
+    /* margin: 0 auto; */
+}
+.person-table th,.person-table td{
+    width: 128px;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+}
+.el-button--primary{
+    background: #4c5e79;
+    border: none;
+}
+.el-button--primary:focus, .el-button--primary:hover{
+    background: #7d8ba1;
+}
+.el-tabs__item.is-active{
+    color: #ffffff;
+    background: #53779D;
 }

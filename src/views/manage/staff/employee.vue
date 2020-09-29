@@ -88,6 +88,7 @@
         <paging />
       </div>
     </main>
+    <add-person />
   </div>
 </template>
 
@@ -98,6 +99,7 @@ import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
+import AddPerson from '@/components/AddPerson/index'
 export default {
   name: 'Employee',
   components: {
@@ -106,6 +108,7 @@ export default {
     EditButton,
     DelButton,
     Paging,
+    AddPerson
   },
   data() {
     return {
@@ -189,9 +192,9 @@ export default {
 .key-words-box{
   margin-bottom: 20px;
 }
-.filter-label{
+/* .filter-label{
   font-weight: 500;
-}
+} */
 .filter-time{
   margin-left: 34px;
 }

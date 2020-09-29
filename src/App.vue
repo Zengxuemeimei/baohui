@@ -6,6 +6,7 @@
 
 <script>
 import '@/styles/base.scss'
+import '@/styles/common.scss'
 export default {
   name: 'App'
 }

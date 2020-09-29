@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-button icon="el-icon-edit">修改</el-button>
+      <el-button icon="el-icon-edit">编辑</el-button>
   </div>
 </template>
 

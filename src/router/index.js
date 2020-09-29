@@ -83,18 +83,18 @@ export const constantRoutes = [
         component: () => import('@/views/manage/index'),
         alwaysShow: true,
         children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
+          {
+            path: 'visitorRecord',
+            name: 'VisitorRecord',
+            component: () => import('@/views/manage/visitor/visitorRecord'),
+            meta: { title: '访客记录', icon: 'dashboard' }
+          },
+          {
+            path: 'visitorAudit',
+            name: 'VisitorAudit',
+            component: () => import('@/views/manage/visitor/visitorAudit'),
+            meta: { title: '访客审核', icon: 'dashboard' }
+          }
         ]
       },
       {

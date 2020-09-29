@@ -4,7 +4,7 @@
 
     <breadcrumb class="breadcrumb-container" />
 
-    <div class="right-menu">
+    <div class="right-menu" v-if="false">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -66,7 +66,9 @@ export default {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
-
+  display: flex;
+  // justify-content: flex-start;
+  align-items: center;
   .hamburger-container {
     line-height: 59px;
     height: 100%;
@@ -87,7 +89,7 @@ export default {
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 59px;
+    // line-height: 59px;
 
     &:focus {
       outline: none;
@@ -115,7 +117,7 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        // margin-top: 5px;
         position: relative;
 
         .user-avatar {

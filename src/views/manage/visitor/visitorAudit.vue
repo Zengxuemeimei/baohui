@@ -1,28 +1,19 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">客户管理</p>
+      <p class="title">访客管理-访客记录</p>
     </header>
     <main class="content-main">
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key />
           <div class="ml50">
-              <label class="filter-label">车辆类型：</label>
-              <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+              <el-button :style="{'background':isAll?'#53779D':'','color':isAll?'#ffffff':''}" @click="isAll=true">全部</el-button>
+              <el-button :style="{'background':isAll?'':'#53779D','color':isAll?'':'#ffffff'}" @click="isAll=false">审核未通过</el-button>
           </div>
         </div>
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+            <el-button type="primary" icon="el-icon-edit">审核</el-button>
         </div>
       </div>
       <div class="all-table">
@@ -64,17 +55,17 @@
           </el-table-column>
           <el-table-column
             prop="address"
-            label="所属公司"
+            label="访问对象"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆信息"
+            label="访问时间"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆类型"
+            label="离开时间"
           >
           </el-table-column>
         </el-table>
@@ -84,30 +75,25 @@
         <paging />
       </div>
     </main>
-    <add-customer />
+    <audit-visitor />
   </div>
 </template>
 
 <script>
 import '@/styles/common.scss'
 import SearchKey from '@/components/searchKey/index'
-import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
+import AuditVisitor from '@/components/AuditVisitor/index'
 import Paging from '@/components/Paging/index'
-import AddCustomer from '@/components/AddCustomer/index'
 export default {
-  name: 'Customer',
+  name: 'VisitorAudit',
   components: {
     SearchKey,
-    AddButton,
-    EditButton,
-    DelButton,
     Paging,
-    AddCustomer
+    AuditVisitor
   },
   data() {
     return {
+      isAll:true,
       tableData3: [{
           date: '2016-05-03',
           name: '王小虎',
@@ -163,7 +149,7 @@ export default {
   mounted() {
   },
   methods: {
-    handleSelectionChange(val) {
+      handleSelectionChange(val) {
         this.multipleSelection = val;
       },
       tableRowClassName({row, rowIndex}){

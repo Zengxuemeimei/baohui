@@ -1,82 +1,55 @@
 <template>
-  <div class="content-box">
-    <header class="content-header">
-      <p class="title">客户管理</p>
-    </header>
+  <div>
     <main class="content-main">
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key />
           <div class="ml50">
-              <label class="filter-label">车辆类型：</label>
-              <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+            <label class="filter-label">车辆类型：</label>
+            <el-select v-model="value" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </div>
         </div>
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+          <edit-button />
         </div>
       </div>
       <div class="all-table">
         <el-table
-         border
-         header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
+          border
+          header-cell-class-name="all-table-th"
+          :row-class-name="tableRowClassName"
           ref="multipleTable"
           :data="tableData3"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-            label="序号"
-            width="120">
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column label="序号" width="120">
             <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
-          <el-table-column
-            prop="headPortrait"
-            label="头像"
-            width="120">
+          <el-table-column prop="headPortrait" label="头像" width="120">
             <div class="headPortrait-box">
-                <img src="" alt="">
+              <img src="" alt="" />
             </div>
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="姓名"
-            width="270">
+          <el-table-column prop="department" label="姓名" width="270">
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="电话号码"
-            width="270">
+          <el-table-column prop="department" label="电话号码" width="270">
           </el-table-column>
-          <el-table-column
-            prop="address"
-            label="所属公司"
-            width="270">
+          <el-table-column prop="address" label="所属公司" width="270">
           </el-table-column>
-          <el-table-column
-            prop="address"
-            label="车辆信息"
-            width="270">
+          <el-table-column prop="address" label="车辆信息" width="270">
           </el-table-column>
-          <el-table-column
-            prop="address"
-            label="车辆类型"
-          >
-          </el-table-column>
+          <el-table-column prop="address" label="车辆类型"> </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
@@ -84,30 +57,23 @@
         <paging />
       </div>
     </main>
-    <add-customer />
   </div>
 </template>
 
 <script>
-import '@/styles/common.scss'
 import SearchKey from '@/components/searchKey/index'
-import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddCustomer from '@/components/AddCustomer/index'
 export default {
-  name: 'Customer',
+  name: 'AlarmList',
   components: {
     SearchKey,
-    AddButton,
     EditButton,
-    DelButton,
-    Paging,
-    AddCustomer
+    Paging
   },
   data() {
     return {
+      activeName2:"all",
       tableData3: [{
           date: '2016-05-03',
           name: '王小虎',
@@ -166,11 +132,14 @@ export default {
     handleSelectionChange(val) {
         this.multipleSelection = val;
       },
-      tableRowClassName({row, rowIndex}){
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'
         }
+    },
+    handleClick(tab, event) {
+        console.log(tab, event);
       }
   }
 }
@@ -181,5 +150,7 @@ export default {
   height: 27px;
   background: #000000;
   margin: 0 auto;
+  color: #ffffff;
 }
+
 </style>
