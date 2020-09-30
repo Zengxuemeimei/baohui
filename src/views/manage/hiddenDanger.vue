@@ -1,7 +1,7 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">员工管理-在职员工</p>
+      <p class="title">安全隐患管理</p>
     </header>
     <main class="content-main">
       <div class="key-words-box">
@@ -10,7 +10,7 @@
       <div class="filter-box flex-between">
         <div class="flex-start">
           <div>
-            <label class="filter-label">部门：</label>
+            <label class="filter-label">处理状态：</label>
             <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -19,16 +19,6 @@
                 :value="item.value">
               </el-option>
             </el-select>
-          </div>
-          <div class="filter-time">
-            <label class="filter-label">入职时间：</label>
-            <el-date-picker
-              v-model="value3"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
           </div>
         </div>
         <div class="btn-box flex-start">
@@ -58,27 +48,47 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="姓名"
+            label="标题"
             width="270">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="部门"
+            label="事件描述"
             width="270">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="入职时间"
-            width="270">
+            label="上报时间"
+            width="146">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆信息"
-            width="270">
+            label="上报人"
+            width="146">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="岗位"
+            label="隐患级别"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="处理时间"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="处理状态"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="处理人"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="处理描述"
           >
           </el-table-column>
         </el-table>
@@ -88,7 +98,7 @@
         <paging />
       </div>
     </main>
-    <add-person />
+    <add-hiddenDanger />
   </div>
 </template>
 
@@ -98,16 +108,16 @@ import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddPerson from '@/components/AddPerson/index'
+import AddHiddenDanger from '@/components/AddHiddenDanger/index'
 export default {
-  name: 'Employee',
+  name: 'HiddenDanger',
   components: {
     SearchKey,
     AddButton,
     EditButton,
     DelButton,
     Paging,
-    AddPerson
+    AddHiddenDanger
   },
   data() {
     return {

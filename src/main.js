@@ -11,6 +11,7 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+import VueAMap from 'vue-amap';
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -34,7 +35,12 @@ Vue.use(ElementUI)
 // Vue.use(ElementUI)
 
 Vue.config.productionTip = false
-
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: 'ce17cfd72f928e5802722d4e2995fe3a',
+  plugin: ['AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PlaceSearch', 'AMap.Geolocation', 'AMap.Geocoder'],
+  v: '1.4.4'
+});
 new Vue({
   el: '#app',
   router,

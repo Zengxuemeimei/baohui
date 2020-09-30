@@ -1,7 +1,7 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">员工管理-在职员工</p>
+      <p class="title">实时监控-监控地址列表</p>
     </header>
     <main class="content-main">
       <div class="key-words-box">
@@ -19,16 +19,6 @@
                 :value="item.value">
               </el-option>
             </el-select>
-          </div>
-          <div class="filter-time">
-            <label class="filter-label">入职时间：</label>
-            <el-date-picker
-              v-model="value3"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
           </div>
         </div>
         <div class="btn-box flex-start">
@@ -58,27 +48,17 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="姓名"
-            width="270">
+            label="点位名称"
+            width="280">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="部门"
-            width="270">
-          </el-table-column>
-          <el-table-column
-            prop="department"
-            label="入职时间"
-            width="270">
+            label="视频播放地址"
+            width="280">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆信息"
-            width="270">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="岗位"
+            label="点位地址"
           >
           </el-table-column>
         </el-table>
@@ -88,7 +68,7 @@
         <paging />
       </div>
     </main>
-    <add-person />
+    <add-monitor />
   </div>
 </template>
 
@@ -98,16 +78,16 @@ import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddPerson from '@/components/AddPerson/index'
+import AddMonitor from '@/components/AddMonitor/index'
 export default {
-  name: 'Employee',
+  name: 'MonitorList',
   components: {
     SearchKey,
     AddButton,
     EditButton,
     DelButton,
     Paging,
-    AddPerson
+    AddMonitor
   },
   data() {
     return {

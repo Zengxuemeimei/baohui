@@ -1,51 +1,40 @@
 <template>
-  <div class="content-box">
-    <header class="content-header">
-      <p class="title">部门管理</p>
-    </header>
-    <main class="content-main">
-      <div class="filter-box flex-between">
-        <search-key />
-        <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+  <div>
+      <main class="content-main">
+      <div class="key-box flex-start">
+        <div class="key-input-box">
+          <el-input placeholder="请选择图片" v-model="input22">
+            <i slot="suffix" class="el-input__icon el-icon-picture-outline" />
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+        </div>
+        <div class="ml20">
+          <el-button type="danger">以图搜图</el-button>
         </div>
       </div>
       <div class="all-table">
         <el-table
-         border
-         header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
+          border
+          header-cell-class-name="all-table-th"
+          :row-class-name="tableRowClassName"
           ref="multipleTable"
           :data="tableData3"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-            label="序号"
-            width="120">
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column label="序号" width="120">
             <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
-          <el-table-column
-            prop="name"
-            label="部门名称"
-            width="270">
+          <el-table-column prop="headPortrait" label="人员图片" width="270">
+            <div class="headPortrait-box">
+              <img src="" alt="" />
+            </div>
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="部门负责人"
-            width="270">
+          <el-table-column prop="address" label="出入时间" width="270">
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="部门电话"
-           >
-          </el-table-column>
+          <el-table-column prop="address" label="出入方向"> </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
@@ -53,26 +42,15 @@
         <paging />
       </div>
     </main>
-    <AddDepartment />
   </div>
 </template>
 
 <script>
-import SearchKey from '@/components/searchKey/index'
-import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddDepartment from '@/components/AddDepartment/index'
 export default {
-  name: 'Department',
+  name: 'TemporaryAccessList',
   components: {
-    SearchKey,
-    AddButton,
-    EditButton,
-    DelButton,
-    Paging,
-    AddDepartment
+    Paging
   },
   data() {
     return {
@@ -124,40 +102,22 @@ export default {
           label: '北京烤鸭'
         }],
         value: ''
-      }
+    }
   },
   created() {
   },
   mounted() {
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
-        //修改table行的颜色
-        if(rowIndex%2 != 1){
-          return 'odd-row'
-        }
-      }
   }
 }
 </script>
 <style scoped>
-/* .filter-label{
-  font-weight: 500;
-} */
-.filter-time{
-  margin-left: 34px;
+.headPortrait-box{
+  width: 31px;
+  height: 27px;
+  background: #000000;
+  margin: 0 auto;
+  color: #ffffff;
 }
-
 </style>

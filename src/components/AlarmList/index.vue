@@ -5,7 +5,7 @@
         <div class="flex-start">
           <search-key />
           <div class="ml50">
-            <label class="filter-label">车辆类型：</label>
+            <label class="filter-label">告警类型：</label>
             <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -15,6 +15,16 @@
               >
               </el-option>
             </el-select>
+          </div>
+          <div class="filter-time ml50">
+            <label class="filter-label">告警时间：</label>
+            <el-date-picker
+              v-model="value3"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
           </div>
         </div>
         <div class="btn-box flex-start">
@@ -36,20 +46,25 @@
           <el-table-column label="序号" width="120">
             <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
-          <el-table-column prop="headPortrait" label="头像" width="120">
+          <el-table-column prop="department" label="事件名称" width="270">
+          </el-table-column>
+          <el-table-column prop="department" label="事件描述" width="270">
+          </el-table-column>
+          <el-table-column prop="headPortrait" label="事件图片" width="120">
             <div class="headPortrait-box">
               <img src="" alt="" />
             </div>
           </el-table-column>
-          <el-table-column prop="department" label="姓名" width="270">
+          <el-table-column prop="headPortrait" label="事件视频" width="120">
+            <div class="headPortrait-box flex-center">
+              <i class="el-icon-video-camera" />
+            </div>
           </el-table-column>
-          <el-table-column prop="department" label="电话号码" width="270">
+          <el-table-column prop="address" label="告警类型" width="270">
           </el-table-column>
-          <el-table-column prop="address" label="所属公司" width="270">
+          <el-table-column prop="address" label="告警时间" width="270">
           </el-table-column>
-          <el-table-column prop="address" label="车辆信息" width="270">
-          </el-table-column>
-          <el-table-column prop="address" label="车辆类型"> </el-table-column>
+          <el-table-column prop="address" label="处置状态"> </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">

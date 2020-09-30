@@ -194,7 +194,6 @@ export default {
     height: 60vh;
     overflow: hidden;
 }
-
 .line{
     text-align: center;
 }

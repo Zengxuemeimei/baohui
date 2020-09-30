@@ -1,16 +1,16 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">员工管理-在职员工</p>
+      <p class="title">出入记录-人员管理</p>
     </header>
     <main class="content-main">
       <div class="key-words-box">
         <search-key />
       </div>
-      <div class="filter-box flex-between">
+      <div class="filter-box flex-between relative">
         <div class="flex-start">
           <div>
-            <label class="filter-label">部门：</label>
+            <label class="filter-label">所属部门：</label>
             <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -20,8 +20,19 @@
               </el-option>
             </el-select>
           </div>
-          <div class="filter-time">
-            <label class="filter-label">入职时间：</label>
+          <div class="ml20">
+            <label class="filter-label">进/出：</label>
+            <el-select v-model="value" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="filter-time ml20">
+            <label class="filter-label">进出时间：</label>
             <el-date-picker
               v-model="value3"
               type="datetimerange"
@@ -31,10 +42,21 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+        <div class="person-total flex-center flex-column">
+            <div class="flex-start">
+                <p class="f30">
+                    <count-to
+                    ref="example"
+                    :start-val="0"
+                    :end-val="520"
+                    :duration="4000"
+                    :autoplay="true"
+                    class="example"
+                    />
+                </p>
+                <p class="f14 ml5 mt5">人</p>
+            </div>
+            <p class="mt5 f14">今日人员进出数量</p>
         </div>
       </div>
       <div class="all-table">
@@ -59,26 +81,51 @@
           <el-table-column
             prop="name"
             label="姓名"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="department"
+            label="身份证"
             width="270">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="部门"
-            width="270">
+            label="图片"
+            width="146">
+            <div class="headPortrait-box flex-center">
+            </div>
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="入职时间"
+            prop="address"
+            label="视频"
+            width="146">
+            <div class="headPortrait-box flex-center">
+              <i class="el-icon-video-camera" />
+            </div>
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="出入地点"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="车辆信息"
+            label="出入时间"
             width="270">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="岗位"
+            label="相似度"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="健康码"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="所属部门"
           >
           </el-table-column>
         </el-table>
@@ -88,30 +135,26 @@
         <paging />
       </div>
     </main>
-    <add-person />
+    <access-person />
   </div>
 </template>
 
 <script>
-import SearchKey from '@/components/searchKey/index'
-import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
+import countTo from 'vue-count-to'
 import Paging from '@/components/Paging/index'
-import AddPerson from '@/components/AddPerson/index'
+import SearchKey from '@/components/searchKey/index'
+import AccessPerson from '@/components/AccessDetail/person'
 export default {
-  name: 'Employee',
+  name: 'PersonRecords',
   components: {
-    SearchKey,
-    AddButton,
-    EditButton,
-    DelButton,
-    Paging,
-    AddPerson
+      SearchKey,
+      countTo,
+      Paging,
+      AccessPerson
   },
   data() {
     return {
-      tableData3: [{
+        tableData3: [{
           date: '2016-05-03',
           name: '王小虎',
           address: '上海市普陀区金沙江路 1518 弄'
@@ -159,22 +202,13 @@ export default {
           label: '北京烤鸭'
         }],
         value: ''
-      }
+    }
   },
   created() {
   },
   mounted() {
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
@@ -188,11 +222,20 @@ export default {
 }
 </script>
 <style scoped>
-/* .filter-label{
-  font-weight: 500;
-} */
-.filter-time{
-  margin-left: 34px;
+.person-total{
+    width: 215px;
+    height: 80px;
+    background: #F35D4D;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #ffffff;
 }
-
+.headPortrait-box{
+  width: 31px;
+  height: 27px;
+  background: #000000;
+  margin: 0 auto;
+  color: #ffffff;
+}
 </style>

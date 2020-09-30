@@ -53,20 +53,45 @@
 .filter-label{
     font-weight: 500;
   }
-.mt20{
-    margin-top: 20px;
+.f14{
+    font-size: 14px;
 }
-.mb40{
-    margin-bottom: 40px;
+.f20{
+    font-size: 20px;
+}
+.f30{
+    font-size: 30px;
+}
+.mt5{
+    margin-top: 5px;
+}
+.ml5{
+    margin-left: 5px;
 }
 .ml50{
     margin-left: 50px;
 }
-.mr20{
-    margin-right: 20px;
+.ml30{
+    margin-left: 30px;
 }
 .ml20{
     margin-left: 20px;
+}
+.mt20{
+    margin-top: 20px;
+}
+.mt10{
+    margin-top: 10px;
+}
+.mb40{
+    margin-bottom: 40px;
+}
+.mb20{
+    margin-bottom: 20px;
+}
+
+.mr20{
+    margin-right: 20px;
 }
 .el-dialog__header{
     padding: 0 0 0 20px;
@@ -86,7 +111,8 @@
   top: 14px;
 }
 .el-scrollbar__wrap {
-    overflow-x: hidden!important;
+    overflow-x: hidden !important;
+    margin-bottom: 0 !important;
 }
 .person-info-title{
     line-height: 32px;
@@ -117,4 +143,7 @@
 .el-tabs__item.is-active{
     color: #ffffff;
     background: #53779D;
+}
+.key-words-box{
+    margin-bottom: 20px;
 }

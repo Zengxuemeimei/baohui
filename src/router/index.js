@@ -104,18 +104,31 @@ export const constantRoutes = [
         component: () => import('@/views/manage/index'),
         alwaysShow: true,
         children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
+          {
+            path: 'calendarSettings',
+            name: 'CalendarSettings',
+            component: () => import('@/views/manage/checkWorkAttendance/calendarSettings'),
+            meta: { title: '工作日历设置', icon: 'dashboard' }
+          },
+          {
+            path: 'shiftSetting',
+            name: 'ShiftSetting',
+            component: () => import('@/views/manage/checkWorkAttendance/shiftSetting'),
+            meta: { title: '班次设置', icon: 'dashboard' }
+          },
+          
+          {
+            path: 'eventRegistration',
+            name: 'EventRegistration',
+            component: () => import('@/views/manage/checkWorkAttendance/eventRegistration'),
+            meta: { title: '请假、加班登记', icon: 'dashboard' }
+          },
+          {
+            path: 'attendanceRecord',
+            name: 'AttendanceRecord',
+            component: () => import('@/views/manage/checkWorkAttendance/attendanceRecord'),
+            meta: { title: '考勤记录', icon: 'dashboard' }
+          }
         ]
       },
       {
@@ -131,40 +144,25 @@ export const constantRoutes = [
         component: () => import('@/views/manage/index'),
         alwaysShow: true,
         children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
+          {
+            path: 'personRecords',
+            name: 'PersonRecords',
+            component: () => import('@/views/manage/accessRecords/personRecords'),
+            meta: { title: '人员出入记录', icon: 'dashboard' }
+          },
+          {
+            path: 'carRecords',
+            name: 'CarRecords',
+            component: () => import('@/views/manage/accessRecords/carRecords'),
+            meta: { title: '车辆出入记录', icon: 'dashboard' }
+          }
         ]
       },
       {
         path: 'hiddenDanger',
         name: 'HiddenDanger',
         meta: { title: '安全隐患', icon: 'dashboard' },
-        component: () => import('@/views/manage/index'),
-        alwaysShow: true,
-        children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
-        ]
+        component: () => import('@/views/manage/hiddenDanger'),
       },
       {
         path: 'patrolManagement',
@@ -173,18 +171,24 @@ export const constantRoutes = [
         component: () => import('@/views/manage/index'),
         alwaysShow: true,
         children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
+          {
+            path: 'pointPosition',
+            name: 'PointPosition',
+            component: () => import('@/views/manage/patrolManagement/pointPosition'),
+            meta: { title: '点位管理', icon: 'dashboard' }
+          },
+          {
+            path: 'patrolScheme',
+            name: 'PatrolScheme',
+            component: () => import('@/views/manage/patrolManagement/patrolScheme'),
+            meta: { title: '巡更方案', icon: 'dashboard' }
+          },
+          {
+            path: 'patrolRecards',
+            name: 'PatrolRecards',
+            component: () => import('@/views/manage/patrolManagement/patrolRecards'),
+            meta: { title: '巡更记录', icon: 'dashboard' }
+          },
         ]
       },
       {
@@ -194,18 +198,51 @@ export const constantRoutes = [
         component: () => import('@/views/manage/index'),
         alwaysShow: true,
         children: [
-          // {
-          //   path: 'employee',
-          //   name: 'Employee',
-          //   component: () => import('@/views/manage/staff/employee'),
-          //   meta: { title: '在职员工', icon: 'dashboard' }
-          // },
-          // {
-          //   path: 'quit',
-          //   name: 'Quit',
-          //   component: () => import('@/views/manage/staff/quit'),
-          //   meta: { title: '离职员工', icon: 'dashboard' }
-          // }
+          {
+            path: 'list',
+            name: 'MonitorList',
+            component: () => import('@/views/manage/monitor/list'),
+            meta: { title: '监控地址列表', icon: 'dashboard' }
+          },
+          {
+            path: 'play',
+            name: 'MonitorPlay',
+            component: () => import('@/views/manage/monitor/play'),
+            meta: { title: '视频播放页面', icon: 'dashboard' }
+          }
+        ]
+      },
+      {
+        path: 'manAndVehicleControl',
+        name: 'ManAndVehicleControl',
+        meta: { title: '人车布控', icon: 'dashboard' },
+        component: () => import('@/views/manage/index'),
+        alwaysShow: true,
+        children: [
+          {
+            path: 'temporaryManAndVehicles',
+            name: 'TemporaryMan',
+            component: () => import('@/views/manage/manAndVehicleControl/temporaryManAndVehicles'),
+            meta: { title: '临时人员-车辆', icon: 'dashboard' }
+          },
+          {
+            path: 'temporaryManAndVehiclesRecard',
+            name: 'TemporaryManRecard',
+            component: () => import('@/views/manage/manAndVehicleControl/temporaryManAndVehiclesRecard'),
+            meta: { title: '临时人车出入记录', icon: 'dashboard' }
+          },
+          {
+            path: 'controlManAndVehicle',
+            name: 'ControlMan',
+            component: () => import('@/views/manage/manAndVehicleControl/controlManAndVehicle'),
+            meta: { title: '布控人员-车辆', icon: 'dashboard' }
+          },
+          {
+            path: 'controlManAndVehicleRecard',
+            name: 'ControlManRecard',
+            component: () => import('@/views/manage/manAndVehicleControl/controlManAndVehicleRecard'),
+            meta: { title: '布控人车出入记录', icon: 'dashboard' }
+          }
         ]
       }
     ]

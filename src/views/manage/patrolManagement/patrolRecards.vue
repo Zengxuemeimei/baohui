@@ -1,41 +1,11 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">员工管理-在职员工</p>
+      <p class="title">巡更管理-巡更记录</p>
     </header>
     <main class="content-main">
-      <div class="key-words-box">
-        <search-key />
-      </div>
       <div class="filter-box flex-between">
-        <div class="flex-start">
-          <div>
-            <label class="filter-label">部门：</label>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-          <div class="filter-time">
-            <label class="filter-label">入职时间：</label>
-            <el-date-picker
-              v-model="value3"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </div>
-        </div>
-        <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
-        </div>
+        <search-key />
       </div>
       <div class="all-table">
         <el-table
@@ -58,27 +28,37 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="姓名"
-            width="270">
+            label="方案名称"
+            width="280">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="部门"
-            width="270">
+            label="巡更时间"
+            width="146">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="入职时间"
-            width="270">
+            label="类型"
+            width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="车辆信息"
-            width="270">
+            prop="department"
+            label="完成进度"
+            width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="岗位"
+            prop="department"
+            label="巡更人员"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="department"
+            label="检查是否正常"
+            width="146">
+          </el-table-column>
+          <el-table-column
+            prop="department"
+            label="所属部门"
           >
           </el-table-column>
         </el-table>
@@ -88,7 +68,7 @@
         <paging />
       </div>
     </main>
-    <add-person />
+    <PatrolSchemeDetail />
   </div>
 </template>
 
@@ -98,16 +78,16 @@ import AddButton from '@/components/AddButton/index'
 import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
-import AddPerson from '@/components/AddPerson/index'
+import PatrolSchemeDetail from '@/components/PatrolSchemeDetail/index'
 export default {
-  name: 'Employee',
+  name: 'PatrolRecards',
   components: {
     SearchKey,
     AddButton,
     EditButton,
     DelButton,
     Paging,
-    AddPerson
+    PatrolSchemeDetail
   },
   data() {
     return {
