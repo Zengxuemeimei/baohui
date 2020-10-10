@@ -50,7 +50,7 @@ export default {
   components: {},
   data() {
     return {
-        dialogVisible:true,
+        dialogVisible:false,
         ruleForm:{},
         rules: {
           name: [

@@ -34,12 +34,15 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
+    // component:  (resolve) => require([`@/views/login/index`], resolve),
+
     hidden: true
   },
 
   {
     path: '/404',
     component: () => import('@/views/404'),
+    // component:  (resolve) => require([`@/views/404`], resolve),
     hidden: true
   },
   {
@@ -248,47 +251,49 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/systemSettings',
-    component: Layout,
-    redirect: '/systemSettings',
-    meta: { title: '系统设置', icon: 'dashboard' },
-    alwaysShow: true,
-    children: [
-      {
-        path: 'accountNumber',
-        name: 'AccountNumber',
-        component: () => import('@/views/systemSettings/accountNumber'),
-        meta: { title: '账号管理', icon: 'dashboard' }
-      },
-      {
-        path: 'department',
-        name: 'Department',
-        component: () => import('@/views/systemSettings/department'),
-        meta: { title: '部门管理', icon: 'dashboard' }
-      },
-      {
-        path: 'equipment',
-        name: 'Equipment',
-        component: () => import('@/views/systemSettings/equipment'),
-        meta: { title: '设备管理', icon: 'dashboard' }
-      },
-      {
-        path: 'visitorCode',
-        name: 'VisitorCode',
-        component: () => import('@/views/systemSettings/visitorCode'),
-        meta: { title: '访客二维码', icon: 'dashboard' }
-      }
-    ]
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/manage/staff/employee'
   },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
-
+export const asyncRoutes = [
+  // {
+  //   path: '/systemSettings',
+  //   component: Layout,
+  //   redirect: '/systemSettings',
+  //   meta: { title: '系统设置', icon: 'dashboard' },
+  //   alwaysShow: true,
+  //   children: [
+  //     {
+  //       path: 'accountNumber',
+  //       name: 'AccountNumber',
+  //       component: () => import('@/views/systemSettings/accountNumber'),
+  //       meta: { title: '账号管理', icon: 'dashboard' }
+  //     },
+  //     {
+  //       path: 'department',
+  //       name: 'Department',
+  //       component: () => import('@/views/systemSettings/department'),
+  //       meta: { title: '部门管理', icon: 'dashboard' }
+  //     },
+  //     {
+  //       path: 'equipment',
+  //       name: 'Equipment',
+  //       component: () => import('@/views/systemSettings/equipment'),
+  //       meta: { title: '设备管理', icon: 'dashboard' }
+  //     },
+  //     {
+  //       path: 'visitorCode',
+  //       name: 'VisitorCode',
+  //       component: () => import('@/views/systemSettings/visitorCode'),
+  //       meta: { title: '访客二维码', icon: 'dashboard' }
+  //     }
+  //   ]
+  // },
+  // { path: '*', redirect: '/404', hidden: true }
+]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),

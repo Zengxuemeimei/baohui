@@ -1,24 +1,33 @@
 import request from '@/utils/request'
 
+import Base64  from 'base-64';
 export function login(data) {
+  data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
+  console.log('密码',data)
   return request({
-    url: '/vue-admin-template/user/login',
+    url: '/userInfo/login',
     method: 'post',
     data
   })
 }
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
+    url: '/userInfo/getUserInfo',
+    method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: '/userInfo/logout',
+    method: 'get'
+  })
+}
+export function getList(params) {
+  return request({
+    url: '/userInfo/list',
+    method: 'get',
+    params
   })
 }

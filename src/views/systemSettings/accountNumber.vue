@@ -18,7 +18,7 @@
          header-cell-class-name="all-table-th"
          :row-class-name="tableRowClassName"
           ref="multipleTable"
-          :data="tableData3"
+          :data="list"
           tooltip-effect="dark"
           style="width: 100%"
           @selection-change="handleSelectionChange">
@@ -28,21 +28,21 @@
           </el-table-column>
           <el-table-column
             label="序号"
+            type="index"
             width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="loginName"
             label="账号"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="password"
             label="密码"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="name"
             label="角色"
             width="270">
           </el-table-column>
@@ -74,6 +74,7 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddAccountNumber from '@/components/AddAccountNumber/index'
+import {getList} from '@/api/user'
 export default {
   name: 'AccountNumber',
   components: {
@@ -86,36 +87,8 @@ export default {
   },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
+      list: [],
+      multipleSelection: [],
       value3:'',
       options: [{
           value: '选项1',
@@ -139,8 +112,21 @@ export default {
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
+    getList(){
+      let that = this
+      let data = {
+        enterpriseId:0,
+        keyword:null,
+        pageIndex:0,
+        pageSize:10
+      }
+      getList(data).then(res=>{
+          that.list=res.data.dataList
+      })
+    },
     toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {

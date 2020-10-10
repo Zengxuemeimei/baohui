@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-button icon="el-icon-circle-plus-outline">新增</el-button>
+      <el-button icon="el-icon-circle-plus-outline" @click="addEvent">新增</el-button>
   </div>
 </template>
 
@@ -19,6 +19,9 @@ export default {
   mounted() {
   },
   methods: {
+    addEvent(){
+        this.$emit('addShow',true)
+    }
   }
 }
 </script>
