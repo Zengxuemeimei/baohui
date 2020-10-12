@@ -289,6 +289,12 @@ export const asyncRoutes = [
   //       name: 'VisitorCode',
   //       component: () => import('@/views/systemSettings/visitorCode'),
   //       meta: { title: '访客二维码', icon: 'dashboard' }
+  //     },
+    //     {
+  //       path: 'role',
+  //       name: 'Role',
+  //       component: () => import('@/views/systemSettings/role'),
+  //       meta: { title: '角色管理', icon: 'dashboard' }
   //     }
   //   ]
   // },

@@ -27,16 +27,13 @@ const permission = {
 
 function filterAsyncRouter(asyncRouterMap) {
   return asyncRouterMap.filter(route => {
-    console.log('route',route)
     if (route.component) {
       if (route.component === 'Layout') {
         route.component = Layout
       } else {
         route.component = loadView(route.component)
-        console.log('route.component',route.component)
       }
     }
-    console.log('route.children',route.children)
     if (route.children != null && route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children)
     }
@@ -45,10 +42,7 @@ function filterAsyncRouter(asyncRouterMap) {
 }
 
 const loadView = (view) => {
-  console.log('view',view)
   return (resolve) => require([`@/views${view}`], resolve)
-  
-  // return () => import(`@${view}`)
 }
 
 export default permission

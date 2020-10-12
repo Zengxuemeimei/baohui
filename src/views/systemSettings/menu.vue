@@ -23,10 +23,10 @@
                     label="菜单名称"
                     prop="meta.title">
                     </el-table-column>
-                    <el-table-column
+                    <!-- <el-table-column
                     label="id"
                     prop="id">
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                     label="name"
                     prop="name">
@@ -42,10 +42,12 @@
                     <el-table-column
                     label="操作"
                     >
-                    <div class="flex-start">
-                        <el-button type="primary" size="mini">编辑</el-button>
-                        <el-button type="danger" size="mini">删除</el-button>
-                    </div>
+                    <template slot-scope="scope">
+                        <div class="flex-start">
+                            <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
+                            <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
+                        </div>
+                    </template>
                     </el-table-column>
                 </el-table>
             </template>
@@ -54,10 +56,10 @@
             label="菜单名称"
             prop="meta.title">
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
             label="id"
             prop="id">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
             label="name"
             prop="name">
@@ -73,10 +75,12 @@
             <el-table-column
             label="操作"
             >
-            <div class="flex-start">
-                <el-button type="primary" size="mini">编辑</el-button>
-                <el-button type="danger" size="mini">删除</el-button>
-            </div>
+            <template slot-scope="scope">
+                <div class="flex-start">
+                    <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
+                    <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
+                </div>
+            </template>
             </el-table-column>
         </el-table>
       </div>
@@ -85,7 +89,7 @@
         <paging /> -->
       </div>
     </main>
-    <AddMenu :isShow="isAdd" @close="closeAdd"/>
+    <AddMenu :isShow="isAdd" :isEdit="isEdit" :menuList="list" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -93,7 +97,8 @@
 import AddButton from '@/components/AddButton/index'
 import Paging from '@/components/Paging/index'
 import AddMenu from '@/components/AddMenu/index'
-import {getList} from '@/api/menu'
+import {getList,deleteMenu} from '@/api/menu'
+
 export default {
   name: 'Menu',
   components: {
@@ -108,19 +113,22 @@ export default {
             pageIndex:0
         },
         list: [],
-        isAdd:false
+        isAdd:false,
+        isEdit:false,
+        editDetail:{} 
     }
   },
   created() {
   },
   mounted() {
       this.getList()
+    
   },
   methods: {
       getList(){
         let that = this
         let data = that.pageDatas
-        getList(data).then(res=>{
+        getList().then(res=>{
             that.list = res.data
         })
       },
@@ -129,9 +137,41 @@ export default {
         that.isAdd = value
         console.log('isadd',value)
       },
-      closeAdd(value){
+      editMenu(item){
         let that = this
-        that.isAdd = value
+        that.isAdd = true
+        that.isEdit = true
+        that.editDetail = item
+      },
+      closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
+        }
+        that.isAdd = item.isShow
+      },
+      deleteList(id){
+           this.$confirm('此操作将永久删除该菜单, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+                }).then(() => {
+                    deleteMenu({id:id}).then(res=>{
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        this.getList()
+                    })
+                    
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+            });
+          
       }
   }
 }
@@ -142,5 +182,8 @@ export default {
 <style>
 .el-table__expanded-cell[class*=cell]{
     padding: 0 0 0 48px;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+    background-color: #d1ba6a42;
 }
 </style>

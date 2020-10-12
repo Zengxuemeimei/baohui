@@ -99,6 +99,7 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddPerson from '@/components/AddPerson/index'
+import {setMenu} from '@/api/roles'
 export default {
   name: 'Employee',
   components: {
@@ -164,6 +165,16 @@ export default {
   created() {
   },
   mounted() {
+// let data={
+//             menuIds:[1,3,15],
+//             roleId:2
+//         }
+//         setMenu(data).then(res=>{
+//             this.$message({
+//                 message: '权限设置成功',
+//                 type: 'success'
+//             });
+//         })
   },
   methods: {
     toggleSelection(rows) {
