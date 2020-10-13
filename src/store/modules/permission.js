@@ -17,6 +17,7 @@ const permission = {
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
         const accessedRoutes = filterAsyncRouter(store.getters.menu)
+
           accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
           commit('SET_ROUTES', accessedRoutes)
           resolve(accessedRoutes)
@@ -42,6 +43,7 @@ function filterAsyncRouter(asyncRouterMap) {
 }
 
 const loadView = (view) => {
+  console.log('view',view)
   return (resolve) => require([`@/views${view}`], resolve)
 }
 

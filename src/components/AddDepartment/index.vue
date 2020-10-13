@@ -1,57 +1,84 @@
 <template>
   <div>
       <el-dialog
-        title="新增账号"
-        :visible.sync="dialogVisible"
-        width="1284px"
+        :title="title"
+        :visible.sync="isShow"
+        width="500px"
         :close-on-click-modal="false"
         :before-close="handleClose">
         <div class="person-content">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                <el-form-item label="部门名称" prop="name">
+            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                <el-form-item label="所属父级" prop="parentId">
                     <div class="input-box">
-                        <el-input v-model="ruleForm.name"></el-input>
-                    </div>
-                </el-form-item>
-                <el-form-item label="部门负责人" prop="password">
-                    <div class="input-box">
-                        <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
-                            <el-option label="区域一" value="shanghai"></el-option>
-                            <el-option label="区域二" value="beijing"></el-option>
+                        <el-select v-model="ruleForm.parentId" placeholder="请选择">
+                            <el-option label="无父级"
+                            :value="null"></el-option>
+                            <el-option
+                            v-for="item in list"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
                         </el-select>
                     </div>
-                    
                 </el-form-item>
-                <el-form-item label="部门电话" prop="password">
+                 <el-form-item label="部门名称" prop="name">
                     <div class="input-box">
                         <el-input v-model="ruleForm.name"></el-input>
                     </div>
                 </el-form-item>
+                <el-form-item label="状态" prop="status">
+                    <div class="input-box">
+                         <el-radio-group v-model="ruleForm.status">
+                            <el-radio-button label="启用"></el-radio-button>
+                            <el-radio-button label="禁用"></el-radio-button>
+                         </el-radio-group>
+                    </div>
+                </el-form-item>
+                
             </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            <el-button @click="handleClose">取 消</el-button>
+            <el-button type="primary" @click="AddDepartment('ruleForm')">确 定</el-button>
         </span>
       </el-dialog>
   </div>
 </template>
 
 <script>
+import {saveOrUpdate} from '@/api/department'
+import moment from 'moment'
 
 export default {
   name: 'AddDepartment',
   components: {},
+  props:{
+    isShow:{
+        type:Boolean
+    },
+    isEdit:{
+        type:Boolean
+    },
+    editDetail:{
+        type:Object
+    },
+    list:{
+        type:Array
+    }
+  },
   data() {
     return {
-        dialogVisible:true,
-        ruleForm:{},
+        title:'新增部门',
+        // parentId:null,
+        ruleForm:{
+            parentId:null,
+            name:null,
+            status:'启用'
+        },
         rules: {
-          name: [
-              { required: true, message: '请输入账号', trigger: 'blur' },
-          ],
-          password:[
-              { required: true, message: '请输入密码', trigger: 'blur' },
+          name:[
+              { required: true, message: '请输入部门名称', trigger: 'blur' },
           ]
         }
     }
@@ -61,9 +88,60 @@ export default {
   mounted() {
   },
   methods: {
-    handleClose(done) {
-        this.dialogVisible = false
+    handleClose() {
+        this.empty()
+        this.$emit('close',{isShow:false,isSuccess:false})
     },
+    empty(){
+        this.ruleForm={
+            parentId:null,
+            name:null,
+            status:'启用'
+        }
+        this.title='新增部门'
+    },
+    AddDepartment(formName){
+        let that = this
+        that.$refs[formName].validate((valid) => {
+          console.log(valid)
+          if (valid) {
+            let date = new Date()
+            if(that.isEdit){
+                that.ruleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+            }else{
+                that.ruleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+            } 
+            saveOrUpdate(that.ruleForm).then(res=>{
+                    if(that.isEdit){
+                        that.$message({
+                            message: '编辑部门成功',
+                            type: 'success'
+                        });
+                    }else{
+                        that.$message({
+                            message: '添加部门成功',
+                            type: 'success'
+                        });
+                    }
+                    that.empty()
+                    that.$emit('close',{isShow:false,isSuccess:true})
+                })
+          }
+        })
+    }
+  },
+  watch:{
+      isEdit(newVal){
+          if(newVal){
+            this.ruleForm={
+                parentId:this.editDetail.parentId,
+                name:this.editDetail.name,
+                status:this.editDetail.status,
+                id:this.editDetail.id
+            }
+            this.title='编辑部门'
+          }
+      }
   }
 }
 </script>

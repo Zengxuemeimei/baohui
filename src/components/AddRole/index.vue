@@ -8,11 +8,11 @@
         :before-close="handleClose">
         <div class="person-content">
             <el-scrollbar style="height:100%">
-                <el-form :model="roleForm"  ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                    <el-form-item label="角色名称" prop="name">
+                <el-form :model="roleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                    <el-form-item label="角色名称" prop="remark">
                         <el-input v-model="roleForm.remark" placeholder="请输入内容"></el-input>
                     </el-form-item>
-                    <el-form-item label="角色标识" prop="nameEn">
+                    <el-form-item label="角色标识" prop="roleCode">
                         <el-input  v-model="roleForm.roleCode" placeholder="请输入内容"></el-input>
                     </el-form-item>
                     <el-form-item label="状态" prop="status">
@@ -26,7 +26,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="AddRole">确 定</el-button>
+            <el-button type="primary" @click="AddRole('ruleForm')">确 定</el-button>
         </span>
     </el-dialog>
   </div>
@@ -53,12 +53,23 @@ export default {
    },
   data() {
     return {
-        roleForm:{
-            remark:null,
-            roleCode:null,
-            status:"启用"
-        },
-        title:'新增角色'
+      rules:{
+        remark:[
+          {required: true, message: '请输入角色名称', trigger: 'blur'}
+        ],
+        roleCode:[
+          {required: true, message: '请输入角色标识', trigger: 'blur'}
+        ],
+        status:[
+          {required: true, message: '请选择状态', trigger: 'change'}
+        ],
+      },
+      roleForm:{
+          remark:null,
+          roleCode:null,
+          status:"启用"
+      },
+      title:'新增角色'
     }
   },
   created() {
@@ -67,39 +78,47 @@ export default {
   },
   methods: {
       empty(){
-         this.roleForm={
+         this.roleForm = {
             remark:null,
             roleCode:null,
             status:"启用"
         }
+        this.$refs.roleForm.resetFields();
+        console.log(this.roleForm)
       },
-      AddRole(){
+      AddRole(formName){
           let that = this
-          let date = new Date()
-          if(that.isEdit){
-            that.roleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-          }else{
-            that.roleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-          }
-          saveOrUpdate(that.roleForm).then(res=>{
+          that.$refs[formName].validate((valid) => {
+          console.log(valid)
+          if (valid) {
+              let date = new Date()
             if(that.isEdit){
-              that.$message({
-                  message: '修改角色信息成功',
-                  type: 'success'
-              });
+              that.roleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
             }else{
-              that.$message({
-                  message: '添加角色成功',
-                  type: 'success'
-              });
+              that.roleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
             }
-            that.empty()
-            that.$emit('close',{isShow:false,isSuccess:true})
+            saveOrUpdate(that.roleForm).then(res=>{
+              if(that.isEdit){
+                that.$message({
+                    message: '修改角色信息成功',
+                    type: 'success'
+                });
+              }else{
+                that.$message({
+                    message: '添加角色成功',
+                    type: 'success'
+                });
+              }
+              that.empty()
+              that.$emit('close',{isShow:false,isSuccess:true})
+            })
+            }
           })
+          
       },
       handleClose() {
         let that = this
-        that.empty()
+        that.empty() 
         that.$emit('close',{isShow:false,isSuccess:false})
     },
   },

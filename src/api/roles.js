@@ -1,10 +1,10 @@
 import request from '@/utils/request'
+import store from '@/store'
 
-export function getRoleList(params) {
+export function getRoleList() {
     return request({
-      url: '/roleInfo/list',
-      method: 'get',
-      params
+      url: '/roleInfo/list?enterpriseId=' + store.getters.enterpriseId,
+      method: 'get'
     })
 }
 

@@ -5,31 +5,22 @@
     </header>
     <main class="content-main">
       <div class="filter-box flex-between">
-        <search-key />
+        <search-key @query="keyWordsQuery" />
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+            <add-button @addShow="addShow"/>
+            <!-- <edit-button />
+            <del-button /> -->
         </div>
       </div>
       <div class="all-table">
         <el-table
-         border
-         header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          :data="list"
+          border
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type="index"
+            width="80">
           </el-table-column>
           <el-table-column
             prop="name"
@@ -37,14 +28,23 @@
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="部门负责人"
+            prop="status"
+            label="状态"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="creatTime"
+            label="创建时间"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="部门电话"
-           >
+          label="操作">
+          <template slot-scope="scope">
+            <div class="flex-start">
+                <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
+                <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
+            </div>
+          </template>
           </el-table-column>
         </el-table>
       </div>
@@ -53,7 +53,7 @@
         <paging />
       </div>
     </main>
-    <AddDepartment />
+    <AddDepartment :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" :list="list" @close="closeAdd"/>
   </div>
 </template>
 
@@ -64,6 +64,7 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddDepartment from '@/components/AddDepartment/index'
+import {getDepartmentList,deleteDepartment} from '@/api/department'
 export default {
   name: 'Department',
   components: {
@@ -76,61 +77,74 @@ export default {
   },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      list: [],
+      pageData:{
+        keyword:null,
+        pageIndex:0
+      },
+      isAdd:false,
+      isEdit:false,
+      editDetail:{}
       }
   },
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
+    keyWordsQuery(val){
+        this.pageData.keyword = val
+        this.pageData.pageIndex = 0
+        this.getList()
+    },
+    addShow(value){
+      let that = this
+      that.isAdd = value
+    },
+    closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
+        }
+        that.isAdd = item.isShow
+        that.isEdit = item.isShow
+      },
+      editMenu(item){
+        this.isAdd = true
+        this.isEdit = true
+        this.editDetail = item
+      },
+      deleteList(id){
+        let that = this
+         that.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+                }).then(() => {
+                  deleteDepartment({id:id}).then(res=>{
+                       that.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        that.getList()
+                  })               
+                }).catch(() => {
+                    that.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+            });
+        
+      },
+    getList(){
+      let that = this
+      let data = that.pageData
+      getDepartmentList(data).then(res=>{
+          that.list=res.data
+      })
+    },
     toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {

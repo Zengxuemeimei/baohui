@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-
+import store from '@/store'
 import Base64  from 'base-64';
 export function login(data) {
   data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
@@ -25,8 +25,29 @@ export function logout() {
   })
 }
 export function getList(params) {
+  params.pageSize=10
+  params.enterpriseId = store.getters.enterpriseId
   return request({
     url: '/userInfo/list',
+    method: 'get',
+    params
+  })
+}
+export function saveOrUpdate(data) {
+  data.enterpriseId = store.getters.enterpriseId
+  if(!data.id){
+    data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
+  }
+  return request({
+    url: '/userInfo/saveOrUpdate',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteAccountNum(params) {
+  return request({
+    url: '/userInfo/deleteById',
     method: 'get',
     params
   })

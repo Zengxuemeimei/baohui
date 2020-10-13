@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     handleClose() {
-        this.$emit('close',{isShow:false,isSuccess:false})
+        this.$emit('closeTree',{isShow:false,isSuccess:false})
     },
     empty(){
         this.menuIds=[]
@@ -97,7 +97,7 @@ export default {
             });
             that.empty()
         })
-        that.$emit('close',{isShow:false,isSuccess:true})
+        that.$emit('closeTree',{isShow:false,isSuccess:true})
     },
     deep(list){
         let that = this

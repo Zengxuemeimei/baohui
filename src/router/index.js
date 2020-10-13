@@ -38,7 +38,6 @@ export const constantRoutes = [
 
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -69,7 +68,7 @@ export const constantRoutes = [
             path: 'quit',
             name: 'Quit',
             component: () => import('@/views/manage/staff/quit'),
-            meta: { title: '离职员工', icon: 'dashboard' }
+            meta: { title: '离职员工', icon: 'dashboard'}
           }
         ]
       },

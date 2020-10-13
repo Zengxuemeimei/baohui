@@ -5,7 +5,7 @@
     <!-- <breadcrumb class="breadcrumb-container" /> -->
     <p >宝汇冷链电商配送中心</p>
     <div class="right-menu flex-start">
-        <p class="f20 mr20">当前用户：超级管理员</p>
+        <p class="f20 mr20">当前用户：{{name}}</p>
         <i class="el-icon-switch-button f30" @click="logout"/>
     </div>
   </div>
@@ -24,7 +24,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
   },
   methods: {

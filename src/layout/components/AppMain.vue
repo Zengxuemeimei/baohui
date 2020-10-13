@@ -1,16 +1,24 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <router-view :key="key" />
+      <keep-alive :include="cachedViews">
+        <router-view :key="key" />
+      </keep-alive>
     </transition>
   </section>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'AppMain',
+  
   computed: {
+    ...mapGetters([
+      'cachedViews'
+    ]),
     key() {
+      console.log(this.$route.path)
       return this.$route.path
     }
   }
@@ -20,12 +28,12 @@ export default {
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 59px);
+  min-height: calc(100vh - 93px);
   /* width: 100%; */
   position: relative;
   padding-top: 12px;
-  /* overflow: hidden;
-  overflow-x: scroll; */
+  overflow: hidden;
+  /* overflow-x: scroll; */
 }
 .fixed-header+.app-main {
   padding-top: 59px;

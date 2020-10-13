@@ -5,11 +5,13 @@
         placeholder="请输入关键词"
         prefix-icon="el-icon-search"
         size="medium"
+        clearable
+        @keyup.enter.native="query"
         v-model="keyWords">
       </el-input>
     </div>
     <div class="key-btn">
-      <el-button>查询</el-button>
+      <el-button @click="query">查询</el-button>
     </div>
   </div>
 </template>
@@ -18,9 +20,9 @@
 
 export default {
   name: 'SearchKey',
-  props: {
-    keyWords: {
-      type: String
+  data(){
+    return{
+      keyWords:null
     }
   },
   created() {
@@ -28,6 +30,10 @@ export default {
   mounted() {
   },
   methods: {
+    query(){
+
+      this.$emit('query',this.keyWords.trim())
+    }
   }
 }
 </script>

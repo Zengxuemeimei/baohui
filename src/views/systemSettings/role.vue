@@ -34,6 +34,7 @@
             </el-table-column>
             <el-table-column
             label="操作"
+            width="200"
             >
             <template slot-scope="scope">
                 <div class="flex-start">
@@ -51,7 +52,7 @@
       </div>
     </main>
     <AddRole :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
-    <TreeRole :isShow="isSetRoles" @close="closeAdd" :menuList="menuList" :roleId="roleId"/>
+    <TreeRole :isShow="isSetRoles" @closeTree="closeTree" :menuList="menuList" :roleId="roleId"/>
   </div>
 </template>
 
@@ -146,6 +147,12 @@ export default {
               this.getRoleList()
           }
           this.isAdd = item.isShow
+          this.isEdit = item.isShow
+      },
+      closeTree(item){
+        if(item.isSuccess){
+              this.getRoleList()
+          }
           this.isSetRoles = item.isShow
       },
       getRoles(value){
@@ -156,7 +163,7 @@ export default {
         this.menuIds = menuIds
       },
       refresh(){
-        this.reload()
+        // this.reload()
         // location.reload()
       }
   }

@@ -8,29 +8,20 @@
         :before-close="handleClose">
         <div class="person-content">
             <el-scrollbar style="height:100%">
-                <el-form :model="menuForm"  ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="menuForm" :rules="rules"  ref="ruleForm" label-width="100px">
                     <el-form-item label="所属菜单" prop="parentName">
                         <el-select v-model="parentId" placeholder="请选择">
                             <el-option :value="null" label="无父级"></el-option>
-                            <el-option >
-                                <el-tree
-                                :data="menuList"
-                                ref="tree"
-                                node-key="id"
-                                :default-expand-all="true"
-                                :props="treeProps">
-                                </el-tree>
-                            </el-option>
-                            <!-- <el-option v-for="item in parentList" :key="item.id" :value="item.id" :label="item.name"></el-option> -->
+                            <Recursion :list="menuList" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="标题" prop="name">
-                        <el-input v-model="menuForm.meta.title" placeholder="请输入内容"></el-input>
+                    <el-form-item label="标题" prop="title">
+                        <el-input v-model="menuForm.title" placeholder="请输入内容"></el-input>
                     </el-form-item>
                     <el-form-item label="菜单名称" prop="name">
                         <el-input v-model="menuForm.name" placeholder="请输入内容"></el-input>
                     </el-form-item>
-                    <el-form-item label="路径" prop="name">
+                    <el-form-item label="组件路径" prop="component">
                         <el-input v-model="menuForm.component" placeholder="请输入内容"></el-input>
                     </el-form-item>
                 </el-form>
@@ -38,7 +29,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="addMenu">确 定</el-button>
+            <el-button type="primary" @click="addMenu('ruleForm')">确 定</el-button>
         </span>
     </el-dialog>
   </div>
@@ -46,10 +37,11 @@
 
 <script>
 import {saveOrUpdateMenu} from "@/api/menu"
+import Recursion from '@/components/Recursion'
 import moment from 'moment'
 export default {
   name: 'AddMenu',
-  components: {},
+  components: {Recursion},
   props: {
       isShow:{
         type: Boolean,
@@ -68,6 +60,17 @@ export default {
   },
   data() {
     return {
+      rules:{
+         title: [
+            { required: true, message: '请输入标题', trigger: 'blur' }
+          ],
+          name: [
+            { required: true, message: '请输入菜单名称', trigger: 'blur' }
+          ],
+          component: [
+            { required: true, message: '请输入组件路径', trigger: 'blur' }
+          ]
+      },
         treeProps:{
             label:(data)=>{
                 return data.meta.title
@@ -75,12 +78,6 @@ export default {
             children:'children'
         },
         parentId:null,
-        parentList:[
-            {
-                id:1,
-                name:'系统管理'
-            }
-        ],
         selectProps: {
           label: 'name',
           children: 'children'
@@ -94,10 +91,11 @@ export default {
             name: null,
             notDelete: true,
             orderNum: null,
-            parentId: 1,
+            parentId: null,
             path: null,
             redirect: null,
             type: '菜单',
+            title:null
         }
     }
   },
@@ -107,11 +105,13 @@ export default {
     console.log('editDetail',this.editDetail)
   },
   methods: {
-    handleNodeClick(){
-
+    handleCheckChange(data){
+      this.parentId = data.meta.title
+      console.log('1',data)
     },
     handleClose() {
         // this.isShow = false
+        this.empty()
         this.$emit('close',{isShow:false,isSuccess:false})
     },
     empty(){
@@ -125,45 +125,61 @@ export default {
             name: null,
             notDelete: true,
             orderNum: null,
-            parentId: 1,
+            parentId: null,
             path: null,
             redirect: null,
             type: '菜单',
+            title:null
         }
+        this.$refs.ruleForm.resetFields();
     },
-    addMenu(){
+    addMenu(formName){
         let that = this
-        let date = new Date()
-        if(that.isEdit){
-            this.menuForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-        }else{
-            this.menuForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-        }
-        this.menuForm.meta = JSON.stringify(this.menuForm.meta)
-        this.menuForm.path = this.menuForm.name.replace(this.menuForm.name[0],this.menuForm.name[0].toLowerCase());
-        saveOrUpdateMenu(this.menuForm).then(res=>{
-            that.empty()
-            this.$emit('close',{isShow:false,isSuccess:true})
+        that.$refs[formName].validate((valid) => {
+          console.log(valid)
+          if (valid) {
+            let date = new Date()
+            if(that.isEdit){
+                that.menuForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+            }else{
+                that.menuForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+            }   
+            that.menuForm.meta.title = that.menuForm.title 
+            that.menuForm.meta = JSON.stringify(that.menuForm.meta)
+            if(that.parentId){
+              that.menuForm.path = that.menuForm.name.replace(that.menuForm.name[0],that.menuForm.name[0].toLowerCase());
+            }else{
+              that.menuForm.path = '/' + that.menuForm.name.replace(that.menuForm.name[0],that.menuForm.name[0].toLowerCase());
+            }
+            delete this.menuForm.title
+            saveOrUpdateMenu(that.menuForm).then(res=>{
+                that.empty()
+                that.$emit('close',{isShow:false,isSuccess:true})
+            })
+          }
         })
+        
     }
-
   },
   watch:{
-    editDetail(newVal){
-        if(this.isEdit){
-            this.parentId = newVal.parentId
-            this.menuForm.name = newVal.name
-            this.menuForm.meta = newVal.meta
-            this.menuForm.path = newVal.path
-            this.menuForm.id = newVal.id
-            this.menuForm.component = newVal.component
-        }
-        // console.log('isEdit',this.isEdit)
-        console.log('newVal',newVal)
-    } 
+    isShow(newVal){
+      if(this.isEdit){
+          this.parentId = this.editDetail.parentId
+          this.menuForm.name = this.editDetail.name
+          this.menuForm.meta = this.editDetail.meta
+          this.menuForm.title = this.editDetail.meta.title
+          this.menuForm.path = this.editDetail.path
+          this.menuForm.id = this.editDetail.id
+          this.menuForm.component = this.editDetail.component
+      }
+
+      
+    }
   }
 }
 </script>
 <style scoped>
-
+.el-tree-node__expand-icon{
+  color: transparent !important;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="content-box">
+  <div class="content-box relative">
     <header class="content-header">
       <p class="title">菜单管理</p>
     </header>
@@ -10,79 +10,7 @@
         </div>
       </div>
       <div class="all-table">
-          <el-table
-            :data="list"
-            style="width: 100%">
-            <el-table-column type="expand">
-            <template slot-scope="prop">
-                <el-table
-                    :data="prop.row.children"
-                    :show-header="false"
-                    style="width: 100%">
-                <el-table-column
-                    label="菜单名称"
-                    prop="meta.title">
-                    </el-table-column>
-                    <!-- <el-table-column
-                    label="id"
-                    prop="id">
-                    </el-table-column> -->
-                    <el-table-column
-                    label="name"
-                    prop="name">
-                    </el-table-column>
-                    <el-table-column
-                    label="component"
-                    prop="component">
-                    </el-table-column>
-                    <el-table-column
-                    label="path"
-                    prop="path">
-                    </el-table-column>
-                    <el-table-column
-                    label="操作"
-                    >
-                    <template slot-scope="scope">
-                        <div class="flex-start">
-                            <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
-                            <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
-                        </div>
-                    </template>
-                    </el-table-column>
-                </el-table>
-            </template>
-            </el-table-column>
-            <el-table-column
-            label="菜单名称"
-            prop="meta.title">
-            </el-table-column>
-            <!-- <el-table-column
-            label="id"
-            prop="id">
-            </el-table-column> -->
-            <el-table-column
-            label="name"
-            prop="name">
-            </el-table-column>
-            <el-table-column
-            label="component"
-            prop="component">
-            </el-table-column>
-            <el-table-column
-            label="path"
-            prop="path">
-            </el-table-column>
-            <el-table-column
-            label="操作"
-            >
-            <template slot-scope="scope">
-                <div class="flex-start">
-                    <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
-                    <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
-                </div>
-            </template>
-            </el-table-column>
-        </el-table>
+        <MenuList :list="list" @editMenu="editMenu" @deleteList="deleteList" />
       </div>
       <div class="flex-between mt20">
         <!-- <p>双击进入详情页面</p>
@@ -90,13 +18,17 @@
       </div>
     </main>
     <AddMenu :isShow="isAdd" :isEdit="isEdit" :menuList="list" :editDetail="editDetail" @close="closeAdd"/>
+    <Loading :isLoading="loading"/>
+    
   </div>
 </template>
 
 <script>
 import AddButton from '@/components/AddButton/index'
+import Loading from '@/components/Loading/index'
 import Paging from '@/components/Paging/index'
 import AddMenu from '@/components/AddMenu/index'
+import MenuList from '@/components/Recursion/menuList'
 import {getList,deleteMenu} from '@/api/menu'
 
 export default {
@@ -105,6 +37,8 @@ export default {
     AddButton,
     AddMenu,
     Paging,
+    Loading,
+    MenuList
   },
   data() {
     return {
@@ -115,7 +49,8 @@ export default {
         list: [],
         isAdd:false,
         isEdit:false,
-        editDetail:{} 
+        editDetail:{},
+        loading:true
     }
   },
   created() {
@@ -128,8 +63,12 @@ export default {
       getList(){
         let that = this
         let data = that.pageDatas
+        that.loading = true
         getList().then(res=>{
             that.list = res.data
+            that.loading = false
+        }).catch(error=>{
+          that.loading = false
         })
       },
       addMenu(value){
@@ -139,9 +78,9 @@ export default {
       },
       editMenu(item){
         let that = this
-        that.isAdd = true
-        that.isEdit = true
-        that.editDetail = item
+        that.isAdd = item.isAdd
+        that.isEdit = item.isEdit
+        that.editDetail = item.editDetail
       },
       closeAdd(item){
         let that = this
@@ -149,29 +88,10 @@ export default {
             that.getList()
         }
         that.isAdd = item.isShow
+        that.isEdit = item.isShow
       },
-      deleteList(id){
-           this.$confirm('此操作将永久删除该菜单, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-                }).then(() => {
-                    deleteMenu({id:id}).then(res=>{
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                        this.getList()
-                    })
-                    
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-            });
-          
+      deleteList(){
+        this.getList()
       }
   }
 }
@@ -181,9 +101,9 @@ export default {
 </style>
 <style>
 .el-table__expanded-cell[class*=cell]{
-    padding: 0 0 0 48px;
+    padding:0;
 }
 .el-table--enable-row-hover .el-table__body tr:hover>td {
-    background-color: #d1ba6a42;
+    background-color: #a1d1f142;
 }
 </style>
