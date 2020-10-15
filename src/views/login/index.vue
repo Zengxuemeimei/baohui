@@ -19,7 +19,7 @@
               </span>
               <input class="username" type="password" v-model="loginForm.password" placeholder="请输入密码"> 
             </el-form-item>
-            <el-button type="primary" @click="login">登录</el-button>
+            <el-button type="primary" @click="login" :loading="isLoading">登录</el-button>
           </el-form>
       </div>
   </div>
@@ -28,6 +28,8 @@
 <script>
 const login_img = require('@/assets/login_images/login_bg.jpg')
 import { login } from '@/api/user'
+import  Tools  from '@/utils/tools'
+
 export default {
   name: 'Login',
   components: {},
@@ -38,8 +40,7 @@ export default {
         loginName: 'jsxa',
         password: 'admin123456'
       },
-
-      loading:false
+      isLoading:false
     }
   },
   created() {
@@ -49,13 +50,28 @@ export default {
   methods: {
     login(){
       console.log('dainji')
+      if(Tools.isEmpty(this.loginForm.loginName)){
+        this.$message({
+            message: '请输入账号',
+            type: 'warning'
+        });
+        return
+      }
+      if(Tools.isEmpty(this.loginForm.password)){
+        this.$message({
+            message: '请输入密码',
+            type: 'warning'
+        });
+        return
+      }
+      this.isLoading = true
       this.$store.dispatch('user/login',this.loginForm)
             .then(() => {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
+              this.isLoading = false
             })
             .catch(() => {
-              this.loading = false
+              this.isLoading = false
             })
     }
   }
@@ -73,7 +89,7 @@ export default {
 .login-box{
   width: 100%;
   height: 100%;
-  padding-top: 170px;
+  padding-top: 10vh;
 }
 .title{
   text-align: center;

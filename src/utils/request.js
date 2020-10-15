@@ -63,6 +63,10 @@ service.interceptors.response.use(
           duration: 5 * 1000
         })
       }
+      if (res.code === '401') {
+        // to re-login
+        next(`/login?redirect=${this.$route.path}`)
+      }
       return Promise.reject(new Error(res.msg || '网络故障，请稍后再试'))
     } else {
       return res
@@ -71,7 +75,7 @@ service.interceptors.response.use(
   error => {
     console.log('err' + error) // for debug
     Message({
-      message: error.message,
+      message: '请求超时，请稍后再试',
       type: 'error',
       duration: 5 * 1000
     })

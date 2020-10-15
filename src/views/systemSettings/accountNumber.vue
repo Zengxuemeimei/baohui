@@ -8,24 +8,15 @@
         <search-key @query="keyWordsQuery"/>
         <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
-            <!-- <edit-button />
-            <del-button /> -->
         </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
           ref="multipleTable"
           :data="list"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <!-- <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column> -->
+          style="width: 100%">
           <el-table-column
             label="序号"
             type="index"
@@ -159,25 +150,7 @@ export default {
       getList(data).then(res=>{
           that.list=res.data.dataList
       })
-    },
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
-        //修改table行的颜色
-        if(rowIndex%2 != 1){
-          return 'odd-row'
-        }
-      }
+    }
   }
 }
 </script>

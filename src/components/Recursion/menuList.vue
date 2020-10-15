@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-table :data="list" :show-header="isHeader" :default-expand-all="false" :row-class-name="getRowClassName"  style="width: 100%">
+    <el-table :data="list" :show-header="isHeader" header-cell-class-name="all-table-th" :default-expand-all="false" :row-class-name="getRowClassName"  style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="prop" v-if="prop.row.children">
-          <MenuList :list="prop.row.children" :isHeader="false" @editMenu="editMenuItem"/>
+          <MenuList :list="prop.row.children" :isHeader="false" @editMenu="editMenuItem" @deleteList="deleteItem"/>
         </template>
       </el-table-column>
       <el-table-column label="菜单名称" prop="meta.title"> </el-table-column>
@@ -70,6 +70,9 @@ export default {
         isEdit:true,
         editDetail:item
       })
+    },
+    deleteItem(){
+      this.$emit('deleteList')
     },
     deleteList(id) {
       this.$confirm("此操作将永久删除该菜单, 是否继续?", "提示", {

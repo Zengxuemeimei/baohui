@@ -5,7 +5,7 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key />
+        <search-key @query="keyWordsQuery"/>
       </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
@@ -32,29 +32,22 @@
           </div>
         </div>
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+            <add-button @addShow="addShow" />
+            <!-- <edit-button />
+            <del-button /> -->
         </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
           :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type="index"
+            width="80">
+            <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
           </el-table-column>
           <el-table-column
             prop="name"
@@ -78,15 +71,26 @@
           </el-table-column>
           <el-table-column
             prop="address"
-            label="岗位"
-          >
+            label="岗位">
           </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="primary" @click="editItem(scope.row)" size="mini">编辑</el-button>
+                  <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button>
+                </div>
+            </template>
+          </el-table-column>
+          
         </el-table>
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
         <paging />
       </div>
+      <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd" />
+      <Loading :loading="loading" />
     </main>
     <add-person />
   </div>
@@ -95,23 +99,36 @@
 <script>
 import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
+// import EditButton from '@/components/EditButton/index'
+// import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddPerson from '@/components/AddPerson/index'
-import {setMenu} from '@/api/roles'
+import Loading from '@/components/Loading/index'
+import {getStaffList} from '@/api/staff/index'
+import {getDepartmentList} from '@/api/department'
+
+
 export default {
   name: 'Employee',
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
-    AddPerson
+    AddPerson,
+    Loading
   },
   data() {
     return {
+      pageData:{
+        keyword:null,
+        pageIndex:0
+      },
+      isAdd:false,
+      isEdit:false,
+      editDetail:{},
+      list:[],
+      listDepartment:[],
+      loading:false,
       tableData3: [{
           date: '2016-05-03',
           name: '王小虎',
@@ -165,30 +182,49 @@ export default {
   created() {
   },
   mounted() {
-// let data={
-//             menuIds:[1,3,15],
-//             roleId:2
-//         }
-//         setMenu(data).then(res=>{
-//             this.$message({
-//                 message: '权限设置成功',
-//                 type: 'success'
-//             });
-//         })
+    this.getList()
+    this.getDepartmentList()
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
+    keyWordsQuery(){
+
+    },
+    editItem(){
+
+    },
+    deleteItem(){
+
+    },
+    addShow(value){
+      console.log('addShow',value)
+      this.isAdd = value
+    },
+    closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
         }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
+        that.isAdd = item.isShow
+        that.isEdit = item.isShow 
+    },
+    getDepartmentList(){
+        let that = this
+        getDepartmentList().then(res=>{
+          that.listDepartment=res.data
+        })
+    },
+    getList(){
+      let data = this.pageData
+      let that = this
+      that.loading = true
+      data.quit=true
+      getStaffList(data).then(res=>{
+          that.list = res.data.dataList
+          that.loading = false
+      }).catch(error=>{
+          that.loading = false
+      })
+    },
       tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){

@@ -12,6 +12,7 @@
       </div>
       <div class="all-table">
           <el-table
+            header-cell-class-name="all-table-th"
             :data="list"
             border
             style="width: 100%">

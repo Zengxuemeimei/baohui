@@ -9,7 +9,7 @@
         <div class="person-content">
             <el-scrollbar style="height:100%">
                 <el-form :model="menuForm" :rules="rules"  ref="ruleForm" label-width="100px">
-                    <el-form-item label="所属菜单" prop="parentName">
+                    <el-form-item label="所属菜单" prop="parentId">
                         <el-select v-model="parentId" placeholder="请选择">
                             <el-option :value="null" label="无父级"></el-option>
                             <Recursion :list="menuList" />
@@ -143,7 +143,8 @@ export default {
                 that.menuForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
             }else{
                 that.menuForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-            }   
+            }  
+            that.menuForm.parentId = that.parentId
             that.menuForm.meta.title = that.menuForm.title 
             that.menuForm.meta = JSON.stringify(that.menuForm.meta)
             if(that.parentId){

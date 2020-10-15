@@ -13,12 +13,7 @@
                         <el-select v-model="ruleForm.parentId" placeholder="请选择">
                             <el-option label="无父级"
                             :value="null"></el-option>
-                            <el-option
-                            v-for="item in list"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
+                            <DepartmentSelect :list="list"/>
                         </el-select>
                     </div>
                 </el-form-item>
@@ -31,7 +26,7 @@
                     <div class="input-box">
                          <el-radio-group v-model="ruleForm.status">
                             <el-radio-button label="启用"></el-radio-button>
-                            <el-radio-button label="禁用"></el-radio-button>
+                            <el-radio-button label="停用"></el-radio-button>
                          </el-radio-group>
                     </div>
                 </el-form-item>
@@ -40,7 +35,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="AddDepartment('ruleForm')">确 定</el-button>
+            <el-button type="primary" :loading="loading" @click="AddDepartment('ruleForm')">确 定</el-button>
         </span>
       </el-dialog>
   </div>
@@ -49,10 +44,11 @@
 <script>
 import {saveOrUpdate} from '@/api/department'
 import moment from 'moment'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
 
 export default {
   name: 'AddDepartment',
-  components: {},
+  components: {DepartmentSelect},
   props:{
     isShow:{
         type:Boolean
@@ -79,8 +75,12 @@ export default {
         rules: {
           name:[
               { required: true, message: '请输入部门名称', trigger: 'blur' },
+          ],
+          status:[
+              { required: true, message: '请选择状态', trigger: 'change' },
           ]
-        }
+        },
+        loading:false
     }
   },
   created() {
@@ -102,9 +102,11 @@ export default {
     },
     AddDepartment(formName){
         let that = this
+        
         that.$refs[formName].validate((valid) => {
           console.log(valid)
           if (valid) {
+            that.loading = true
             let date = new Date()
             if(that.isEdit){
                 that.ruleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
@@ -112,6 +114,7 @@ export default {
                 that.ruleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
             } 
             saveOrUpdate(that.ruleForm).then(res=>{
+                that.loading = false
                     if(that.isEdit){
                         that.$message({
                             message: '编辑部门成功',
@@ -125,6 +128,8 @@ export default {
                     }
                     that.empty()
                     that.$emit('close',{isShow:false,isSuccess:true})
+                }).catch(error=>{
+                    that.loading = false
                 })
           }
         })

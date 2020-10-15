@@ -1,17 +1,18 @@
 import request from '@/utils/request'
 import store from '@/store'
 
-export function getDepartmentList() {  
+export function getStaffList(params) {  
+  params.pageSize = 10
     return request({
-      url: '/departmentInfo/list?enterpriseId=' + store.getters.enterpriseId,
+      url: '/staffInfo/list',
       method: 'get',
+      params
     })
 }
 
 export function saveOrUpdate(data) {
-    data.enterpriseId = store.getters.enterpriseId
     return request({
-      url: '/departmentInfo/saveOrUpdate',
+      url: '/staffInfo/saveOrUpdate',
       method: 'post',
       data
     })
@@ -19,7 +20,7 @@ export function saveOrUpdate(data) {
 
 export function deleteDepartment(params) {
     return request({
-      url: '/departmentInfo/deleteById',
+      url: '/staffInfo/deleteById',
       method: 'get',
       params
     })
