@@ -3,7 +3,7 @@
     <main class="content-main">
       <div class="key-words-box flex-between">
         <div class="flex-start">
-          <search-key />
+          <search-key @query="keyWordsQuery"/>
           <div class="ml50">
             <label class="filter-label">告警类型：</label>
             <el-select v-model="value" placeholder="请选择">
@@ -35,16 +35,9 @@
         <el-table
           border
           header-cell-class-name="all-table-th"
-          :row-class-name="tableRowClassName"
-          ref="multipleTable"
           :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column label="序号" width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+          style="width: 100%">
+          <el-table-column label="序号" width="80" type=index>
           </el-table-column>
           <el-table-column prop="department" label="事件名称" width="270">
           </el-table-column>
@@ -65,6 +58,13 @@
           <el-table-column prop="address" label="告警时间" width="270">
           </el-table-column>
           <el-table-column prop="address" label="处置状态"> </el-table-column>
+          <el-table-column label="操作"> 
+              <template slot-scope="scope">
+                <div class="flex-start">
+                    <el-button type="primary" @click="editAlarm(scope.row)" size="mini">编辑</el-button>
+                </div>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
@@ -72,6 +72,7 @@
         <paging />
       </div>
     </main>
+    <AlarmEdit :isEdit="isEdit"/>
   </div>
 </template>
 
@@ -79,15 +80,31 @@
 import SearchKey from '@/components/searchKey/index'
 import EditButton from '@/components/EditButton/index'
 import Paging from '@/components/Paging/index'
+import AlarmEdit from '@/components/AlarmEdit/index'
+import {getAlarmInfoList} from '@/api/alarmCenter'
+
 export default {
   name: 'AlarmList',
   components: {
     SearchKey,
     EditButton,
-    Paging
+    Paging,
+    AlarmEdit
+  },
+  props:{
+    riskType:{
+      type:String
+    }
   },
   data() {
     return {
+      pageData:{
+        keyword:null,
+        pageIndex:0,
+        riskType:this.riskType
+      },
+      list:[],
+      isEdit:false,
       activeName2:"all",
       tableData3: [{
           date: '2016-05-03',
@@ -142,20 +159,34 @@ export default {
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-    handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-    tableRowClassName({row, rowIndex}){
-        //修改table行的颜色
-        if(rowIndex%2 != 1){
-          return 'odd-row'
-        }
+    editAlarm(item){
+        this.isEdit = true
+        
+    },
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    getList(){
+      let that = this
+      let data = that.pageData
+      getAlarmInfoList(data).then(res=>{
+
+      })
     },
     handleClick(tab, event) {
         console.log(tab, event);
-      }
+    }
+  },
+  watch:{
+    riskType(newVal){
+      this.riskType = newVal
+      // this.getList()
+    }
   }
 }
 </script>

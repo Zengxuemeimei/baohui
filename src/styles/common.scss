@@ -153,4 +153,19 @@
     outline: none;
     border: none;
     padding: 0 5px;
+    background: transparent;
+}
+.upload-img-box{
+    width: 148px;
+    height: 148px;
+    border-radius: 6px;
+    background: #EEEEEF;
+    overflow: hidden;
+}
+.upload-img{
+    width: auto;
+    height: 100%;
+}
+.person-content .el-input__inner{
+    border: none;
 }

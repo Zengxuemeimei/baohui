@@ -2,7 +2,7 @@
   <div>
       <el-dialog
         title="访客审核"
-        :visible.sync="dialogVisible"
+        :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
@@ -53,10 +53,16 @@
 </template>
 
 <script>
+import {auditVisitor} from '@/api/visitor/index'
 
 export default {
   name: 'AuditVisitor',
   components: {},
+  props:{
+      isShow:{
+          type:Boolean
+      }
+  },
   data() {
     return {
         dialogVisible:true,
@@ -69,7 +75,7 @@ export default {
   },
   methods: {
     handleClose(done) {
-        this.dialogVisible = false
+        this.$emit("close", { isShow: false, isSuccess: false });
     },
   }
 }

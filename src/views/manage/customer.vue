@@ -6,46 +6,37 @@
     <main class="content-main">
       <div class="key-words-box flex-between">
         <div class="flex-start">
-          <search-key />
+          <search-key @query="keyWordsQuery"/>
           <div class="ml50">
               <label class="filter-label">车辆类型：</label>
-              <el-select v-model="value" placeholder="请选择">
+              <!-- <el-select v-model="value" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
                 </el-option>
-              </el-select>
+              </el-select> -->
           </div>
         </div>
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+            <add-button @addShow="addShow"/>
         </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
+          :data="list"
           tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type=index
+            width="80">
           </el-table-column>
           <el-table-column
-            prop="headPortrait"
+            prop="photoUrl"
             label="头像"
             width="120">
             <div class="headPortrait-box">
@@ -53,7 +44,7 @@
             </div>
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="name"
             label="姓名"
             width="270">
           </el-table-column>
@@ -63,19 +54,8 @@
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="所属公司"
-            width="270">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="车辆信息"
-            width="270">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="车辆类型"
-          >
+            prop="customerEnterpriseName"
+            label="所属公司">
           </el-table-column>
         </el-table>
       </div>
@@ -84,7 +64,7 @@
         <paging />
       </div>
     </main>
-    <add-customer />
+    <AddCustomer :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -92,86 +72,66 @@
 import '@/styles/common.scss'
 import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddCustomer from '@/components/AddCustomer/index'
+import {getCustomerList} from '@/api/customer'
 export default {
   name: 'Customer',
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
     AddCustomer
   },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      pageData:{
+        keyword:null,
+        pageIndex:0,
+      },
+      isAdd:false,
+      isEdit:false,
+      editDetail:{},
+      list:[],
+      loading:false
       } 
   },
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-    handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    addShow(value){
+      console.log('addShow',value)
+      this.isAdd = value
+    },
+    closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
+        }
+        that.isAdd = item.isShow
+        that.isEdit = item.isShow 
+    },
+    getList(){
+      let that = this
+      let data = this.pageData
+      getCustomerList(data).then(res=>{
+        that.list = res.data.dataList
+      })
+    },
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'
         }
-      }
+    }
   }
 }
 </script>

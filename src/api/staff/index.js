@@ -18,9 +18,9 @@ export function saveOrUpdate(data) {
     })
 }
 
-export function deleteDepartment(params) {
+export function getStaffDetail(params) {
     return request({
-      url: '/staffInfo/deleteById',
+      url: '/staffInfo/getById',
       method: 'get',
       params
     })

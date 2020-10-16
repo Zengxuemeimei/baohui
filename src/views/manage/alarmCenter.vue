@@ -5,34 +5,34 @@
     </header>
     <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
         <el-tab-pane label="全部" name="all">
-          <alarm-list />
+          <AlarmList :riskType="riskType" />
         </el-tab-pane>
         <el-tab-pane label="未处理" name="untreated">
-           <alarm-list />
+           <AlarmList riskType="untreated"/>
         </el-tab-pane>
         <el-tab-pane label="已处理" name="processed">
-           <alarm-list />
+           <AlarmList :riskType="riskType"/>
         </el-tab-pane>
         <el-tab-pane label="处理中" name="processing">
-           <alarm-list />
+           <AlarmList :riskType="riskType"/>
         </el-tab-pane>
     </el-tabs>
-    <alarm-edit />
+    
   </div>
 </template>
 
 <script>
 import AlarmList from '@/components/AlarmList/index'
-import AlarmEdit from '@/components/AlarmEdit/index'
+
 
 export default {
   name: 'AlarmCenter',
   components: {
-    AlarmList,
-    AlarmEdit
+    AlarmList
   },
   data() {
     return {
+      riskType:null,
       activeName2:"all"
       } 
   },

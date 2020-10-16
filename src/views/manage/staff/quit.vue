@@ -5,25 +5,21 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key />
+        <search-key @query="keyWordsQuery"/>
       </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
           <div>
             <label class="filter-label">部门：</label>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+            <el-select v-model="pageData.departmentId" clearable @change="changeDepartment" placeholder="请选择">
+              <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
           <div class="filter-time">
             <label class="filter-label">入职时间：</label>
             <el-date-picker
-              v-model="value3"
+              @change="changeTimeList"
+              v-model="quitTime"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -31,28 +27,18 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="btn-box flex-start">
-            <del-button />
-        </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
           ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          :data="list"
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type=index
+            width="80">
           </el-table-column>
           <el-table-column
             prop="name"
@@ -60,24 +46,23 @@
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="departmentName"
             label="部门"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="position"
+            width="270"
+            label="岗位">
+          </el-table-column>
+          <el-table-column
+            prop="entryTime"
             label="入职时间"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="车辆信息"
-            width="270">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="岗位"
-          >
+            prop="quitTime"
+            label="离职时间">
           </el-table-column>
         </el-table>
       </div>
@@ -92,94 +77,94 @@
 <script>
 import '@/styles/common.scss'
 import SearchKey from '@/components/searchKey/index'
-import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
+import Loading from '@/components/Loading/index'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import {getStaffList,getStaffDetail} from '@/api/staff/index'
+import {getDepartmentList} from '@/api/department'
+import moment from 'moment'
+
 export default {
   name: 'Quit',
   components: {
     SearchKey,
-    AddButton,
-    EditButton,
-    DelButton,
+    Loading,
     Paging,
+    DepartmentSelect
   },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      pageData:{
+        keyword:null,
+        pageIndex:0,
+        departmentId:null,
+        quitTimeStartTime:null,
+        quitTimeEndTime:null
+      },
+      list:[],
+      listDepartment:[],
+      loading:false,
+      quitTime:null,
       }
   },
   created() {
   },
   mounted() {
+    this.getList()
+    this.getDepartmentList()
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    changeDepartment(val){
+      if(val){
+        this.pageData.pageIndex = 0
+      }else{
+        this.pageData.departmentId = null
+      }
+      this.getList()
+
+    },
+    changeTimeList(val){
+      this.pageData.pageIndex = 0
+      if(val){
+        this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
+        this.pageData.quitTimeEndTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
+      }else{
+        this.pageData.quitTimeStartTime = null
+        this.pageData.quitTimeEndTime = null
+      }
+      
+      this.getList()
+      console.log(val)
+    },
+    getDepartmentList(){
+        let that = this
+        getDepartmentList().then(res=>{
+          that.listDepartment=res.data
+        })
+    },
+    getList(){
+      let data = this.pageData
+      let that = this
+      that.loading = true
+      data.quit=true
+      getStaffList(data).then(res=>{
+          that.list = res.data.dataList
+          that.loading = false
+      }).catch(error=>{
+          that.loading = false
+      })
+    },
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'
         }
-      }
+    }
   }
 }
 </script>

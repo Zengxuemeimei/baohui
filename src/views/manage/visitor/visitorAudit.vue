@@ -6,34 +6,26 @@
     <main class="content-main">
       <div class="key-words-box flex-between">
         <div class="flex-start">
-          <search-key />
+          <search-key @query="keyWordsQuery"/>
           <div class="ml50">
               <el-button :style="{'background':isAll?'#53779D':'','color':isAll?'#ffffff':''}" @click="isAll=true">全部</el-button>
               <el-button :style="{'background':isAll?'':'#53779D','color':isAll?'':'#ffffff'}" @click="isAll=false">审核未通过</el-button>
           </div>
         </div>
         <div class="btn-box flex-start">
-            <el-button type="primary" icon="el-icon-edit">审核</el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="isAudit=true">审核</el-button>
         </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          :data="list"
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type=index
+            width="80">
           </el-table-column>
           <el-table-column
             prop="headPortrait"
@@ -75,15 +67,16 @@
         <paging />
       </div>
     </main>
-    <audit-visitor />
+    <AuditVisitor :isShow="isAudit" @close="closeAudit"/>
   </div>
 </template>
 
 <script>
-import '@/styles/common.scss'
 import SearchKey from '@/components/searchKey/index'
 import AuditVisitor from '@/components/AuditVisitor/index'
 import Paging from '@/components/Paging/index'
+import {getVisitorList} from '@/api/visitor/index'
+
 export default {
   name: 'VisitorAudit',
   components: {
@@ -93,66 +86,46 @@ export default {
   },
   data() {
     return {
+       pageData:{
+        keyword:null,
+        pageIndex:0,
+      },
+      list:[],
+      loading:false,
       isAll:true,
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      isAudit:false
       } 
   },
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
+    closeAudit(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
+        }
+        that.isAdd = item.isShow
+    },
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    getList(){
+      let data = this.pageData
+      let that = this
+      that.loading = true
+      getVisitorList(data).then(res=>{
+          that.list = res.data.dataList
+          that.loading = false
+      }).catch(error=>{
+          that.loading = false
+      })
+    },
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'

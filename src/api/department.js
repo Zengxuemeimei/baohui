@@ -23,4 +23,4 @@ export function deleteDepartment(params) {
       method: 'get',
       params
     })
-  }
+}

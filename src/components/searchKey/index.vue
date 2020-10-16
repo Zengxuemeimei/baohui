@@ -31,8 +31,12 @@ export default {
   },
   methods: {
     query(){
+      if(this.keyWords){
+        this.$emit('query',this.keyWords.trim())
+      }else{
+        this.$emit('query',null)
+      }
 
-      this.$emit('query',this.keyWords.trim())
     }
   }
 }

@@ -2,7 +2,7 @@
   <div>
       <el-dialog
         title="告警信息"
-        :visible.sync="dialogVisible"
+        :visible.sync="isEdit"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
@@ -54,6 +54,11 @@
 export default {
   name: 'AlarmEdit',
   components: {},
+  props:{
+      isEdit:{
+          type:Boolean
+      }
+  },
   data() {
     return {
         dialogVisible:false
