@@ -2,7 +2,7 @@
   <div>
     <el-table :data="list" :show-header="isHeader"  :default-expand-all="false" header-cell-class-name="all-table-th" :row-class-name="getRowClassName" >
       <el-table-column type="expand">
-        <template slot-scope="prop" v-if="prop.row.children && prop.row.children.length >0">
+        <template slot-scope="prop" v-if="prop.row.children">
           <DepartmentList :list="prop.row.children" :isHeader="false" @editMenu="editMenuItem" @stopDepartment="stopDepartmentItem"/>
         </template>
       </el-table-column>
@@ -115,6 +115,7 @@ export default {
 </script>
 <style>
  .row-expand-cover .el-table__expand-icon{visibility:hidden;}
+
  .el-table__expanded-cell[class*=cell]{
     padding:0;
 }

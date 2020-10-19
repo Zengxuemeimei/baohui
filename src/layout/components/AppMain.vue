@@ -18,7 +18,6 @@ export default {
       'cachedViews'
     ]),
     key() {
-      console.log(this.$route.path)
       return this.$route.path
     }
   }

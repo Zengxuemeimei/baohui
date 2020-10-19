@@ -25,3 +25,11 @@ export function auditVisitor(data) {
     data
   })
 }
+
+export function deleteVisitor(params) { 
+  return request({
+    url: '/visitorInfo/deleteById',
+    method: 'get',
+    params
+  })
+}

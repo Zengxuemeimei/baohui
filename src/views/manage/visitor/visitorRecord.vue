@@ -104,6 +104,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:0,
+        status:'PASS'
       },
       list:[],
       loading:false,

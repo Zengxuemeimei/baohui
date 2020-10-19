@@ -5,7 +5,7 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key />
+        <search-key @query="keyWordsQuery"/>
       </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
@@ -22,44 +22,34 @@
           </div>
         </div>
         <div class="btn-box flex-start">
-            <add-button />
-            <edit-button />
-            <del-button />
+            <add-button @addShow="addShow"/>
         </div>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          :data="list"
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type="index"
+            width="80">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="title"
             label="标题"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="eventDescribe"
             label="事件描述"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="reportTime"
             label="上报时间"
-            width="146">
+            width="160">
           </el-table-column>
           <el-table-column
             prop="address"
@@ -67,17 +57,17 @@
             width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="level"
             label="隐患级别"
             width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="manageTime"
             label="处理时间"
-            width="146">
+            width="160">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="manageStatus"
             label="处理状态"
             width="146">
           </el-table-column>
@@ -87,9 +77,17 @@
             width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="处理描述"
-          >
+            prop="manageDescribe"
+            label="处理描述">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="">
+                <div class="flex-start">
+                  <el-button type="primary"  size="mini">编辑</el-button>
+                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -98,7 +96,7 @@
         <paging />
       </div>
     </main>
-    <add-hiddenDanger />
+    <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -109,6 +107,8 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddHiddenDanger from '@/components/AddHiddenDanger/index'
+import {getHiddenDangerList} from '@/api/hiddenDanger'
+
 export default {
   name: 'HiddenDanger',
   components: {
@@ -121,36 +121,15 @@ export default {
   },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
+      pageData:{
+        keyword:null,
+        pageIndex:0
+      },
+      loading:false,
+      isAdd:false,
+      isEdit:false,
+      editDetail:{},
+      list:[],
       value3:'',
       options: [{
           value: '选项1',
@@ -174,21 +153,38 @@ export default {
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    addShow(value){
+      console.log('addShow',value)
+      this.isAdd = value
+    },
+    closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
         }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      tableRowClassName({row, rowIndex}){
+        that.isAdd = item.isShow
+        that.isEdit = item.isShow 
+    },
+    getList(){
+      let data = this.pageData
+      let that = this
+      that.loading = true
+      getHiddenDangerList(data).then(res=>{
+          that.list = res.data.dataList
+          that.loading = false
+      }).catch(error=>{
+          that.loading = false
+      })
+    },
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'

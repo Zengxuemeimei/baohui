@@ -6,7 +6,7 @@
         width="500px"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="person-content">
+        <div class="">
             <el-scrollbar style="height:100%">
                 <el-form :model="menuForm" :rules="rules"  ref="ruleForm" label-width="100px">
                     <el-form-item label="所属菜单" prop="parentId">
@@ -15,14 +15,17 @@
                             <Recursion :list="menuList" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="标题" prop="title">
+                    <el-form-item label="菜单名称" prop="title">
                         <el-input v-model="menuForm.title" placeholder="请输入内容"></el-input>
                     </el-form-item>
-                    <el-form-item label="菜单名称" prop="name">
+                    <el-form-item label="name" prop="name">
                         <el-input v-model="menuForm.name" placeholder="请输入内容"></el-input>
                     </el-form-item>
                     <el-form-item label="组件路径" prop="component">
                         <el-input v-model="menuForm.component" placeholder="请输入内容"></el-input>
+                    </el-form-item>
+                    <el-form-item label="重定向" prop="redirect">
+                        <el-input v-model="menuForm.redirect" placeholder="请输入内容"></el-input>
                     </el-form-item>
                 </el-form>
             </el-scrollbar>

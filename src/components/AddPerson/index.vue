@@ -91,6 +91,7 @@
                         <th>离职时间</th>
                         <td colspan="3">
                             <el-date-picker
+                            :disabled="!isEdit"
                                 v-model="personInfo.quitTime"
                                 type="date"
                                 placeholder="选择日期">
@@ -100,44 +101,49 @@
                 </table>
                 <span class="person-info-title">文档资料</span>
                 <div class="ml50 mb40">
-                    <div class="flex-start">
-                        <img v-for="item in fileUrl" :key="item" :src="item" alt="">
+                    <div class="flex-start flex-wrap">
+                        <div class="upload-img-box mr20 relative"  v-for="item in fileUrl" :key="item">
+                            <img class="upload-img"  :src="item" alt="" @error="defaultBackImg">
+                            <!-- <img class="upload-img" src="blob:http://localhost:9528/62acebfa-ccb3-4bd0-9df7-ef7b0f209be2" alt=""> -->
+                        </div>
+                        <el-upload
+                            action="http://192.168.1.103:9092/file/upload/staff"
+                            list-type="picture-card"
+                            accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
+                            :headers="token"
+                            :on-success="uploadStaff"
+                            :on-remove="handleRemove">
+                            <span>上传资料</span>
+                        </el-upload>
                     </div>
-                    <el-upload
-                        action="http://192.168.1.103:9092/file/upload/staff"
-                        list-type="picture-card"
-                        :headers="token"
-                        :on-success="uploadStaff"
-                        :on-remove="handleRemove">
-                        <span>上传资料</span>
-                    </el-upload>
+                    
                 </div>
                 <span class="person-info-title">车辆信息</span>
                 <div class="person-car-info ml50 mb40 ">
-                    <!-- <el-upload
-                        action="http://192.168.1.103:9092/file/upload/cars"
-                        list-type="picture-card"
-                        :headers="token"
-                        :on-success="uploadCar"
-                        :limit="1">
-                        <span>上传车辆图片</span>
-                    </el-upload> -->
-                    <div class="flex-start">
-                        <div class="upload-img-box" v-for="item in carList" :key="item">
-                            <img class="upload-img"  :src="item" alt="">
-                            <!-- <img src="blob:http://192.168.1.120:9528/df3e387a-21b3-40dd-ae6e-142d96f3c992" alt=""> -->
+                    <div class="flex-start flex-wrap">
+                        <div v-for="item in carList" :key="item.carNumber">
+                            <div class="upload-img-box mr20 relative mb20" v-show="item.carImage">
+                                <img class="upload-img"  :src="item.carImage" @error="defaultBackImg">
+                                <p class="car-num">{{item.carNumber}}</p>
+                                <!-- <img class="upload-img" src="blob:http://localhost:9528/62acebfa-ccb3-4bd0-9df7-ef7b0f209be2" alt=""> -->
+                            </div>
                         </div>
                     </div>
                     <el-button type="text" @click="addCar"><i class="el-icon-circle-plus-outline" /><span style="display:inline-block;margin-left:10px">新增车辆</span> </el-button>
                     <table class="person-table" border="1">
                         <tr v-for="(item,index) in personInfo.staffCarInfoList" :key="item.carNumber">
                             <th>车牌号</th>
-                            <td>
-                                 <input type="text" class="input-form" v-model="item.carNumber">
+                            <td class="relative">
+                                <input type="text" disabled class="input-form" v-model="item.carNumber">
+                                <LicenseKeyboard v-model="item.carNumber" title="软键盘" />
                             </td>
                             <th>车辆类型</th>
                             <td>
-                                 <input type="text" class="input-form" v-model="item.carType">
+                                 <!-- <input type="text" class="input-form" v-model="item.carType"> -->
+                                 <el-select v-model="item.carType" placeholder="请选择">
+                                    <!-- <el-option :value="null" label="无父级"></el-option> -->
+                                    <DepartmentSelect :list="carTypeList" />
+                                </el-select>
                             </td>
                             <th>上传车辆图片</th>
                             <td >
@@ -146,72 +152,15 @@
                                         :headers="token"
                                         :on-preview="handlePreview"
                                         :on-success="uploadCar"
-                                        :file-list="carList"
                                         :show-file-list="false"
-                                        :limit="1">
-                                        <el-button size="small" type="primary" @click="uploadCarParent(index)">点击上传</el-button>
+                                        >
+                                        <el-button size="small" type="primary" @click="uploadCarParent(index,item.carNumber)">点击上传</el-button>
                                     </el-upload>
                             </td>
+
                         </tr>
                     </table>
                 </div>
-                <!-- <span class="person-info-title mr20">人员事件</span>
-                <el-button type="text" @click="showEvent"><i class="el-icon-circle-plus-outline" /><span style="display:inline-block;margin-left:10px">新增事件</span> </el-button>
-                <div class="ml50">
-                    <el-table
-                        :data="tableData"
-                        stripe
-                        style="width: 100%">
-                        <el-table-column
-                        prop="date"
-                        label="序号"
-                        width="128">
-                        </el-table-column>
-                        <el-table-column
-                        prop="name"
-                        label="事件名称"
-                        width="364">
-                        </el-table-column>
-                        <el-table-column
-                        prop="name"
-                        label="事件内容"
-                        width="364">
-                        </el-table-column>
-                        <el-table-column
-                        prop="address"
-                        label="发生时间"
-                        >
-                        </el-table-column>
-                    </el-table>
-                </div> -->
-                <!-- <el-dialog
-                    width="30%"
-                    title="添加事件"
-                    :visible.sync="innerVisible"
-                    :close-on-click-modal="false"
-                    append-to-body>
-                    <el-form ref="form" :model="form" label-width="80px">
-                        <el-form-item label="事件名称">
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                        <el-form-item label="事件内容">
-                            <el-input type="textarea" v-model="form.desc"></el-input>
-                        </el-form-item>
-                        <el-form-item label="事件时间">
-                            <el-col :span="11">
-                                <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-                            </el-col>
-                                <el-col class="line" :span="2">-</el-col>
-                            <el-col :span="11">
-                                <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-                            </el-col>
-                        </el-form-item>
-                    </el-form>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="innerVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="addPerson">确 定</el-button>
-                    </span>
-                </el-dialog> -->
             </el-scrollbar>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -227,6 +176,9 @@ import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import moment from 'moment'
 import store from '@/store'
 import {saveOrUpdate} from '@/api/staff/index'
+import {uploadFile} from '@/api/upload'
+import DictionaryList from '@/components/Recursion/dictionaryList'
+import Tools from '@/utils/tools'
 
 export default {
   name: 'AddPerson',
@@ -243,15 +195,24 @@ export default {
       },
       editDetail:{
           type:Object
+      },
+      carTypeList:{
+          type:Array
       }
   },
   data() {
     return {
+        licenseNumber:null,
         token:{
             Authorization:store.getters.token
         },
         fileUrl:[],
-        carList:[],
+        carList:[
+            {
+                carNumber:null,
+                carImage:null
+            }
+        ],
         carIndex:0,
         personInfo:{
             contractScanning: null,//合同
@@ -259,6 +220,7 @@ export default {
             education: null,
             email: null,
             emergencyContact: null,//紧急联系人
+            emergencyContactMobile:null,
             entryTime: null,
             expireTime: null,//过期
             quitTime: null,
@@ -291,9 +253,25 @@ export default {
   methods: {
       addPerson(){
           let that = this
+          if(!Tools.isPhone(that.personInfo.emergencyContactMobile)){
+              that.$message({
+                    message: '紧急联系人电话号码格式不正确',
+                    type: 'warning'
+                });
+                return
+          }
+          if(!Tools.isPhone(that.personInfo.mobileNumber)){
+              that.$message({
+                    message: '电话号码格式不正确',
+                    type: 'warning'
+                });
+                return
+          }
           that.personInfo.entryTime = moment(that.personInfo.entryTime).format('YYYY-MM-DD hh:mm:ss')
           that.personInfo.expireTime = moment(that.personInfo.expireTime).format('YYYY-MM-DD hh:mm:ss')
-          that.personInfo.quitTime = moment(that.personInfo.quitTime).format('YYYY-MM-DD hh:mm:ss')
+          if(that.personInfo.quitTime){
+            that.personInfo.quitTime = moment(that.personInfo.quitTime).format('YYYY-MM-DD hh:mm:ss')
+          }
           that.personInfo.formalTime = moment(that.personInfo.formalTime).format('YYYY-MM-DD hh:mm:ss')
           this.personInfo.fileUrl = this.fileUrl.toString()
           if(this.isEdit){
@@ -321,15 +299,32 @@ export default {
             that.loading = false
           })
       },
+      defaultBackImg(event){
+          if(event.type == "error") {
+          event.target.src= require("@/assets/default_pic.png")
+        }
+      },
       addCar(){
         this.personInfo.staffCarInfoList.push({
             carImage:null,
             carNumber: null,
             carType: null,
         })
-        console.log(this.personInfo.staffCarInfoList)
+        this.carList.push({
+             carNumber: null,
+             carImage:null
+        })
+        console.log( this.personInfo.staffCarInfoList)
       },
       empty(){
+          this.fileUrl=[]
+          this.carIndex=0
+          this.carList=[
+                {
+                    carNumber:null,
+                    carImage:null
+                }
+            ]
           this.personInfo={
             contractScanning: null,//合同
             departmentId: null,
@@ -337,7 +332,8 @@ export default {
             email: null,
             emergencyContact: null,//紧急联系人
             entryTime: null,
-            expireTime: null,//离职
+            expireTime: null,//过期
+            quitTime: null,
             faceImage: null,
             formalTime: null,//转正
             homeAddress: null,//住址
@@ -345,30 +341,43 @@ export default {
             major: null,//专业
             mobileNumber: null,
             name: null,
+            age:null,
+            fileUrl:null,
             position: null,
-            sex: true
+            sex: true,
+            staffCarInfoList: [
+                {
+                    carImage:null,
+                    carNumber: null,
+                    carType: null,
+                }
+            ],
         }
       },
-      handleClose(done) {
+      handleClose() {
+        this.empty()
         this.$emit('close',{isShow:false,isSuccess:false})
       },
       handleRemove(file, fileList) {
         console.log(file, fileList);
       },
       handlePreview(file){
-          console.log(file)
+          console.log('上传',file)
       },
       uploadStaff(file) {
         this.fileUrl.push(file[0]) ;
       },
-      uploadCarParent(index){
-        //   this.carIndex = index
+      uploadCarParent(index,carNumber){
+        this.carIndex = index
+        this.carList[index].carNumber = carNumber
         // //   this.carList[index] = ''
-        //   console.log(index)
+         console.log('btton',carNumber)
       },
-      uploadCar(data,file){
-        this.personInfo.staffCarInfoList[0].carImage = data[0]
-        this.carList[0] = URL.createObjectURL(file.raw)
+      uploadCar(res,file){
+        this.personInfo.staffCarInfoList[this.carIndex].carImage = res[0]
+        this.carList[this.carIndex].carImage = URL.createObjectURL(file.raw)
+        console.log('this.carList',this.carList)
+        // console.log('file',URL.createObjectURL(file.raw))
       }
   },
   watch:{
@@ -380,16 +389,20 @@ export default {
             delete newVal.userId
             this.personInfo=newVal
             this.fileUrl = newVal.fileUrl.split(',')
+            let list = []
+            newVal.staffCarInfoList.forEach(el=>{
+                list.push({
+                    carNumber:el.carNumber,
+                    carImage:el.carImage
+                })
+            })
+            this.carList = list
           }
       }
   }
 }
 </script>
 <style scoped>
-.person-content{
-    height: 60vh;
-    overflow: hidden;
-}
 .line{
     text-align: center;
 }
@@ -422,6 +435,16 @@ export default {
 .el-date-editor.el-input, .el-date-editor.el-input__inner{
     width: 100%;
     border: none;
+}
+.car-num{
+    width: 100%;
+    line-height: 40px;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
 }
 </style>
 

@@ -81,7 +81,7 @@
           ></canvas>
           <i class="el-icon-camera take-photo" @click="setImage" />
           <div class="img_bg_camera flex-start flex-end ml20">
-            <img :src="imgSrc" alt class="tx_img" />
+            <img :src="imgSrc" alt class="tx_img" @error="defaultBackImg"/>
           </div>
         </div>
       </div>
@@ -126,7 +126,6 @@ export default {
         leaveTime: null,
         mobile: null,
         name: null,
-        sex: null,
         visitTime: null,
       },
     };
@@ -134,32 +133,36 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    handleClose(done) {
+    handleClose() {
       this.$emit("close", { isShow: false, isSuccess: false });
     },
+     defaultBackImg(event){
+          if(event.type == "error") {
+          event.target.src= require("@/assets/default_pic.png")
+        }
+      },
     AddVisitor() {
       let that = this;
       let data = that.visitorInfo;
       let fd = new FormData()
-      if(that.isEdit){
-        data.updateTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
-        fd.append('updateTime',data.updateTime)
-      }else{
-         data.creatTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
-         fd.append('creatTime',data.creatTime)
-      }
+      // if(that.isEdit){
+      //   data.updateTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+      //   fd.append('updateTime',data.updateTime)
+      // }else{
+      //    data.creatTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+      //    fd.append('creatTime',data.creatTime)
+      // }
       data.leaveTime = moment(data.leaveTime).format('YYYY-MM-DD hh:mm:ss')
+      data.visitTime = moment(data.visitTime).format('YYYY-MM-DD hh:mm:ss')
       fd.append('idNumber',data.idNumber)
       fd.append('imgFile',data.image)
       fd.append('intervieweeName',data.intervieweeName)
       fd.append('leaveTime',data.leaveTime)
       fd.append('mobile',data.mobile)
       fd.append('name',data.name)
-      fd.append('sex',data.sex)
-      fd.append('idNumber',data.idNumber)
-      console.log('visitTime',data.visitTime)
+      fd.append('visitTime',data.visitTime)
       saveOrUpdate(fd).then((res) => {
-
+         this.$emit("close", { isShow: false, isSuccess: true });
       });
     },
     dataURLtoFile(dataurl, filename) {

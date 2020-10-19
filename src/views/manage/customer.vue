@@ -9,6 +9,9 @@
           <search-key @query="keyWordsQuery"/>
           <div class="ml50">
               <label class="filter-label">车辆类型：</label>
+              <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
+                <DepartmentSelect :list="carTypeList"/>
+              </el-select>
               <!-- <el-select v-model="value" placeholder="请选择">
                 <el-option
                   v-for="item in options"
@@ -39,9 +42,11 @@
             prop="photoUrl"
             label="头像"
             width="120">
-            <div class="headPortrait-box">
-                <img src="" alt="">
-            </div>
+            <template slot-scope="scope">
+              <div class="headPortrait-box">
+                  <img :src="scope.row.photoUrl" alt="">
+              </div>
+            </template>
           </el-table-column>
           <el-table-column
             prop="name"
@@ -49,13 +54,23 @@
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="mobile"
             label="电话号码"
             width="270">
           </el-table-column>
           <el-table-column
             prop="customerEnterpriseName"
             label="所属公司">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
+                  <el-button type="success" @click="detailItem(scope.row.id)" size="mini">详情</el-button>
+                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -64,7 +79,7 @@
         <paging />
       </div>
     </main>
-    <AddCustomer :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
+    <AddCustomer :isShow="isAdd" :carTypeList="carTypeList" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -74,36 +89,60 @@ import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
 import Paging from '@/components/Paging/index'
 import AddCustomer from '@/components/AddCustomer/index'
-import {getCustomerList} from '@/api/customer'
+import {getCustomerList,getCustomerDetail} from '@/api/customer'
+// import {getDepartmentList} from '@/api/department'
+import {getDictionaryList} from '@/api/dictionary'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+
 export default {
   name: 'Customer',
   components: {
     SearchKey,
     AddButton,
     Paging,
-    AddCustomer
+    AddCustomer,
+    DepartmentSelect
   },
   data() {
     return {
       pageData:{
         keyword:null,
         pageIndex:0,
+        type:null
       },
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       list:[],
-      loading:false
+      loading:false,
+      carTypeList:[]
       } 
   },
   created() {
   },
   mounted() {
     this.getList()
+    this.getCarTypeList()
   },
   methods: {
     keyWordsQuery(val){
       this.pageData.keyword = val
+      this.pageData.pageIndex = 0
+      this.getList()
+    },
+    editItem(id){
+      let that = this
+      that.isAdd = true
+      that.isEdit = true
+      getCustomerDetail({id:id}).then(res=>{
+          that.editDetail = res.data
+      })
+    },
+    detailItem(id){
+
+    },
+    changeCarType(){
       this.pageData.pageIndex = 0
       this.getList()
     },
@@ -125,6 +164,13 @@ export default {
       getCustomerList(data).then(res=>{
         that.list = res.data.dataList
       })
+    },
+    getCarTypeList(){
+      let data = {}
+      data.type = "车辆类型"
+      getDictionaryList(data).then(res=>{
+            this.carTypeList = res.data
+        })
     },
     tableRowClassName({row, rowIndex}){
         //修改table行的颜色

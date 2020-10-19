@@ -20,6 +20,12 @@
 
 export default {
   name: 'SearchKey',
+  props:{
+    isClear:{
+      type:Boolean,
+      default:false
+    }
+  },
   data(){
     return{
       keyWords:null
@@ -37,6 +43,13 @@ export default {
         this.$emit('query',null)
       }
 
+    }
+  },
+  watch:{
+    isClear(newVal){
+      if(newVal){
+        this.keyWords = null
+      }
     }
   }
 }

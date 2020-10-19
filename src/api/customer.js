@@ -9,6 +9,15 @@ export function getCustomerList(params) {
       params
     })
 }
+
+export function getCustomerDetail(params) { 
+  return request({
+    url: '/customerInfo/getById',
+    method: 'get',
+    params
+  })
+}
+
 export function saveOrUpdate(data) { 
     data.enterpriseId = store.getters.enterpriseId
     return request({

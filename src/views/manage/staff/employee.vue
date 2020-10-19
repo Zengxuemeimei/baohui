@@ -5,13 +5,13 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key @query="keyWordsQuery"/>
+        <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
       </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
           <div>
             <label class="filter-label">部门：</label>
-            <el-select v-model="pageData.departmentId" @change="pageData.pageIndex=0;getList()" placeholder="请选择">
+            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=0;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
               <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
@@ -74,10 +74,10 @@
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging />
       </div>
-      <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd" />
+      <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
       <Loading :loading="loading" />
     </main>
     <add-person />
@@ -94,6 +94,7 @@ import AddPerson from '@/components/AddPerson/index'
 import Loading from '@/components/Loading/index'
 import {getStaffList,getStaffDetail} from '@/api/staff/index'
 import {getDepartmentList} from '@/api/department'
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'Employee',
@@ -107,6 +108,7 @@ export default {
   },
   data() {
     return {
+      isClearKey:false,
       pageData:{
         keyword:null,
         pageIndex:0,
@@ -120,7 +122,8 @@ export default {
       list:[],
       listDepartment:[],
       loading:false,
-      entryTime:null
+      entryTime:null,
+      carTypeList:[]
       }
   },
   created() {
@@ -128,14 +131,17 @@ export default {
   mounted() {
     this.getList()
     this.getDepartmentList()
+    this.getCarTypeList()
   },
   methods: {
     keyWordsQuery(val){
       this.pageData.keyword = val
       this.pageData.pageIndex = 0
+      this.isClearKey=false
       this.getList()
     },
     changeTimeList(val){
+      this.isClearKey=true
       if(val){
         this.pageData.entryTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
         this.pageData.entryTimeEndTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
@@ -189,6 +195,13 @@ export default {
       }).catch(error=>{
           that.loading = false
       })
+    },
+    getCarTypeList(){
+      let data = {}
+      data.type = "车辆类型"
+      getDictionaryList(data).then(res=>{
+            this.carTypeList = res.data
+        })
     },
       tableRowClassName({row, rowIndex}){
         //修改table行的颜色

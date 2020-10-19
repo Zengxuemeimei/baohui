@@ -2,7 +2,7 @@
   <div>
       <el-dialog
         title="人员信息"
-        :visible.sync="dialogVisible"
+        :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
         </span>
       </el-dialog>
@@ -55,6 +55,11 @@
 export default {
   name: 'AccessPerson',
   components: {},
+  props:{
+      isShow:{
+          type:Boolean
+      }
+  },
   data() {
     return {
         dialogVisible:true
@@ -66,7 +71,7 @@ export default {
   },
   methods: {
       handleClose(done) {
-        this.dialogVisible = false
+        this.$emit("close", { isShow: false, isSuccess: false });
     },
   }
 }

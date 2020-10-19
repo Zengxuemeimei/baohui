@@ -6,7 +6,7 @@
         width="500px"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="person-content">
+        <div class="">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
                 <el-form-item label="姓名" prop="name">
                     <div class="input-box">

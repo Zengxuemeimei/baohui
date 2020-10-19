@@ -8,13 +8,13 @@
         <div class="flex-start">
           <search-key @query="keyWordsQuery"/>
           <div class="ml50">
-              <el-button :style="{'background':isAll?'#53779D':'','color':isAll?'#ffffff':''}" @click="isAll=true">全部</el-button>
-              <el-button :style="{'background':isAll?'':'#53779D','color':isAll?'':'#ffffff'}" @click="isAll=false">审核未通过</el-button>
+              <el-button :style="{'background':isAll?'#53779D':'','color':isAll?'#ffffff':''}" @click="getAllList">全部</el-button>
+              <el-button :style="{'background':isAll?'':'#53779D','color':isAll?'':'#ffffff'}" @click="getUnPassList">审核未通过</el-button>
           </div>
         </div>
-        <div class="btn-box flex-start">
+        <!-- <div class="btn-box flex-start">
             <el-button type="primary" icon="el-icon-edit" @click="isAudit=true">审核</el-button>
-        </div>
+        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -31,34 +31,44 @@
             prop="headPortrait"
             label="头像"
             width="120">
-            <div class="headPortrait-box">
-                <img src="" alt="">
-            </div>
+            <template slot-scope="scope">
+              <div class="headPortrait-box">
+                  <img :src="scope.row.image" alt="">
+              </div>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="name"
             label="姓名"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="mobile"
             label="电话号码"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="intervieweeName"
             label="访问对象"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="visitTime"
             label="访问时间"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="离开时间"
-          >
+            prop="leaveTime"
+            label="离开时间">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="primary" v-if="isAll" icon="el-icon-edit" size="small" @click="isAudit=true;audit(scope.row)">审核</el-button>
+                  <el-button type="danger" v-else size="small" @click="deleteVisitor(scope.row.id)">删除</el-button>
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -67,7 +77,7 @@
         <paging />
       </div>
     </main>
-    <AuditVisitor :isShow="isAudit" @close="closeAudit"/>
+    <AuditVisitor :isShow="isAudit" @close="closeAudit" :editDetail="editDetail"/>
   </div>
 </template>
 
@@ -75,7 +85,7 @@
 import SearchKey from '@/components/searchKey/index'
 import AuditVisitor from '@/components/AuditVisitor/index'
 import Paging from '@/components/Paging/index'
-import {getVisitorList} from '@/api/visitor/index'
+import {getVisitorList,deleteVisitor} from '@/api/visitor/index'
 
 export default {
   name: 'VisitorAudit',
@@ -89,11 +99,13 @@ export default {
        pageData:{
         keyword:null,
         pageIndex:0,
+        status:'REVIEWED'
       },
       list:[],
       loading:false,
       isAll:true,
-      isAudit:false
+      isAudit:false,
+      editDetail:{}
       } 
   },
   created() {
@@ -102,12 +114,49 @@ export default {
     this.getList()
   },
   methods: {
+    audit(item){
+      this.editDetail = item
+    },
+    deleteVisitor(id){
+      let that = this
+         that.$confirm('此操作将永久删除该访客, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+                }).then(() => {
+                  deleteVisitor({id:id}).then(res=>{
+                       that.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        that.getUnPassList()
+                  })               
+                }).catch(() => {
+                    that.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+            });
+    },
+    getAllList(){
+        this.isAll = true
+        this.pageData.status="REVIEWED"
+        this.pageData.pageIndex=0
+        this.getList()
+    },
+    getUnPassList(){
+        this.isAll=false
+        this.pageData.status="UNPASS"
+        this.pageData.pageIndex=0
+        this.getList()
+    },
     closeAudit(item){
         let that = this
         if(item.isSuccess){
             that.getList()
         }
-        that.isAdd = item.isShow
+        that.isAudit = item.isShow
     },
     keyWordsQuery(val){
       this.pageData.keyword = val

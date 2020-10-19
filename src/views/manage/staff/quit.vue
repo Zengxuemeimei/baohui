@@ -5,7 +5,7 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key @query="keyWordsQuery"/>
+        <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
       </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
@@ -67,7 +67,7 @@
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging />
       </div>
     </main>
@@ -105,6 +105,7 @@ export default {
       listDepartment:[],
       loading:false,
       quitTime:null,
+      isClearKey:false
       }
   },
   created() {
@@ -117,9 +118,12 @@ export default {
     keyWordsQuery(val){
       this.pageData.keyword = val
       this.pageData.pageIndex = 0
+      this.isClearKey=false
       this.getList()
     },
     changeDepartment(val){
+      this.pageData.keyword=null
+      this.isClearKey=true;
       if(val){
         this.pageData.pageIndex = 0
       }else{
@@ -129,6 +133,7 @@ export default {
 
     },
     changeTimeList(val){
+      this.isClearKey=true;
       this.pageData.pageIndex = 0
       if(val){
         this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')

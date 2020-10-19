@@ -114,6 +114,10 @@
     overflow-x: hidden !important;
     margin-bottom: 0 !important;
 }
+.person-content{
+    height: 60vh;
+    overflow: hidden;
+}
 .person-info-title{
     line-height: 32px;
     padding: 0 16px;
@@ -168,4 +172,23 @@
 }
 .person-content .el-input__inner{
     border: none;
+}
+.app-license-keyboard .license-container{
+    width: 1280px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+.app-license-keyboard{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.app-license-keyboard font,.app-license-keyboard .icon{
+    opacity: 0;
+}
+.app-license-keyboard > span{
+    display: block;
+    cursor: pointer;
 }

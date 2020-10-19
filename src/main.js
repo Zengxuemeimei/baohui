@@ -15,6 +15,11 @@ import VueAMap from 'vue-amap';
 import '@/icons' // icon
 import '@/permission' // permission control
 
+
+import LicenseKeyboard from 'vue-license-keyboard';
+import 'vue-license-keyboard/lib/vue-license-keyboard.css';
+Vue.use(LicenseKeyboard); //键盘车牌
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

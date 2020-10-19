@@ -11,23 +11,58 @@
             <table class="person-table mb40 ml50" border="1">
                 <tr>
                     <th>事件名称</th>
-                    <td></td>
+                    <td>
+                        <input
+                            type="text"
+                            class="input-form"
+                            v-model="alarmInfo.mobile"
+                        />
+                    </td>
                     <th>事件描述</th>
-                    <td colspan="3"></td>
+                    <td colspan="3">
+                        <input
+                            type="text"
+                            class="input-form"
+                            v-model="alarmInfo.describe"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>告警类型</th>
-                    <td></td>
+                    <td>
+                        <!-- <input
+                            type="text"
+                            class="input-form"
+                            v-model="alarmInfo.mobile"
+                        /> -->
+                    </td>
                     <th>告警时间</th>
-                    <td></td>
+                    <td>
+                        <el-date-picker
+                            type="date"
+                            placeholder="选择日期">
+                        </el-date-picker>
+                    </td>
                     <th>处置状态</th>
                     <td colspan="1"></td>
                 </tr>
                 <tr>
                     <th>处理人</th>
-                    <td></td>
+                    <td>
+                        <input
+                            type="text"
+                            class="input-form"
+                            v-model="alarmInfo.name"
+                        />
+                    </td>
                     <th>处理结果描述</th>
-                    <td colspan="3"></td>
+                    <td colspan="3">
+                        <input
+                            type="text"
+                            class="input-form"
+                            v-model="alarmInfo.resultDescribe"
+                        />
+                    </td>
                 </tr>
             </table>
             <div class="flex-start flex-end ml50">
@@ -42,7 +77,7 @@
             </div>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
         </span>
       </el-dialog>
@@ -50,6 +85,7 @@
 </template>
 
 <script>
+import {saveOrUpdate} from '@/api/alarmCenter'
 
 export default {
   name: 'AlarmEdit',
@@ -61,7 +97,16 @@ export default {
   },
   data() {
     return {
-        dialogVisible:false
+        alarmInfo:{
+            describe:null,
+            imageUrl:null,
+            manageResult:null,
+            manageStatus:null,
+            name:null,
+            resultDescribe:null,
+            riskType:null,
+            videoUrl:null
+        },
     }
   },
   created() {
@@ -70,7 +115,7 @@ export default {
   },
   methods: {
       handleClose(done) {
-        this.dialogVisible = false
+        this.$emit("close", { isShow: false, isSuccess: false });
     },
   }
 }

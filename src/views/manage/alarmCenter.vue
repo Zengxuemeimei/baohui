@@ -5,16 +5,16 @@
     </header>
     <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
         <el-tab-pane label="全部" name="all">
-          <AlarmList :riskType="riskType" />
+          <AlarmList :manageStatus="manageStatus" />
         </el-tab-pane>
         <el-tab-pane label="未处理" name="untreated">
-           <AlarmList riskType="untreated"/>
+           <AlarmList :manageStatus="manageStatus"/>
         </el-tab-pane>
         <el-tab-pane label="已处理" name="processed">
-           <AlarmList :riskType="riskType"/>
+           <AlarmList :manageStatus="manageStatus"/>
         </el-tab-pane>
         <el-tab-pane label="处理中" name="processing">
-           <AlarmList :riskType="riskType"/>
+           <AlarmList :manageStatus="manageStatus"/>
         </el-tab-pane>
     </el-tabs>
     
@@ -33,6 +33,7 @@ export default {
   data() {
     return {
       riskType:null,
+      manageStatus:null,
       activeName2:"all"
       } 
   },

@@ -27,9 +27,9 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="btn-box flex-start">
+        <!-- <div class="btn-box flex-start">
           <edit-button />
-        </div>
+        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -72,7 +72,7 @@
         <paging />
       </div>
     </main>
-    <AlarmEdit :isEdit="isEdit"/>
+    <AlarmEdit :isEdit="isEdit" @close="closeEdit"/>
   </div>
 </template>
 
@@ -162,6 +162,12 @@ export default {
     this.getList()
   },
   methods: {
+    closeEdit(item){
+        if(item.isSuccess){
+          this.getList()
+        }
+        this.isEdit = item.isShow
+    },
     editAlarm(item){
         this.isEdit = true
         

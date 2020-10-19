@@ -5,7 +5,7 @@
     </header>
     <main class="content-main">
       <div class="key-words-box">
-        <search-key />
+        <search-key @query="keyWordsQuery"/>
       </div>
       <div class="filter-box flex-between relative">
         <div class="flex-start">
@@ -52,20 +52,12 @@
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          :data="list"
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type=index
+            width="80">
           </el-table-column>
           <el-table-column
             prop="name"
@@ -119,7 +111,7 @@
         <paging />
       </div>
     </main>
-    <!-- <access-person /> -->
+    <!-- <AccessPerson :isShow="isDetail" :editDetail="editDetail" @close="closeAdd"/> -->
   </div>
 </template>
 
@@ -127,47 +119,27 @@
 import countTo from 'vue-count-to'
 import Paging from '@/components/Paging/index'
 import SearchKey from '@/components/searchKey/index'
-// import AccessPerson from '@/components/AccessDetail/person'
+import AccessPerson from '@/components/AccessDetail/person'
+import {getAccessCarList} from '@/api/accessRecords/index'
+
 export default {
   name: 'CarRecords',
   components: {
       SearchKey,
       countTo,
       Paging,
-    //   AccessPerson
+      AccessPerson
   },
   data() {
     return {
-        tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
+      pageData:{
+        keyword:null,
+        pageIndex:0
+      },
+      list:[],
+      isDetail:false,
+      loading:false,
+      editDetail:{},
       value3:'',
       options: [{
           value: '选项1',
@@ -191,12 +163,37 @@ export default {
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
+    keyWordsQuery(val){
+        this.pageData.keyword = val
+        this.pageData.pageIndex = 0
+        this.getList()
       },
-      tableRowClassName({row, rowIndex}){
+      addShow(value){
+        console.log('addShow',value)
+        this.isDetail = value
+      },
+      closeAdd(item){
+          let that = this
+          if(item.isSuccess){
+              that.getList()
+          }
+          that.isDetail = item.isShow
+      },
+      getList(){
+        let data = this.pageData
+        let that = this
+        that.loading = true
+        getAccessCarList(data).then(res=>{
+            that.list = res.data.dataList
+            that.loading = false
+        }).catch(error=>{
+            that.loading = false
+        })
+      },
+    tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){
           return 'odd-row'

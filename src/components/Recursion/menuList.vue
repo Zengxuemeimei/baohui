@@ -2,7 +2,7 @@
   <div>
     <el-table :data="list" :show-header="isHeader" header-cell-class-name="all-table-th" :default-expand-all="false" :row-class-name="getRowClassName"  style="width: 100%">
       <el-table-column type="expand">
-        <template slot-scope="prop" v-if="prop.row.children">
+        <template slot-scope="prop" v-if="prop.row.children.length > 0">
           <MenuList :list="prop.row.children" :isHeader="false" @editMenu="editMenuItem" @deleteList="deleteItem"/>
         </template>
       </el-table-column>

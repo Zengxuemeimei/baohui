@@ -16,8 +16,11 @@ export default {
   },
   data(){
     return{
-       isRouterAlice: true
+       isRouterAlice: true,
+       staffSelect:[],
     }
+  },
+  mounted() {
   },
   methods: {
     reload() {
@@ -25,7 +28,7 @@ export default {
       this.$nextTick(function() {
         this.isRouterAlice = true
       })
-    }
+    },
   }
 }
 </script>

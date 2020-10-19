@@ -6,7 +6,7 @@
         width="500px"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="person-content">
+        <div class="">
             <el-scrollbar style="height:100%">
                 <el-form :model="roleForm" :rules="rules" ref="ruleForm" label-width="100px">
                     <el-form-item label="角色名称" prop="remark">
@@ -83,7 +83,7 @@ export default {
             roleCode:null,
             status:"启用"
         }
-        this.$refs.roleForm.resetFields();
+        this.$refs.ruleForm.resetFields();
         console.log(this.roleForm)
       },
       AddRole(formName){
