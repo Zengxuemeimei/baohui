@@ -78,7 +78,7 @@
         </div>
         <table class="person-table person-car-table ml50" border="1">
           <tr
-            v-for="item in customerInfo.customerCarInfos"
+            v-for="(item,index) in customerInfo.customerCarInfos"
             :key="item.carNumber">
             <th>车牌号</th>
             <td class="relative">
@@ -91,6 +91,10 @@
               <el-select clearable v-model="item.carType" placeholder="请选择">
                 <DepartmentSelect :list="carTypeList" />
               </el-select>
+            </td>
+            <th v-if="customerInfo.customerCarInfos.length >1">操作</th>
+            <td v-if="customerInfo.customerCarInfos.length >1">
+              <el-button type="danger" size="small" @click="deleteCar(index)">删除</el-button>
             </td>
           </tr>
         </table>
@@ -159,6 +163,9 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    deleteCar(index){
+          this.customerInfo.customerCarInfos.splice(index,1)
+      },
     defaultBackImg(event){
           if(event.type == "error") {
           event.target.src= require("@/assets/default_pic.png")

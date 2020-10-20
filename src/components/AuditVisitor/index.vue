@@ -13,6 +13,7 @@
                     <th>姓名</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.name"
@@ -21,6 +22,7 @@
                     <th>身份证号</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.idNumber"
@@ -29,6 +31,7 @@
                     <th>常用电话</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.mobile"
@@ -39,6 +42,7 @@
                     <th>访问时间</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.visitTime"
@@ -47,6 +51,7 @@
                     <th>离开时间</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.leaveTime"
@@ -55,6 +60,7 @@
                     <th>访问对象</th>
                     <td>
                         <input
+                            disabled
                             type="text"
                             class="input-form"
                             v-model="editDetail.intervieweeName"
@@ -134,7 +140,7 @@ export default {
             visitorId:this.editDetail.id
         }
         auditVisitor(data).then(res=>{
-            that.$message({
+            this.$message({
                 message: '审核成功',
                 type: 'success'
             });
@@ -155,10 +161,13 @@ export default {
     padding-left: 5px;
 }
 .visitor-img-box .img-box{
-    width: 250px;
-    height: 350px;
+    width: 350px;
+    height: 250px;
     overflow: hidden;
     background: #e6e6e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .img-box img{
     width: auto;

@@ -5,26 +5,18 @@
     </header>
     <main class="content-main">
       <div class="filter-box flex-between">
-        <search-key />
+        <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
       </div>
       <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
-         :row-class-name="tableRowClassName"
-          ref="multipleTable"
           :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
+          style="width: 100%">
           <el-table-column
             label="序号"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            type=index
+            width="80">
           </el-table-column>
           <el-table-column
             prop="name"
@@ -65,10 +57,10 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <PatrolSchemeDetail />
+    <PatrolSchemeDetail :isDetail="isDetail"/>
   </div>
 </template>
 
@@ -79,6 +71,8 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import PatrolSchemeDetail from '@/components/PatrolSchemeDetail/index'
+import {getKeepWatchRecordList} from '@/api/keepWatch/index'
+
 export default {
   name: 'PatrolRecards',
   components: {
@@ -91,6 +85,14 @@ export default {
   },
   data() {
     return {
+      isClearKey:false,
+      pageData:{
+        keyword:null,
+        pageIndex:1
+      },
+      isDetail:false,
+      list:[],
+      total:0,
       tableData3: [{
           date: '2016-05-03',
           name: '王小虎',
@@ -144,20 +146,27 @@ export default {
   created() {
   },
   mounted() {
+    this.getList()
   },
   methods: {
-    toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
+    keyWordsQuery(val){
+      this.pageData.keyword = val
+      this.pageData.pageIndex = 1
+      this.isClearKey=false
+      this.getList()
+    },
+    getList(){
+      let that = this
+      let data = that.pageData
+      getKeepWatchRecordList(data).then(res=>{
+
+      })
+    },
       tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){

@@ -9,6 +9,15 @@ export function getHiddenDangerList(params) {
       params
     })
 }
+
+export function getHiddenDangerDetail(params) { 
+  return request({
+    url: '/hiddenDangerInfo/getById',
+    method: 'get',
+    params
+  })
+}
+
 export function saveOrUpdate(data) { 
     return request({
       url: '/hiddenDangerInfo/saveOrUpdate',

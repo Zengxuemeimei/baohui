@@ -68,8 +68,9 @@
       </div>
       <div class="flex-between mt20">
         <p></p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
   </div>
 </template>
@@ -96,7 +97,7 @@ export default {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0,
+        pageIndex:1,
         departmentId:null,
         quitTimeStartTime:null,
         quitTimeEndTime:null
@@ -115,9 +116,14 @@ export default {
     this.getDepartmentList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.isClearKey=false
       this.getList()
     },
@@ -125,7 +131,7 @@ export default {
       this.pageData.keyword=null
       this.isClearKey=true;
       if(val){
-        this.pageData.pageIndex = 0
+        this.pageData.pageIndex = 1
       }else{
         this.pageData.departmentId = null
       }
@@ -134,7 +140,7 @@ export default {
     },
     changeTimeList(val){
       this.isClearKey=true;
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       if(val){
         this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
         this.pageData.quitTimeEndTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
@@ -159,6 +165,7 @@ export default {
       data.quit=true
       getStaffList(data).then(res=>{
           that.list = res.data.dataList
+          that.total = res.data.total
           that.loading = false
       }).catch(error=>{
           that.loading = false

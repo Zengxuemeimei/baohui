@@ -6,7 +6,7 @@
           <search-key @query="keyWordsQuery"/>
           <div class="ml50">
             <label class="filter-label">告警类型：</label>
-            <el-select v-model="value" placeholder="请选择">
+            <!-- <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -14,17 +14,17 @@
                 :value="item.value"
               >
               </el-option>
-            </el-select>
+            </el-select> -->
           </div>
           <div class="filter-time ml50">
             <label class="filter-label">告警时间：</label>
-            <el-date-picker
+            <!-- <el-date-picker
               v-model="value3"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期">
-            </el-date-picker>
+            </el-date-picker> -->
           </div>
         </div>
         <!-- <div class="btn-box flex-start">
@@ -35,7 +35,7 @@
         <el-table
           border
           header-cell-class-name="all-table-th"
-          :data="tableData3"
+          :data="list"
           style="width: 100%">
           <el-table-column label="序号" width="80" type=index>
           </el-table-column>
@@ -69,7 +69,7 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
     <AlarmEdit :isEdit="isEdit" @close="closeEdit"/>
@@ -100,60 +100,14 @@ export default {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0,
+        pageIndex:1,
         riskType:this.riskType
       },
       list:[],
+      total:0,
       isEdit:false,
       activeName2:"all",
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      loading:false
       } 
   },
   created() {
@@ -174,14 +128,19 @@ export default {
     },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.getList()
     },
     getList(){
       let that = this
       let data = that.pageData
+      that.loading = true
       getAlarmInfoList(data).then(res=>{
-
+          that.list = res.data.dataList
+          that.total = res.data.total
+          that.loading = false
+      }).catch(error=>{
+        that.loading = false
       })
     },
     handleClick(tab, event) {

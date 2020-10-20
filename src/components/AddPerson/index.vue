@@ -155,9 +155,12 @@
                                         :show-file-list="false"
                                         >
                                         <el-button size="small" type="primary" @click="uploadCarParent(index,item.carNumber)">点击上传</el-button>
-                                    </el-upload>
+                                </el-upload>
                             </td>
-
+                            <th v-if="personInfo.staffCarInfoList.length >1">操作</th>
+                            <td v-if="personInfo.staffCarInfoList.length >1">
+                                <el-button type="danger" size="small" @click="deleteCar(index)">删除</el-button>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -251,6 +254,9 @@ export default {
   mounted() {
   },
   methods: {
+      deleteCar(index){
+          this.personInfo.staffCarInfoList.splice(index,1)
+      },
       addPerson(){
           let that = this
           if(!Tools.isPhone(that.personInfo.emergencyContactMobile)){

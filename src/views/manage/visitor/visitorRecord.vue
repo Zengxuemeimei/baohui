@@ -9,6 +9,9 @@
           <search-key @query="keyWordsQuery"/>
           <div class="ml50">
               <label class="filter-label">车辆类型：</label>
+              <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
+                <DepartmentSelect :list="carTypeList"/>
+              </el-select>
               <!-- <el-select v-model="value" placeholder="请选择">
                 <el-option
                   v-for="item in options"
@@ -22,7 +25,7 @@
         <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
             <!-- <edit-button /> -->
-            <del-button />
+            <!-- <del-button /> -->
         </div>
       </div>
       <div class="all-table">
@@ -37,25 +40,27 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="headPortrait"
+            prop="image"
             label="头像"
             width="120">
-            <div class="headPortrait-box">
-                <img src="" alt="">
-            </div>
+            <template slot-scope="scope">
+                <div class="headPortrait-box">
+                    <img :src="scope.row.image"  @error="defaultBackImg">
+                </div>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="name"
             label="姓名"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="mobile"
             label="电话号码"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="intervieweeName"
             label="访问对象"
             width="270">
           </el-table-column>
@@ -65,7 +70,7 @@
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="leaveTime"
             label="离开时间"
           >
           </el-table-column>
@@ -73,8 +78,9 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddVisitor :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -88,6 +94,9 @@ import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddVisitor from '@/components/AddVisitor/index'
 import {getVisitorList} from '@/api/visitor/index'
+import {getDictionaryList} from '@/api/dictionary'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import Loading from '@/components/Loading/index'
 
 export default {
   name: 'VisitorRecord',
@@ -97,31 +106,47 @@ export default {
     EditButton,
     DelButton,
     Paging,
-    AddVisitor
+    AddVisitor,
+    DepartmentSelect,
+    Loading
   },
   data() {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0,
-        status:'PASS'
+        pageIndex:1,
+        status:'PASS',
+        type:null
       },
       list:[],
       loading:false,
       isAdd:false,
       isEdit:false,
       editDetail:{},
+      total:0,
+      carTypeList:[]
       } 
   },
   created() {
   },
   mounted() {
     this.getList()
+    this.getCarTypeList()
   },
   methods: {
+    defaultBackImg(event){
+          if(event.type == "error") {
+          event.target.src= require("@/assets/default_pic.png")
+        }
+      },
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.getList()
     },
     addShow(value){
@@ -142,10 +167,18 @@ export default {
       that.loading = true
       getVisitorList(data).then(res=>{
           that.list = res.data.dataList
+          that.total = res.data.total
           that.loading = false
       }).catch(error=>{
           that.loading = false
       })
+    },
+    getCarTypeList(){
+      let data = {}
+      data.type = "车辆类型"
+      getDictionaryList(data).then(res=>{
+            this.carTypeList = res.data
+        })
     },
     tableRowClassName({row, rowIndex}){
         //修改table行的颜色
@@ -160,7 +193,11 @@ export default {
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #e6e6e6;
   margin: 0 auto;
+}
+.headPortrait-box img{
+  height: 100%;
+  width: 100%;
 }
 </style>

@@ -76,8 +76,9 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddCustomer :isShow="isAdd" :carTypeList="carTypeList" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -93,6 +94,7 @@ import {getCustomerList,getCustomerDetail} from '@/api/customer'
 // import {getDepartmentList} from '@/api/department'
 import {getDictionaryList} from '@/api/dictionary'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import Loading from '@/components/Loading/index'
 
 export default {
   name: 'Customer',
@@ -101,13 +103,14 @@ export default {
     AddButton,
     Paging,
     AddCustomer,
-    DepartmentSelect
+    DepartmentSelect,
+    Loading
   },
   data() {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0,
+        pageIndex:1,
         type:null
       },
       isAdd:false,
@@ -116,7 +119,8 @@ export default {
       editDetail:{},
       list:[],
       loading:false,
-      carTypeList:[]
+      carTypeList:[],
+      total:0
       } 
   },
   created() {
@@ -126,9 +130,14 @@ export default {
     this.getCarTypeList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.getList()
     },
     editItem(id){
@@ -143,7 +152,7 @@ export default {
 
     },
     changeCarType(){
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.getList()
     },
     addShow(value){
@@ -161,8 +170,13 @@ export default {
     getList(){
       let that = this
       let data = this.pageData
+      that.loading = true
       getCustomerList(data).then(res=>{
         that.list = res.data.dataList
+        that.total = res.data.total
+        that.loading = false
+      }).catch(error=>{
+        that.loading = false
       })
     },
     getCarTypeList(){

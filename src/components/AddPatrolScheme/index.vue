@@ -2,7 +2,7 @@
   <div>
     <el-dialog
         title="新增方案"
-        :visible.sync="dialogVisible"
+        :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
@@ -12,24 +12,57 @@
                 <table class="person-table mb20 ml50" border="1">
                     <tr>
                         <th>方案名称</th>
-                        <td></td>
+                        <td>
+                            <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.name"
+                            />
+                        </td>
                         <th>方案状态</th>
-                        <td></td>
+                        <td>
+                            <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.status"
+                            />
+                        </td>
                         <th>方案类型</th>
-                        <td style="width:300px"></td>
+                        <td style="width:300px">
+                            <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.type"
+                            />
+                        </td>
                     </tr>
                     <tr>
                         <th>所属部门</th>
-                        <td colspan="2"></td>
+                        <td colspan="2">
+                            <!-- <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.departmentId"
+                            /> -->
+                            <el-select v-model="keepWatchPlanInfo.departmentId" placeholder="请选择">
+                                <DepartmentSelect :list="listDepartment"/>
+                            </el-select>
+                        </td>
                         <th>重复计划</th>
-                        <td colspan="2"></td>
+                        <td colspan="2">
+                            <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.repetitionType"
+                            />
+                        </td>
                     </tr>
                 </table>
                 <div class="ml50">
                     <div class="flex-start">
                         <p>巡更点位设置</p>
                         <div class="ml5">
-                            <el-button class="el-icon-circle-plus-outline" type="text"> 新增</el-button>
+                            <el-button class="el-icon-circle-plus-outline" @click="addPlace" type="text"> 新增</el-button>
                         </div>
                         <!-- <i class="el-icon-circle-plus-outline" /> -->
                     </div>
@@ -40,42 +73,194 @@
                             <th>时间</th>
                             <th style="width:532px">巡更人员</th>
                         </tr>
-                        <tr>
-                            <td style="width:80px">1</td>
-                            <td style="width:200px"></td>
-                            <td></td>
-                            <td style="width:532px"></td>
+                        <tr v-for="(item,index) in keepWatchPlanInfo.keepWatchPlanPlaces" :key="index">
+                            <td style="width:80px">{{index+1}}</td>
+                            <td style="width:200px">
+                                <!-- <input
+                                type="text"
+                                class="input-form"
+                                v-model="item.placeId"/> -->
+                                <el-select v-model="item.placeId" placeholder="请选择">
+                                        <el-option
+                                        v-for="item in placeList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                        </el-option>
+                                </el-select>
+                            </td>
+                            <td>
+                                <el-time-picker
+                                    is-range
+                                    v-model="timePicker[index].time"
+                                    range-separator="至"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    placeholder="选择时间范围">
+                                </el-time-picker>
+                            </td>
+                            <td style="width:532px">
+                                 <!-- <input
+                                    type="text"
+                                    class="input-form"
+                                    v-model="item.keepWatchPlaceStaffs"/> -->
+                                    <el-select v-model="item.keepWatchPlaceStaffs" multiple placeholder="请选择">
+                                        <el-option
+                                        v-for="item in staffList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                            </td>
                         </tr>
                     </table>
                 </div>
             </el-scrollbar>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            <el-button @click="handleClose">取 消</el-button>
+            <el-button type="primary" @click="addPatrolScheme">确 定</el-button>
         </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import {saveOrUpdatePlan,getKeepWatchPlaceList} from '@/api/keepWatch/index'
+import {getStaffList} from '@/api/staff/index'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import moment from 'moment'
 
 export default {
   name: 'AddPatrolScheme',
-  components: {},
+  components: {DepartmentSelect},
+  props:{
+      isShow:{
+          type:Boolean
+      },
+      isEdit:{
+          type:Boolean
+      },
+      listDepartment:{
+          type:Array
+      },
+      editDetail:{
+          type:Object
+      },
+  },
   data() {
     return {
-        dialogVisible:true
+        timePicker:[
+            {
+                time:null
+            }
+        ],
+        keepWatchPlanInfo:{
+          departmentId: null,
+          keepWatchPlanPlaces: [
+                {
+                endTime: null,
+                keepWatchPlaceStaffs: [],
+                placeId: null,
+                startTime: null
+                }
+            ],
+            name: null,
+            repetition: true,
+            repetitionType: null,
+            status: null,
+            type: '日常巡更'   
+        },
+        staffList:[],
+        placeList:[]
     }
   },
   created() {
   },
   mounted() {
+      this.getStaffList()
+      this.getPlaceList()
   },
   methods: {
-      handleClose(done) {
-        this.dialogVisible = false
+      addPlace(){
+          this.keepWatchPlanInfo.keepWatchPlanPlaces.push({
+                endTime: null,
+                keepWatchPlaceStaffs: [],
+                placeId: null,
+                startTime: null
+          })
+          this.timePicker.push({
+                time:null
+          })
       },
+      getStaffList(){
+        let that = this
+        let data = {
+            keyword:null,
+            pageIndex:1,
+            pageSize:100
+        }
+        getStaffList(data).then(res=>{
+            let {dataList} =res.data
+            dataList.forEach((el,index)=>{
+                dataList[index].value = el.name
+            })
+            that.staffList = dataList
+        })
+    },
+    getPlaceList(){
+        let data = {
+            keyword:null,
+            pageIndex:1
+        }
+        getKeepWatchPlaceList(data).then(res=>{
+                this.placeList = res.data.dataList
+        })
+    },
+      handleClose() {
+        this.$emit('close',{isShow:false,isSuccess:false})
+      },
+      empty(){
+        this.timePicker=[
+            {
+                time:null
+            }
+        ],
+        this.keepWatchPlanInfo={
+          departmentId: null,
+          keepWatchPlanPlaces: [
+                {
+                endTime: null,
+                keepWatchPlaceStaffs: [],
+                placeId: null,
+                startTime: null
+                }
+            ],
+            name: null,
+            repetition: true,
+            repetitionType: null,
+            status: null,
+            type: null   
+        }
+      },
+      addPatrolScheme(){
+          let list = []
+          this.timePicker.forEach((el,index)=>{
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = moment(el.time[0]).format('HH:mm:ss')
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = moment(el.time[1]).format('HH:mm:ss')
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs.forEach((item,num)=>{
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs[num] = {
+                        staffId:item
+                }
+            })
+          })
+          let data = this.keepWatchPlanInfo
+          saveOrUpdatePlan(data).then(res=>{
+              this.empty()
+              this.$emit('close',{isShow:false,isSuccess:true})
+          })
+      }
   }
 }
 </script>
@@ -83,5 +268,8 @@ export default {
 .person-content{
     max-height: 60vh;
     overflow: hidden;
+}
+.el-select{
+    width: 100%;
 }
 </style>

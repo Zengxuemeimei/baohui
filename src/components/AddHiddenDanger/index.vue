@@ -227,7 +227,9 @@ export default {
       },
   },
   watch:{
-
+    editDetail(newVal){
+        this.hiddenDangerInfo = newVal
+    }
   }
 }
 </script>

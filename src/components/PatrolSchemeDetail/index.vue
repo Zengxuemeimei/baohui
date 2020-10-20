@@ -2,7 +2,7 @@
   <div>
     <el-dialog
         title="巡更记录详情"
-        :visible.sync="dialogVisible"
+        :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
@@ -58,10 +58,10 @@
                 </div>
             </el-scrollbar>
         </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
+        <!-- <span slot="footer" class="dialog-footer">
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-        </span>
+        </span> -->
     </el-dialog>
   </div>
 </template>
@@ -71,9 +71,14 @@
 export default {
   name: 'PatrolSchemeDetail',
   components: {},
+  props:{
+      isDetail:{
+          type:Boolean
+      }
+  },
   data() {
     return {
-        dialogVisible:true
+        // dialogVisible:true
     }
   },
   created() {

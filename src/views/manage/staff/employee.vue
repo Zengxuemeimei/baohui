@@ -75,7 +75,7 @@
       </div>
       <div class="flex-between mt20">
         <p></p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
       <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
       <Loading :loading="loading" />
@@ -111,7 +111,7 @@ export default {
       isClearKey:false,
       pageData:{
         keyword:null,
-        pageIndex:0,
+        pageIndex:1,
         departmentId:null,
         entryTimeStartTime:null,
         entryTimeEndTime:null
@@ -123,7 +123,8 @@ export default {
       listDepartment:[],
       loading:false,
       entryTime:null,
-      carTypeList:[]
+      carTypeList:[],
+      total:0
       }
   },
   created() {
@@ -134,9 +135,14 @@ export default {
     this.getCarTypeList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex = 1
       this.isClearKey=false
       this.getList()
     },
@@ -192,6 +198,7 @@ export default {
       getStaffList(data).then(res=>{
           that.list = res.data.dataList
           that.loading = false
+          that.total = res.data.total
       }).catch(error=>{
           that.loading = false
       })

@@ -11,14 +11,14 @@
         <div class="flex-start">
           <div>
             <label class="filter-label">处理状态：</label>
-            <el-select v-model="value" placeholder="请选择">
+            <!-- <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
               </el-option>
-            </el-select>
+            </el-select> -->
           </div>
         </div>
         <div class="btn-box flex-start">
@@ -82,9 +82,9 @@
           </el-table-column>
           <el-table-column
             label="操作">
-            <template slot-scope="">
+            <template slot-scope="scope">
                 <div class="flex-start">
-                  <el-button type="primary"  size="mini">编辑</el-button>
+                  <el-button type="primary" @click="editItem(scope.row)"  size="mini">编辑</el-button>
                   <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
@@ -93,7 +93,7 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
     <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
@@ -107,7 +107,7 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddHiddenDanger from '@/components/AddHiddenDanger/index'
-import {getHiddenDangerList} from '@/api/hiddenDanger'
+import {getHiddenDangerList,getHiddenDangerDetail} from '@/api/hiddenDanger'
 
 export default {
   name: 'HiddenDanger',
@@ -123,31 +123,14 @@ export default {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0
+        pageIndex:1
       },
       loading:false,
       isAdd:false,
       isEdit:false,
       editDetail:{},
       list:[],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      total:0,
       }
   },
   created() {
@@ -156,6 +139,11 @@ export default {
     this.getList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
       this.pageData.keyword = val
       this.pageData.pageIndex = 0
@@ -173,12 +161,21 @@ export default {
         that.isAdd = item.isShow
         that.isEdit = item.isShow 
     },
+    editItem(item){
+      this.isAdd = true
+      this.isEdit = true
+      getHiddenDangerDetail({id:item.id}).then(res=>{
+          this.editDetail = res.data
+      })
+      
+    },
     getList(){
       let data = this.pageData
       let that = this
       that.loading = true
       getHiddenDangerList(data).then(res=>{
           that.list = res.data.dataList
+          that.total = res.data.total
           that.loading = false
       }).catch(error=>{
           that.loading = false

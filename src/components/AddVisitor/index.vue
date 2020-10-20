@@ -12,7 +12,7 @@
         <table class="person-table mb40 ml50" border="1">
           <tr>
             <th>姓名</th>
-            <td>
+            <td style="width:200px">
               <input
                 type="text"
                 class="input-form"
@@ -20,7 +20,7 @@
               />
             </td>
             <th>身份证号</th>
-            <td>
+            <td style="width:200px">
               <input
                 type="text"
                 class="input-form"
@@ -96,6 +96,7 @@
 <script>
 import { saveOrUpdate } from "@/api/visitor/index";
 import moment from 'moment'
+import Tools from '@/utils/tools';
 
 export default {
   name: "AddVisitor",
@@ -145,15 +146,22 @@ export default {
       let that = this;
       let data = that.visitorInfo;
       let fd = new FormData()
-      // if(that.isEdit){
-      //   data.updateTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
-      //   fd.append('updateTime',data.updateTime)
-      // }else{
-      //    data.creatTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
-      //    fd.append('creatTime',data.creatTime)
-      // }
       data.leaveTime = moment(data.leaveTime).format('YYYY-MM-DD hh:mm:ss')
       data.visitTime = moment(data.visitTime).format('YYYY-MM-DD hh:mm:ss')
+      if(!Tools.isPhone(data.mobile)){
+        that.$message({
+            message: '电话号码格式不正确',
+            type: 'warning'
+        });
+        return
+      }
+      if(!Tools.verifyID(data.idNumber)){
+        that.$message({
+            message: '身份证号码格式不正确',
+            type: 'warning'
+        });
+        return
+      }
       fd.append('idNumber',data.idNumber)
       fd.append('imgFile',data.image)
       fd.append('intervieweeName',data.intervieweeName)

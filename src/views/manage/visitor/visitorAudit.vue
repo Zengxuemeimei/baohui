@@ -33,7 +33,7 @@
             width="120">
             <template slot-scope="scope">
               <div class="headPortrait-box">
-                  <img :src="scope.row.image" alt="">
+                  <img :src="scope.row.image" @error="defaultBackImg">
               </div>
             </template>
           </el-table-column>
@@ -74,8 +74,9 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AuditVisitor :isShow="isAudit" @close="closeAudit" :editDetail="editDetail"/>
   </div>
@@ -98,14 +99,15 @@ export default {
     return {
        pageData:{
         keyword:null,
-        pageIndex:0,
+        pageIndex:1,
         status:'REVIEWED'
       },
       list:[],
       loading:false,
       isAll:true,
       isAudit:false,
-      editDetail:{}
+      editDetail:{},
+      total:0,
       } 
   },
   created() {
@@ -116,6 +118,16 @@ export default {
   methods: {
     audit(item){
       this.editDetail = item
+    },
+    defaultBackImg(event){
+          if(event.type == "error") {
+          event.target.src= require("@/assets/default_pic.png")
+        }
+      },
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
     },
     deleteVisitor(id){
       let that = this
@@ -148,7 +160,7 @@ export default {
     getUnPassList(){
         this.isAll=false
         this.pageData.status="UNPASS"
-        this.pageData.pageIndex=0
+        this.pageData.pageIndex=1
         this.getList()
     },
     closeAudit(item){
@@ -160,7 +172,7 @@ export default {
     },
     keyWordsQuery(val){
       this.pageData.keyword = val
-      this.pageData.pageIndex = 0
+      this.pageData.pageIndex =1
       this.getList()
     },
     getList(){
@@ -169,6 +181,7 @@ export default {
       that.loading = true
       getVisitorList(data).then(res=>{
           that.list = res.data.dataList
+          that.total = res.data.total
           that.loading = false
       }).catch(error=>{
           that.loading = false
@@ -187,7 +200,11 @@ export default {
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #e6e6e6;
   margin: 0 auto;
+}
+.headPortrait-box img{
+  height: 100%;
+  width: 100%;
 }
 </style>

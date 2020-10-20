@@ -147,8 +147,9 @@ export default {
                     })
                 })
                 that.ruleForm.roleInfoList = list
+                let data = that.ruleForm
                 console.log(that.ruleForm)
-                saveOrUpdate(that.ruleForm).then(res=>{
+                saveOrUpdate(data).then(res=>{
                     if(that.isEdit){
                         that.$message({
                             message: '编辑账号成功',

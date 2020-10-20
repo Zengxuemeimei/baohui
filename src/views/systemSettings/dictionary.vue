@@ -143,6 +143,7 @@ export default {
                     that.loading = false
                     that.empty()
                     that.handleClose()
+                    that.getList()
                 }).catch(error=>{
                     that.loading = false
                 })

@@ -5,10 +5,10 @@
     </header>
     <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
         <el-tab-pane label="临时人员" name="person">
-            <temporary-list />
+            <TemporaryList />
         </el-tab-pane>
         <el-tab-pane label="临时车辆" name="car">
-            <temporary-list />
+            <TemporaryList />
         </el-tab-pane>
     </el-tabs>
   </div>

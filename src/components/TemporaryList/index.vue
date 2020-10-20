@@ -30,17 +30,43 @@
 
 <script>
 import Paging from '@/components/Paging/index'
+import {getTemporaryInfoList} from '@/api/temporaryInfo/index';
+
 export default {
   name: "TemporaryList",
   components: {
       Paging
   },
   data() {
-    return {}
+    return {
+      isClearKey:false,
+      pageData:{
+        keyword:null,
+        pageIndex:1,
+      },
+      total:0,
+      loading:false,
+      list:[]
+    }
   },
   created() {},
-  mounted() {},
-  methods: {},
+  mounted() {
+    this.getList()
+  },
+  methods: {
+    getList(){
+      let that = this
+      let data = that.pageData
+      that.loading = true
+      getTemporaryInfoList(data).then(res=>{
+          that.list = res.data.dataList
+          that.total = res.data.total
+          that.loading = false
+      }).catch(error=>{
+         that.loading = false
+      })
+    }
+  },
 };
 </script>
 <style scoped>

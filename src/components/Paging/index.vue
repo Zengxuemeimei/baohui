@@ -5,6 +5,7 @@
         prev-text="上一页"
         next-text="下一页"
         layout="prev, pager, next"
+        @current-change="changePaging"
         :total="total">
     </el-pagination>
   </div>
@@ -31,6 +32,10 @@ export default {
   mounted() {
   },
   methods: {
+    changePaging(val){
+      console.log(val)
+      this.$emit('getCurrentPage',val)
+    }
   }
 }
 </script>

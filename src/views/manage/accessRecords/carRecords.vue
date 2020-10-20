@@ -108,7 +108,7 @@
       </div>
       <div class="flex-between mt20">
         <p>双击进入详情页面</p>
-        <paging />
+        <paging  :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
     <!-- <AccessPerson :isShow="isDetail" :editDetail="editDetail" @close="closeAdd"/> -->
@@ -134,12 +134,13 @@ export default {
     return {
       pageData:{
         keyword:null,
-        pageIndex:0
+        pageIndex:1
       },
       list:[],
       isDetail:false,
       loading:false,
       editDetail:{},
+      total:0,
       value3:'',
       options: [{
           value: '选项1',
@@ -166,9 +167,14 @@ export default {
     this.getList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
         this.pageData.keyword = val
-        this.pageData.pageIndex = 0
+        this.pageData.pageIndex = 1
         this.getList()
       },
       addShow(value){
@@ -188,6 +194,7 @@ export default {
         that.loading = true
         getAccessCarList(data).then(res=>{
             that.list = res.data.dataList
+            that.total = res.data.total
             that.loading = false
         }).catch(error=>{
             that.loading = false

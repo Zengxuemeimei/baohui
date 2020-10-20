@@ -56,8 +56,9 @@
       </div>
       <div class="flex-between mt20">
         <p></p>
-        <paging />
+        <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddAccountNumber :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -71,6 +72,8 @@ import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddAccountNumber from '@/components/AddAccountNumber/index'
 import {getList,deleteAccountNum} from '@/api/user'
+import Loading from '@/components/Loading/index'
+
 export default {
   name: 'AccountNumber',
   components: {
@@ -79,18 +82,21 @@ export default {
     EditButton,
     DelButton,
     Paging,
-    AddAccountNumber
+    AddAccountNumber,
+    Loading
   },
   data() {
     return {
       list: [],
       pageData:{
         keyword:null,
-        pageIndex:0
+        pageIndex:1
       },
       isAdd:false,
       isEdit:false,
-      editDetail:{}
+      editDetail:{},
+      total:0,
+      loading:false
       }
   },
   created() {
@@ -99,9 +105,14 @@ export default {
     this.getList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     keyWordsQuery(val){
         this.pageData.keyword = val
-        this.pageData.pageIndex = 0
+        this.pageData.pageIndex = 1
         this.getList()
     },
     addShow(value){
@@ -147,8 +158,13 @@ export default {
     getList(){
       let that = this
       let data = that.pageData
+      that.loading = true
       getList(data).then(res=>{
           that.list=res.data.dataList
+          that.total = res.data.total
+          that.loading = false
+      }).catch(error=>{
+          that.loading = false
       })
     }
   }
