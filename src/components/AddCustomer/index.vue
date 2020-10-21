@@ -89,7 +89,7 @@
             <td>
               <!-- <input type="text" class="input-form" v-model="item.carType"> -->
               <el-select clearable v-model="item.carType" placeholder="请选择">
-                <DepartmentSelect :list="carTypeList" />
+                <DictionarySelect :list="carTypeList" />
               </el-select>
             </td>
             <th v-if="customerInfo.customerCarInfos.length >1">操作</th>
@@ -110,14 +110,14 @@
 
 <script>
 import { saveOrUpdate } from "@/api/customer";
-import DepartmentSelect from "@/components/Recursion/departmentSelect";
+import DictionarySelect from "@/components/Recursion/dictionarySelect";
 import moment from "moment";
 import store from '@/store'
 import Tools from '@/utils/tools';
 
 export default {
   name: "AddCustomer",
-  components: { DepartmentSelect },
+  components: { DictionarySelect },
   props: {
     isShow: {
       type: Boolean,

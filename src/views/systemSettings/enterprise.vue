@@ -1,13 +1,13 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">设备管理</p>
+      <p class="title">企业管理</p>
     </header>
     <main class="content-main">
-      <div class="btn-box flex-start">
+        <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
         </div>
-      <div class="all-table">
+         <div class="all-table">
         <el-table
          border
          header-cell-class-name="all-table-th"
@@ -20,24 +20,20 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="serialNumber"
-            label="设备序列号">
-          </el-table-column>
-          <el-table-column
             prop="name"
-            label="设备名称">
+            label="企业名称">
           </el-table-column>
           <el-table-column
-            prop="ipAddress"
-            label="设备IP">
+            prop="mobilNumber"
+            label="联系电话">
           </el-table-column>
           <el-table-column
-            prop="activeStatus"
+            prop="detailedAddress"
+            label="详细地址">
+          </el-table-column>
+          <el-table-column
+            prop="status"
             label="状态">
-          </el-table-column>
-          <el-table-column
-            prop="deviceType"
-            label="设备类型">
           </el-table-column>
          <el-table-column
             prop="address"
@@ -57,39 +53,36 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddEquipment :isShow="isAdd" :isEdit="isEdit" @close="closeAdd"/>
+    <AddEnterprise :isShow="isAdd" :isEdit="isEdit" @close="closeAdd"/>
   </div>
 </template>
 
 <script>
 import AddButton from '@/components/AddButton/index'
-import {getEviceInfotList,deleteDeviceInfo} from '@/api/equipment'
-import AddEquipment from '@/components/AddEquipment/index'
+import {getEnterpriseInfoList} from '@/api/enterprise'
 import Paging from '@/components/Paging/index'
-
+import AddEnterprise from '@/components/AddEnterprise/index'
 
 export default {
-  name: 'Equipment',
-  components: {AddButton,AddEquipment,Paging},
+  name: 'Enterprise',
+  components: {AddButton,Paging,AddEnterprise},
   data() {
     return {
-      isAdd:false,
-      isEdit:false,
-      list:[],
-      total:0,
-       pageData:{
-        keyword:null,
-        pageIndex:1,
-        pageSize:10,
-        enterpriseId:null
-      },
-
+        isAdd:false,
+        isEdit:false,
+        pageData:{
+            keyword:null,
+            pageIndex:1,
+            pageSize:10,
+        },
+        list:[],
+        total:0
     }
   },
   created() {
   },
   mounted() {
-    this.getList()
+      this.getList()
   },
   methods: {
     getPage(val){
@@ -114,14 +107,14 @@ export default {
 
     },
     getList(){
-      this.loading = true
-      getEviceInfotList(this.pageData).then(res=>{
-          this.list = res.data.dataList
-          this.total = res.data.total
-          this.loading = false
-      }).catch(error=>{
-          this.loading = false
-      })
+        this.loading = true
+        getEnterpriseInfoList(this.pageData).then(res=>{
+            this.list = res.data.dataList
+            this.total = res.data.total
+            this.loading = false
+        }).catch(error=>{
+            this.loading = false
+        })
     }
   }
 }

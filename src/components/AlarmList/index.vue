@@ -116,6 +116,11 @@ export default {
     this.getList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     closeEdit(item){
         if(item.isSuccess){
           this.getList()

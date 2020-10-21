@@ -3,19 +3,19 @@
     <header class="content-header">
       <p class="title">告警中心</p>
     </header>
-    <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+    <el-tabs v-model="alarmStatus" type="card" @tab-click="handleClick">
         <el-tab-pane label="全部" name="all">
           <AlarmList :manageStatus="manageStatus" />
         </el-tab-pane>
-        <el-tab-pane label="未处理" name="untreated">
+        <el-tab-pane :label="item.name" :name="item.code" v-for="item in alarmStatusList" :key="item.code">
            <AlarmList :manageStatus="manageStatus"/>
         </el-tab-pane>
-        <el-tab-pane label="已处理" name="processed">
+        <!-- <el-tab-pane label="已处理" name="processed">
            <AlarmList :manageStatus="manageStatus"/>
         </el-tab-pane>
         <el-tab-pane label="处理中" name="processing">
            <AlarmList :manageStatus="manageStatus"/>
-        </el-tab-pane>
+        </el-tab-pane> -->
     </el-tabs>
     
   </div>
@@ -23,7 +23,7 @@
 
 <script>
 import AlarmList from '@/components/AlarmList/index'
-
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'AlarmCenter',
@@ -34,17 +34,26 @@ export default {
     return {
       riskType:null,
       manageStatus:null,
-      activeName2:"all"
+      alarmStatusList:[],
+       alarmStatus:'all'
       } 
   },
   created() {
   },
   mounted() {
+    this.getAlarmStatusList()
   },
   methods: {
     handleClick(tab, event) {
         console.log(tab, event);
-      }
+    },
+    getAlarmStatusList(){
+      let data = {}
+      data.type = "告警状态"
+      getDictionaryList(data).then(res=>{
+            this.alarmStatusList = res.data
+        })
+    },
   }
 }
 </script>

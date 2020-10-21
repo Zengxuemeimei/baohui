@@ -50,7 +50,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="AddAccountNumber('ruleForm')">确 定</el-button>
+            <el-button type="primary" @click="addAccountNumber('ruleForm')">确 定</el-button>
         </span>
       </el-dialog>
   </div>
@@ -128,7 +128,7 @@ export default {
         this.title = "新增账号"
         this.$refs.ruleForm.resetFields();
     },
-    AddAccountNumber(formName){
+    addAccountNumber(formName){
         let that = this
         that.$refs[formName].validate((valid) => {
           console.log(valid)

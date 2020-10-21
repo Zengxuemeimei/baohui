@@ -4,73 +4,62 @@
       <p class="title">数据字典</p>
     </header>
     <main class="content-main">
-        <AddButton @addShow="addShow"/>
         <el-tabs type="border-card" class="mt10" @tab-click="tabList">
             <el-tab-pane label="车辆类型">
                 <div class="all-table">
-                    <DictionaryList :list="dictionaryList" @editMenu="editMenu" />
+                    <DictionaryList dictionaryType="车辆类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="告警类型">
                 <div class="all-table">
-                    <DictionaryList :list="dictionaryList" @editMenu="editMenu" />
+                    <DictionaryList dictionaryType="告警类型" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="告警状态">
                 <div class="all-table">
-                    <DictionaryList :list="dictionaryList" @editMenu="editMenu" />
+                    <DictionaryList dictionaryType="告警状态" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="隐患级别">
                 <div class="all-table">
-                    <DictionaryList :list="dictionaryList" @editMenu="editMenu" />
+                    <DictionaryList dictionaryType="隐患级别" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="企业类型">
+                <div class="all-table">
+                    <DictionaryList dictionaryType="企业类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="隐患处理状态">
                 <div class="all-table">
-                    <DictionaryList :list="dictionaryList" @editMenu="editMenu" />
+                    <DictionaryList dictionaryType="隐患处理状态" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                </div>
+            </el-tab-pane>
+             <el-tab-pane label="点位类型">
+                <div class="all-table">
+                    <DictionaryList dictionaryType="点位类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="方案类型">
+                <div class="all-table">
+                    <DictionaryList dictionaryType="方案类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
                 </div>
             </el-tab-pane>
         </el-tabs>
     </main>
-    <el-dialog
-        title="新增字典"
-        :visible.sync="isAdd"
-        width="500px"
-        :close-on-click-modal="false"
-        :before-close="handleClose">
-        <div class="">
-            <el-scrollbar style="height:100%">
-                <el-form :model="dictionaryForm" :rules="rules"  ref="ruleForm" label-width="100px">
-                    <el-form-item label="所属上级" prop="parentId">
-                        <el-select v-model="dictionaryForm.parentId" placeholder="请选择">
-                            <el-option :value="null" label="无父级"></el-option>
-                            <DepartmentSelect :list="dictionaryList" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="数据名称" prop="name">
-                        <el-input v-model="dictionaryForm.name" placeholder="请输入内容"></el-input>
-                    </el-form-item>
-                </el-form>
-            </el-scrollbar>
-        </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="addDictionary('ruleForm')">确 定</el-button>
-        </span>
-    </el-dialog>
+    
   </div>
 </template>
 
 <script>
-import AddButton from '@/components/AddButton/index'
+
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import {saveOrUpdate,getDictionaryList} from '@/api/dictionary'
 import DictionaryList from '@/components/Recursion/dictionaryList'
 
 export default {
   name: 'Dictionary',
-  components: {AddButton,DepartmentSelect,DictionaryList},
+  components: {DepartmentSelect,DictionaryList},
   data() {
     return {
         isAdd:false,
@@ -85,7 +74,7 @@ export default {
         dictionaryType:"车辆类型",
         pageData:{
             keyword:null,
-            pageIndex:0,
+            pageIndex:1,
         },
         rules:{
             name:[
@@ -108,10 +97,13 @@ export default {
         this.isAdd = false
         this.empty()
     },
+    closeAdd(){
+        this.getList()
+    },
     tabList(tab){
         console.log(tab)
         this.dictionaryType = tab.label
-        this.pageData.pageIndex = 0
+        this.pageData.pageIndex = 1
         this.getList()
     },
     empty(){
@@ -130,26 +122,7 @@ export default {
             this.dictionaryList = res.data
         })
     },
-    addDictionary(formName){
-        let that = this
-        that.$refs[formName].validate((valid) => {
-          console.log(valid)
-          if (valid) {
-                that.loading = true
-                let data = that.dictionaryForm
-                data.type = that.dictionaryType
-                console.log('data',data)
-                saveOrUpdate(data).then(res=>{
-                    that.loading = false
-                    that.empty()
-                    that.handleClose()
-                    that.getList()
-                }).catch(error=>{
-                    that.loading = false
-                })
-          }
-        })
-    },
+   
     editMenu(item){
         let that = this
         that.isAdd = item.isAdd

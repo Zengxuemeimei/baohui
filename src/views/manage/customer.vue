@@ -10,7 +10,7 @@
           <div class="ml50">
               <label class="filter-label">车辆类型：</label>
               <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
-                <DepartmentSelect :list="carTypeList"/>
+                <DictionarySelect :list="carTypeList"/>
               </el-select>
               <!-- <el-select v-model="value" placeholder="请选择">
                 <el-option
@@ -93,7 +93,7 @@ import AddCustomer from '@/components/AddCustomer/index'
 import {getCustomerList,getCustomerDetail} from '@/api/customer'
 // import {getDepartmentList} from '@/api/department'
 import {getDictionaryList} from '@/api/dictionary'
-import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import Loading from '@/components/Loading/index'
 
 export default {
@@ -103,7 +103,7 @@ export default {
     AddButton,
     Paging,
     AddCustomer,
-    DepartmentSelect,
+    DictionarySelect,
     Loading
   },
   data() {
