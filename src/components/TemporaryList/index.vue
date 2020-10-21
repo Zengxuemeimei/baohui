@@ -3,7 +3,7 @@
     <main class="content-main">
       <div class="key-box flex-start">
         <div class="key-input-box">
-          <el-input placeholder="请选择图片" v-model="input22">
+          <el-input placeholder="请选择图片" >
             <i slot="suffix" class="el-input__icon el-icon-picture-outline" />
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
@@ -12,17 +12,23 @@
           <el-button type="danger">以图搜图</el-button>
         </div>
       </div>
-      <ul class="person-menu mt20 mb20">
-        <li v-for="item in 30" :key="item" class="">
+      <ul class="person-menu mt20 mb20" v-if="total > 0">
+        <li v-for="item in list" :key="item" class="">
           <div class="img-box">
             <img src="" alt="" />
           </div>
           <el-button type="primary">布控</el-button>
         </li>
       </ul>
+      <div v-if="total == 0" class="flex-center" style="width:100%">
+          <div>
+              <img src="@/assets/no_data.png" alt="">
+              <p style="text-align: center;">暂无数据</p>
+          </div>
+      </div>
       <div class="flex-between mt20">
         <p></p>
-        <paging />
+        <paging v-if="total > 0" :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
   </div>
@@ -37,12 +43,17 @@ export default {
   components: {
       Paging
   },
+  props:{
+    controlType:{
+      type:String
+    }
+  },
   data() {
     return {
       isClearKey:false,
       pageData:{
         keyword:null,
-        pageIndex:1,
+        pageIndex:1
       },
       total:0,
       loading:false,
@@ -54,9 +65,15 @@ export default {
     this.getList()
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
     getList(){
       let that = this
       let data = that.pageData
+      data.controlType = that.controlType
       that.loading = true
       getTemporaryInfoList(data).then(res=>{
           that.list = res.data.dataList
@@ -67,6 +84,11 @@ export default {
       })
     }
   },
+  watch:{
+    controlType(newVal){
+        this.getList()
+    }
+  }
 };
 </script>
 <style scoped>

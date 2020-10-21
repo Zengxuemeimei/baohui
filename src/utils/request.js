@@ -63,6 +63,14 @@ service.interceptors.response.use(
           duration: 5 * 1000
         })
       }
+      if (res.code === '400') {
+        // to re-login
+        Message({
+          message: res.msg || '网络故障，请稍后再试',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
       if (res.code === '401') {
         // to re-login
         next(`/login?redirect=${this.$route.path}`)

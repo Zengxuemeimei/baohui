@@ -80,7 +80,7 @@
       <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
       <Loading :loading="loading" />
     </main>
-    <add-person />
+    <!-- <add-person /> -->
   </div>
 </template>
 

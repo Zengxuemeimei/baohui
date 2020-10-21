@@ -3,12 +3,12 @@
     <header class="content-header">
       <p class="title">临时人员-车辆</p>
     </header>
-    <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+    <el-tabs v-model="activeName2" type="card" >
         <el-tab-pane label="临时人员" name="person">
-            <TemporaryList />
+            <TemporaryList controlType='人员'/>
         </el-tab-pane>
         <el-tab-pane label="临时车辆" name="car">
-            <TemporaryList />
+            <TemporaryList controlType='车辆'/>
         </el-tab-pane>
     </el-tabs>
   </div>

@@ -9,3 +9,11 @@ export function getTemporaryInfoList(params) {
       params
     })
 }
+
+export function setControl(data) { 
+  return request({
+    url: '/temporaryInfo/setControl',
+    method: 'post',
+    data
+  })
+}
