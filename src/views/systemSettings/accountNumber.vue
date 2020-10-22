@@ -4,9 +4,9 @@
       <p class="title">账号管理</p>
     </header>
     <main class="content-main">
-      <div class="filter-box flex-between">
+      <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery"/>
-        <div class="btn-box flex-start">
+        <div class="btn-box flex-start ml20" >
             <add-button @addShow="addShow"/>
         </div>
       </div>

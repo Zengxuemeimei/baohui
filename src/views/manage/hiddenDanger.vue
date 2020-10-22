@@ -92,7 +92,7 @@
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>

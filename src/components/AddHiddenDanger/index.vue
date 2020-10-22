@@ -153,7 +153,7 @@ export default {
     return {
         pageData:{
             keyword:null,
-            pageIndex:0
+            pageIndex:1
         },
         manager:null,
         reportor:null,

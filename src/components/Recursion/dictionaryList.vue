@@ -6,16 +6,15 @@
     <el-table :data="list" :show-header="isHeader" header-cell-class-name="all-table-th" :default-expand-all="false" :row-class-name="getRowClassName"  style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="prop" v-if="prop.row.children">
-          <DictionaryList :list="prop.row.children" :isHeader="false" @editMenu="editMenuItem"/>
+          <DictionaryList :list="prop.row.children" :isHeader="false"/>
         </template>
       </el-table-column>
       <el-table-column label="数据名称" prop="name"> </el-table-column>
+      <el-table-column label="状态" prop="status"> </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <div class="flex-start">
-            <el-button type="primary" @click="editMenu(scope.row)" size="mini"
-              >编辑</el-button
-            >
+            <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
           </div>
         </template>
       </el-table-column>
@@ -42,6 +41,16 @@
                     <el-form-item label="数据名称" prop="name">
                         <el-input v-model="dictionaryForm.name" placeholder="请输入内容"></el-input>
                     </el-form-item>
+                    <el-form-item label="排序" prop="orderNum">
+                        <el-input v-model="dictionaryForm.orderNum" placeholder="请输入内容"></el-input>
+                    </el-form-item>
+                     <el-form-item label="状态" prop="status">
+                       <el-radio-group v-model="dictionaryForm.status">
+                          <el-radio-button label="启用"></el-radio-button>
+                          <el-radio-button label="停用"></el-radio-button>
+                      </el-radio-group>
+                     </el-form-item>
+                    
                 </el-form>
             </el-scrollbar>
         </div>
@@ -54,7 +63,6 @@
 </template>
 
 <script>
-import {updateStatus} from '@/api/dictionary'
 import AddButton from '@/components/AddButton/index'
 import Paging from '@/components/Paging/index'
 import {saveOrUpdate} from '@/api/dictionary'
@@ -84,7 +92,8 @@ export default {
             parentId:null,
             name:null,
             children:null,
-            status:'启用'
+            status:'启用',
+            orderNum:null
         },
         pageData:{
             keyword:null,
@@ -112,11 +121,23 @@ export default {
         editDetail:item.editDetail
       })
     },
+     editMenu(item){
+        let that = this
+        that.isAdd = true
+        that.isEdit = true
+        that.dictionaryForm.parentId = item.parentId
+        that.dictionaryForm.name = item.name
+        that.dictionaryForm.id = item.id
+        that.dictionaryForm.orderNum = item.orderNum
+        that.dictionaryForm.status = item.status
+    },
     addShow(val){
         this.isAdd = val
     },
     handleClose(){
         this.isAdd = false
+        this.isEdit = false
+
         this.empty()
     },
     empty(){
@@ -124,7 +145,8 @@ export default {
             parentId:null,
             name:null,
             children:null,
-            status:'启用'
+            status:'启用',
+            orderNum:null
         }
     },
     getRowClassName({row, rowIndex}){
@@ -152,13 +174,6 @@ export default {
           }
         })
     },
-    editMenu(item) {
-      this.$emit('editMenu',{
-        isAdd:true,
-        isEdit:true,
-        editDetail:item
-      })
-    }
   },
 };
 </script>

@@ -32,30 +32,34 @@
             label="头像"
             width="120">
             <template slot-scope="scope">
-              <div class="headPortrait-box">
-                  <img :src="scope.row.image" @error="defaultBackImg">
+              <div class="headPortrait-box flex-center">
+                  <!-- <img :src="scope.row.image" @error="defaultBackImg"> -->
+                  <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.image">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
               </div>
             </template>
           </el-table-column>
           <el-table-column
             prop="name"
-            label="姓名"
-            width="270">
+            label="姓名">
           </el-table-column>
           <el-table-column
             prop="mobile"
-            label="电话号码"
-            width="270">
+            label="电话号码">
           </el-table-column>
           <el-table-column
             prop="intervieweeName"
-            label="访问对象"
-            width="270">
+            label="访问对象">
           </el-table-column>
           <el-table-column
             prop="visitTime"
-            label="访问时间"
-            width="270">
+            label="访问时间">
           </el-table-column>
           <el-table-column
             prop="leaveTime"
@@ -87,13 +91,15 @@ import SearchKey from '@/components/searchKey/index'
 import AuditVisitor from '@/components/AuditVisitor/index'
 import Paging from '@/components/Paging/index'
 import {getVisitorList,deleteVisitor} from '@/api/visitor/index'
+import Loading from '@/components/Loading/index'
 
 export default {
   name: 'VisitorAudit',
   components: {
     SearchKey,
     Paging,
-    AuditVisitor
+    AuditVisitor,
+    Loading
   },
   data() {
     return {

@@ -102,17 +102,16 @@
                 <span class="person-info-title">文档资料</span>
                 <div class="ml50 mb40">
                     <div class="flex-start flex-wrap">
-                        <div class="upload-img-box mr20 relative"  v-for="item in fileUrl" :key="item">
+                        <!-- <div class="upload-img-box mr20 relative"  v-for="item in fileUrl" :key="item">
                             <img class="upload-img"  :src="item" alt="" @error="defaultBackImg">
-                            <!-- <img class="upload-img" src="blob:http://localhost:9528/62acebfa-ccb3-4bd0-9df7-ef7b0f209be2" alt=""> -->
-                        </div>
+                        </div> -->
                         <el-upload
-                            action="http://192.168.1.103:9092/file/upload/staff"
+                            action=""
                             list-type="picture-card"
                             accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
                             :headers="token"
-                            :on-success="uploadStaff"
-                            :on-remove="handleRemove">
+                            :auto-upload="false"
+                            :on-change="uploadStaff">
                             <span>上传资料</span>
                         </el-upload>
                     </div>
@@ -125,7 +124,6 @@
                             <div class="upload-img-box mr20 relative mb20" v-show="item.carImage">
                                 <img class="upload-img"  :src="item.carImage" @error="defaultBackImg">
                                 <p class="car-num">{{item.carNumber}}</p>
-                                <!-- <img class="upload-img" src="blob:http://localhost:9528/62acebfa-ccb3-4bd0-9df7-ef7b0f209be2" alt=""> -->
                             </div>
                         </div>
                     </div>
@@ -148,11 +146,11 @@
                             <th>上传车辆图片</th>
                             <td >
                                  <el-upload
-                                        action="http://192.168.1.103:9092/file/upload/cars"
+                                        action=""
                                         :headers="token"
-                                        :on-preview="handlePreview"
-                                        :on-success="uploadCar"
+                                        :on-change="uploadCar"
                                         :show-file-list="false"
+                                        :auto-upload="false"
                                         >
                                         <el-button size="small" type="primary" @click="uploadCarParent(index,item.carNumber)">点击上传</el-button>
                                 </el-upload>
@@ -213,7 +211,8 @@ export default {
         carList:[
             {
                 carNumber:null,
-                carImage:null
+                carImage:null,
+                file:null
             }
         ],
         carIndex:0,
@@ -235,7 +234,7 @@ export default {
             mobileNumber: null,
             name: null,
             age:null,
-            fileUrl:null,
+            fileUrl:[],
             position: null,
             sex: true,
             staffCarInfoList: [
@@ -279,15 +278,43 @@ export default {
             that.personInfo.quitTime = moment(that.personInfo.quitTime).format('YYYY-MM-DD hh:mm:ss')
           }
           that.personInfo.formalTime = moment(that.personInfo.formalTime).format('YYYY-MM-DD hh:mm:ss')
-          this.personInfo.fileUrl = this.fileUrl.toString()
           if(this.isEdit){
               this.personInfo.updateTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
           }else{
                this.personInfo.creatTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
           }
-          console.log('personInfo',that.personInfo)
+          console.log('personInfo',that.personInfo)  
           that.loading = true
-          saveOrUpdate(this.personInfo).then(res=>{
+          let fd = new FormData()
+        let data = this.personInfo
+          fd.append('contractScanning',data.contractScanning)
+          fd.append('departmentId',data.departmentId)
+          fd.append('education',data.education)
+          fd.append('email',data.email)
+          fd.append('emergencyContact',data.emergencyContact)
+          fd.append('emergencyContactMobile',data.emergencyContactMobile)
+          fd.append('entryTime',data.entryTime)
+          fd.append('expireTime',data.expireTime)
+          fd.append('quitTime',data.quitTime)
+          fd.append('faceImage',data.faceImage)
+          fd.append('formalTime',data.formalTime)
+          fd.append('homeAddress',data.homeAddress)
+          fd.append('idNumberScanning',data.idNumberScanning)
+          fd.append('major',data.major)
+          fd.append('mobileNumber',data.mobileNumber)
+          fd.append('name',data.name)
+          fd.append('age',data.age)
+          this.fileUrl.forEach(el=>{
+              fd.append('fileUrlFile',el)
+          })
+          fd.append('position',data.position)
+          fd.append('sex',data.sex)
+          fd.append('staffCarInfoList',JSON.stringify(data.staffCarInfoList))
+          fd.append('faceImageFile',null)
+          this.carList.forEach(el=>{
+            fd.append('staffCar',el.file)
+          })
+          saveOrUpdate(fd).then(res=>{
             that.loading = false
             if(that.isEdit){
                 that.$message({
@@ -318,7 +345,8 @@ export default {
         })
         this.carList.push({
              carNumber: null,
-             carImage:null
+             carImage:null,
+             file:null
         })
         console.log( this.personInfo.staffCarInfoList)
       },
@@ -328,7 +356,8 @@ export default {
           this.carList=[
                 {
                     carNumber:null,
-                    carImage:null
+                    carImage:null,
+                    file:null
                 }
             ]
           this.personInfo={
@@ -348,7 +377,7 @@ export default {
             mobileNumber: null,
             name: null,
             age:null,
-            fileUrl:null,
+            fileUrl:[],
             position: null,
             sex: true,
             staffCarInfoList: [
@@ -364,25 +393,19 @@ export default {
         this.empty()
         this.$emit('close',{isShow:false,isSuccess:false})
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file){
-          console.log('上传',file)
-      },
       uploadStaff(file) {
-        this.fileUrl.push(file[0]) ;
+        this.fileUrl.push(file.raw);
       },
       uploadCarParent(index,carNumber){
         this.carIndex = index
         this.carList[index].carNumber = carNumber
-        // //   this.carList[index] = ''
-         console.log('btton',carNumber)
       },
-      uploadCar(res,file){
-        this.personInfo.staffCarInfoList[this.carIndex].carImage = res[0]
-        this.carList[this.carIndex].carImage = URL.createObjectURL(file.raw)
-        console.log('this.carList',this.carList)
+      uploadCar(file){
+          this.carList[this.carIndex].carImage = URL.createObjectURL(file.raw)
+          this.carList[this.carIndex].file = file.raw
+        // this.personInfo.staffCarInfoList[this.carIndex].carImage = res[0]
+        // this.carList[this.carIndex].carImage = URL.createObjectURL(file.raw)
+        // console.log('this.carList',this.carList)
         // console.log('file',URL.createObjectURL(file.raw))
       }
   },

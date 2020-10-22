@@ -7,42 +7,47 @@
         <el-tabs type="border-card" class="mt10" @tab-click="tabList">
             <el-tab-pane label="车辆类型">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="车辆类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                    <DictionaryList dictionaryType="车辆类型" :list="dictionaryList"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="告警类型">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="告警类型" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
+                    <DictionaryList dictionaryType="告警类型" :list="dictionaryList"   @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="告警状态">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="告警状态" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
+                    <DictionaryList dictionaryType="告警状态" :list="dictionaryList"   @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="隐患级别">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="隐患级别" :list="dictionaryList" @editMenu="editMenu"  @close="closeAdd"/>
+                    <DictionaryList dictionaryType="隐患级别" :list="dictionaryList"   @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="企业类型">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="企业类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                    <DictionaryList dictionaryType="企业类型" :list="dictionaryList" @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="隐患处理状态">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="隐患处理状态" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                    <DictionaryList dictionaryType="隐患处理状态" :list="dictionaryList"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
              <el-tab-pane label="点位类型">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="点位类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                    <DictionaryList dictionaryType="点位类型" :list="dictionaryList"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="方案类型">
                 <div class="all-table">
-                    <DictionaryList dictionaryType="方案类型" :list="dictionaryList" @editMenu="editMenu" @close="closeAdd"/>
+                    <DictionaryList dictionaryType="方案类型" :list="dictionaryList"  @close="closeAdd"/>
+                </div>
+            </el-tab-pane>
+             <el-tab-pane label="设备类型">
+                <div class="all-table">
+                    <DictionaryList dictionaryType="设备类型" :list="dictionaryList"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
         </el-tabs>
@@ -123,14 +128,7 @@ export default {
         })
     },
    
-    editMenu(item){
-        let that = this
-        that.isAdd = item.isAdd
-        that.isEdit = item.isEdit
-        that.dictionaryForm.parentId = item.editDetail.parentId
-        that.dictionaryForm.name = item.editDetail.name
-        that.dictionaryForm.id = item.editDetail.id
-    },
+   
      deleteList(){
         this.getList()
     }

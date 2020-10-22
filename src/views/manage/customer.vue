@@ -12,14 +12,6 @@
               <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
                 <DictionarySelect :list="carTypeList"/>
               </el-select>
-              <!-- <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select> -->
           </div>
         </div>
         <div class="btn-box flex-start">
@@ -43,8 +35,16 @@
             label="头像"
             width="120">
             <template slot-scope="scope">
-              <div class="headPortrait-box">
-                  <img :src="scope.row.photoUrl" alt="">
+              <div class="headPortrait-box flex-center">
+                  <!-- <img :src="scope.row.photoUrl" @error="defaultBackImg"/> -->
+                  <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.photoUrl">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
               </div>
             </template>
           </el-table-column>
@@ -75,12 +75,12 @@
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
       <Loading :loading="loading" />
     </main>
-    <AddCustomer :isShow="isAdd" :carTypeList="carTypeList" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
+    <AddCustomer :isShow="isAdd" :isDetail="isDetail" :carTypeList="carTypeList" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -130,6 +130,11 @@ export default {
     this.getCarTypeList()
   },
   methods: {
+    defaultBackImg(event){
+          if(event.type == "error") {
+          event.target.src= require("@/assets/default_pic.png")
+        }
+      },
     getPage(val){
       console.log('waimian',val)
         this.pageData.pageIndex = val
@@ -149,7 +154,12 @@ export default {
       })
     },
     detailItem(id){
-
+      let that = this
+      that.isAdd = true
+      that.isDetail = true
+      getCustomerDetail({id:id}).then(res=>{
+          that.editDetail = res.data
+      })
     },
     changeCarType(){
       this.pageData.pageIndex = 1
@@ -166,6 +176,7 @@ export default {
         }
         that.isAdd = item.isShow
         that.isEdit = item.isShow 
+        that.isDetail = item.isShow 
     },
     getList(){
       let that = this
@@ -199,7 +210,7 @@ export default {
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #f6f6f6;
   margin: 0 auto;
 }
 </style>

@@ -16,6 +16,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="visitorInfo.name"
               />
             </td>
@@ -24,6 +25,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="visitorInfo.idNumber"
               />
             </td>
@@ -32,6 +34,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="visitorInfo.mobile"
               />
             </td>
@@ -40,8 +43,9 @@
             <th>访问时间</th>
             <td>
               <el-date-picker
+              :disabled="isDetail"
                 v-model="visitorInfo.visitTime"
-                type="date"
+                type="datetime"
                 placeholder="选择日期"
               >
               </el-date-picker>
@@ -49,8 +53,9 @@
             <th>离开时间</th>
             <td>
               <el-date-picker
+              :disabled="isDetail"
                 v-model="visitorInfo.leaveTime"
-                type="date"
+                type="datetime"
                 placeholder="选择日期"
               >
               </el-date-picker>
@@ -60,6 +65,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="visitorInfo.intervieweeName"
               />
             </td>
@@ -67,6 +73,7 @@
         </table>
         <div class="camera_outer ml50 flex-start flex-end">
           <video
+            v-if="!isDetail"
             id="videoCamera"
             class="mr20"
             :width="videoWidth"
@@ -79,13 +86,23 @@
             :width="videoWidth"
             :height="videoHeight"
           ></canvas>
-          <i class="el-icon-camera take-photo" @click="setImage" />
+          <i class="el-icon-camera take-photo" @click="setImage" v-if="!isDetail"/>
           <div class="img_bg_camera flex-start flex-end ml20">
-            <img :src="imgSrc" alt class="tx_img" @error="defaultBackImg"/>
+            <!-- <img :src="imgSrc" alt class="tx_img" @error="defaultBackImg"/> -->
+              <el-image 
+                  style="width:350px;height:250px"
+                    fit="cover"
+                    :src="imgSrc">
+                    <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                      <i class="el-icon-picture-outline f30"></i>
+                      <span class="mt10" >{{imgSrc?'加载失败':'拍摄照片'}}</span>
+                      <!-- <span class="mt10" v-show="!imgSrc">拍摄照片</span> -->
+                    </div>
+                </el-image>
           </div>
         </div>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" class="dialog-footer" v-if="!isDetail">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="AddVisitor">确 定</el-button>
       </span>
@@ -106,6 +123,9 @@ export default {
     },
     isEdit: {
       type: Boolean,
+    },
+    isDetail:{
+      type:Boolean
     },
     editDetail: {
       type: Object,
@@ -136,12 +156,25 @@ export default {
   methods: {
     handleClose() {
       this.$emit("close", { isShow: false, isSuccess: false });
+      this.empty()
     },
      defaultBackImg(event){
           if(event.type == "error") {
           event.target.src= require("@/assets/default_pic.png")
         }
       },
+    empty(){
+      this.visitorInfo={
+        idNumber: null,
+        image: null,
+        intervieweeName: null,
+        leaveTime: null,
+        mobile: null,
+        name: null,
+        visitTime: null,
+      }
+      this.imgSrc=null
+    },
     AddVisitor() {
       let that = this;
       let data = that.visitorInfo;
@@ -171,6 +204,7 @@ export default {
       fd.append('visitTime',data.visitTime)
       saveOrUpdate(fd).then((res) => {
          this.$emit("close", { isShow: false, isSuccess: true });
+         this.empty()
       });
     },
     dataURLtoFile(dataurl, filename) {
@@ -274,25 +308,46 @@ export default {
     isShow(newVal) {
       if (newVal) {
         let that = this;
-        that.$nextTick(() => {
-          that.getCompetence();
-        });
+        if(!this.isDetail){
+            that.$nextTick(() => {
+              that.getCompetence();
+            });
+        } 
       } else {
-        this.stopNavigator();
+        // if(this.isDetail){
+        //   this.stopNavigator();
+        // }
       }
     },
+    editDetail(newVal){
+      if(newVal){
+        this.visitorInfo={
+          idNumber: newVal.idNumber,
+          intervieweeName:  newVal.intervieweeName,
+          leaveTime:  newVal.leaveTime,
+          mobile:  newVal.mobile,
+          name:  newVal.name,
+          visitTime:  newVal.visitTime,
+          id:newVal.id
+        }
+        this.imgSrc= newVal.image
+      }
+    }
   },
 };
 </script>
 <style scoped>
 #videoCamera {
-  background: #c1e9fc;
+  background: #edeeee;
 }
-.tx_img {
+/* .tx_img {
   width: 350px;
   height: 250px;
   background: #c1e9fc;
   border: none;
+} */
+.img_bg_camera{
+  background: #edeeee;
 }
 .take-photo {
   font-size: 60px;

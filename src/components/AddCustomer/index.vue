@@ -17,6 +17,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="customerInfo.name"
               />
             </td>
@@ -25,6 +26,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="customerInfo.idNumber"
               />
             </td>
@@ -33,6 +35,7 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="customerInfo.mobile"
               />
             </td>
@@ -43,20 +46,31 @@
               <input
                 type="text"
                 class="input-form"
+                :disabled="isDetail"
                 v-model="customerInfo.customerEnterpriseName"
               />
             </td>
           </tr>
         </table>
         <div class="camera_outer mb40 ml50 flex-start flex-end">
-          <div class="upload-img-box mr20 relative" v-show="isEdit">
-              <img class="upload-img"  :src="customerInfo.photoUrl" alt="" @error="defaultBackImg">
+          <div class="upload-img-box mr20 " v-show="isEdit || isDetail ">
+              <el-image
+                style="width: 148px; height: 148px"
+                  :src="customerInfo.photoUrl"
+                  fit="cover">
+                  <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                      <i class="el-icon-picture-outline f30"></i>
+                      <span class="mt10">加载失败</span>
+                    </div>
+                </el-image>
           </div>
           <el-upload
+          v-if="!isDetail"
             action="http://192.168.1.103:9092/file/upload/customer"
             list-type="picture-card"
             accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
             :headers="token"
+            ref="uploadImg"
             :on-success="uploadCustomer">
             <span>上传资料</span>
           </el-upload>
@@ -83,24 +97,24 @@
             <th>车牌号</th>
             <td class="relative">
               <input type="text" disabled class="input-form" v-model="item.carNumber" />
-              <LicenseKeyboard v-model="item.carNumber" title="软键盘" />
+              <LicenseKeyboard v-if="!isDetail" v-model="item.carNumber" title="软键盘" />
             </td>
             <th>车辆类型</th>
             <td>
               <!-- <input type="text" class="input-form" v-model="item.carType"> -->
-              <el-select clearable v-model="item.carType" placeholder="请选择">
+              <el-select clearable v-model="item.carType" :disabled="isDetail" placeholder="请选择">
                 <DictionarySelect :list="carTypeList" />
               </el-select>
             </td>
-            <th v-if="customerInfo.customerCarInfos.length >1">操作</th>
-            <td v-if="customerInfo.customerCarInfos.length >1">
-              <el-button type="danger" size="small" @click="deleteCar(index)">删除</el-button>
+            <th v-if="customerInfo.customerCarInfos.length >1 && !isDetail">操作</th>
+            <td v-if="customerInfo.customerCarInfos.length >1 && !isDetail">
+              <el-button type="danger" size="small"  @click="deleteCar(index)">删除</el-button>
             </td>
           </tr>
         </table>
         </el-scrollbar>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" class="dialog-footer" v-if="!isDetail">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="addCustomer">确 定</el-button>
       </span>
@@ -124,6 +138,9 @@ export default {
     },
     isEdit: {
       type: Boolean,
+    },
+    isDetail:{
+      type:Boolean
     },
     editDetail: {
       type: Object,
@@ -173,6 +190,10 @@ export default {
       },
     handleClose(done) {
       this.empty()
+      if(!this.isDetail){
+      this.$refs.uploadImg.clearFiles()
+
+      }
       this.$emit("close", { isShow: false, isSuccess: false });
     },
     addCar(){
@@ -236,8 +257,9 @@ export default {
               type: "success",
             });
           }
-          that.empty()
+          
           that.$emit("close", { isShow: false, isSuccess: true });
+          that.empty()
         })
         .catch((error) => {
           that.loading = false;

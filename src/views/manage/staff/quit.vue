@@ -143,7 +143,7 @@ export default {
       this.pageData.pageIndex = 1
       if(val){
         this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
-        this.pageData.quitTimeEndTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
+        this.pageData.quitTimeEndTime = moment(val[1]).format('YYYY-MM-DD hh:mm:ss')
       }else{
         this.pageData.quitTimeStartTime = null
         this.pageData.quitTimeEndTime = null

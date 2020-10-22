@@ -150,7 +150,7 @@ export default {
       this.isClearKey=true
       if(val){
         this.pageData.entryTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
-        this.pageData.entryTimeEndTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
+        this.pageData.entryTimeEndTime = moment(val[1]).format('YYYY-MM-DD hh:mm:ss')
       }else{
         this.pageData.entryTimeStartTime = null
         this.pageData.entryTimeEndTime = null

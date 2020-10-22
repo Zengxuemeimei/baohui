@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="menu-list" v-for="item in list" :key="item.id">
-      <el-option :value="item.code" :label="item.name"> </el-option>
+      <el-option :value="item.name" :label="item.name"> </el-option>
       <template v-if="item.children">
           <div class="ml20">
             <DictionarySelect :list="item.children"/>

@@ -44,45 +44,56 @@
             label="头像"
             width="120">
             <template slot-scope="scope">
-                <div class="headPortrait-box">
-                    <img :src="scope.row.image"  @error="defaultBackImg">
+                <div class="headPortrait-box flex-center">
+                    <!-- <img :src="scope.row.image"  @error="defaultBackImg"> -->
+                    <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.photoUrl">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
                 </div>
             </template>
           </el-table-column>
           <el-table-column
             prop="name"
-            label="姓名"
-            width="270">
+            label="姓名">
           </el-table-column>
           <el-table-column
             prop="mobile"
-            label="电话号码"
-            width="270">
+            label="电话号码">
           </el-table-column>
           <el-table-column
             prop="intervieweeName"
-            label="访问对象"
-            width="270">
+            label="访问对象">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="访问时间"
-            width="270">
+            prop="visitTime"
+            label="访问时间">
           </el-table-column>
           <el-table-column
             prop="leaveTime"
-            label="离开时间"
-          >
+            label="离开时间">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+              <div class="flex-start">
+                  <el-button type="success" @click="detailItem(scope.row)" size="mini">详情</el-button>
+              </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
       <Loading :loading="loading" />
     </main>
-    <AddVisitor :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
+    <AddVisitor :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -122,6 +133,7 @@ export default {
       loading:false,
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       total:0,
       carTypeList:[]
@@ -153,6 +165,15 @@ export default {
       console.log('addShow',value)
       this.isAdd = value
     },
+    detailItem(item){
+      this.isAdd = true
+      this.isDetail = true
+      this.editDetail = item
+    },
+    changeCarType(){
+      this.pageData.pageIndex = 1
+      this.getList()
+    },
     closeAdd(item){
         let that = this
         if(item.isSuccess){
@@ -160,6 +181,8 @@ export default {
         }
         that.isAdd = item.isShow
         that.isEdit = item.isShow 
+        that.isDetail = item.isShow 
+        this.editDetail = {}
     },
     getList(){
       let data = this.pageData

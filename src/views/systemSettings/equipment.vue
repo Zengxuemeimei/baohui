@@ -57,7 +57,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddEquipment :isShow="isAdd" :isEdit="isEdit" @close="closeAdd"/>
+    <AddEquipment :isShow="isAdd" :isEdit="isEdit" @close="closeAdd" :editDetail="editDetail" :equipmentList="equipmentList" :enterpriseInfolist="enterpriseInfolist"/>
   </div>
 </template>
 
@@ -66,7 +66,8 @@ import AddButton from '@/components/AddButton/index'
 import {getEviceInfotList,deleteDeviceInfo} from '@/api/equipment'
 import AddEquipment from '@/components/AddEquipment/index'
 import Paging from '@/components/Paging/index'
-
+import {getEnterpriseInfoList} from '@/api/enterprise'
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'Equipment',
@@ -76,20 +77,24 @@ export default {
       isAdd:false,
       isEdit:false,
       list:[],
+      editDetail:{},
       total:0,
-       pageData:{
+      pageData:{
         keyword:null,
         pageIndex:1,
         pageSize:10,
         enterpriseId:null
       },
-
+      enterpriseInfolist:[],
+      equipmentList:[]
     }
   },
   created() {
   },
   mounted() {
     this.getList()
+    this.getEnterpriseInfoList()
+    this.getEquipmentList()
   },
   methods: {
     getPage(val){
@@ -107,11 +112,32 @@ export default {
       }
       this.isAdd = item.isShow
     },
-    editMenu(){
-
+    editMenu(item){
+      this.isAdd = true
+      this.isEdit = true
+      this.editDetail = item
     },
-    deleteList(){
-
+    deleteList(id){
+      let that = this
+      that.$confirm('此操作将永久删除该设备, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteDeviceInfo({id:id}).then(res=>{
+             that.getList()
+               that.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+          })
+        }).catch(() => {
+          that.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      
     },
     getList(){
       this.loading = true
@@ -122,7 +148,20 @@ export default {
       }).catch(error=>{
           this.loading = false
       })
-    }
+    },
+    getEquipmentList(){
+      let data = {}
+      data.type = "设备类型"
+      getDictionaryList(data).then(res=>{
+            this.equipmentList = res.data
+        })
+    },
+    getEnterpriseInfoList(){
+        getEnterpriseInfoList(this.pageData).then(res=>{
+            this.enterpriseInfolist = res.data.dataList
+
+        })
+    },
   }
 }
 </script>

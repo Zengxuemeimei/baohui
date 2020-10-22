@@ -9,10 +9,28 @@
         <div class="">
             <el-form :model="deviceInfo" :rules="rules" ref="ruleForm" label-width="100px">
                 <el-form-item label="企业" prop="enterpriseId">
-                    <el-input v-model="deviceInfo.enterpriseId" placeholder="请选择企业"></el-input>
+                    <!-- <el-input v-model="deviceInfo.enterpriseId" placeholder="请选择企业"></el-input> -->
+                    <el-select v-model="deviceInfo.enterpriseId" placeholder="请选择">
+                        <el-option
+                        v-for="item in enterpriseInfolist"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                  <el-form-item label="设备类型" prop="deviceType">
-                    <el-input v-model="deviceInfo.deviceType" placeholder="请选择类型"></el-input>
+                    <!-- <el-input v-model="deviceInfo.deviceType" placeholder="请选择类型"></el-input> -->
+                    
+                     <el-select v-model="deviceInfo.deviceType" placeholder="请选择">
+                        <!-- <el-option
+                        v-for="item in equipmentList"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.name">
+                        </el-option> -->
+                        <DictionarySelect :list="equipmentList"/>
+                    </el-select>
                 </el-form-item>
                  <el-form-item label="设备序列号" prop="serialNumber">
                     <el-input v-model="deviceInfo.serialNumber" placeholder="请输入序列号"></el-input>
@@ -42,15 +60,25 @@
 
 <script>
 import {saveOrUpdate} from '@/api/equipment'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
 export default {
   name: 'AddEquipment',
-  components: {},
+  components: {DictionarySelect},
   props:{
       isShow:{
           type:Boolean
       },
       isEdit:{
           type:Boolean
+      },
+      enterpriseInfolist:{
+          type:Array
+      },
+      equipmentList:{
+          type:Array
+      },
+      editDetail:{
+          type:Object
       }
   },
   data() {
@@ -60,7 +88,7 @@ export default {
             activeStatus: '启用',
             deviceLocation: null,
             deviceType: null,
-            enterpriseId: 0,
+            enterpriseId:null,
             ipAddress: null,
             name: null,
             serialNumber: null
@@ -102,11 +130,12 @@ export default {
             activeStatus: '启用',
             deviceLocation: null,
             deviceType: null,
-            enterpriseId: 0,
+            enterpriseId:null,
             ipAddress: null,
             name: null,
             serialNumber: null
         }
+        this.$refs.ruleForm.resetFields();
       },
       addEquipment(formName){
           let that = this
@@ -130,6 +159,18 @@ export default {
           }else{
               this.title = '新增设备'
           }
+      },
+      editDetail(newVal){
+           this.deviceInfo={
+            activeStatus: newVal.activeStatus,
+            deviceLocation: newVal.deviceLocation,
+            deviceType: newVal.deviceType,
+            enterpriseId:newVal.enterpriseId,
+            ipAddress: newVal.ipAddress,
+            name: newVal.name,
+            serialNumber: newVal.serialNumber,
+            id:newVal.id
+        }
       }
   }
 }

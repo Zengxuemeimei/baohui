@@ -29,18 +29,26 @@
                         </td>
                         <th>企业类型</th>
                         <td>
-                          <input
+                          <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="enterpriseInfo.enterpriseType"
-                            />
+                            /> -->
+                            <el-select v-model="enterpriseInfo.enterpriseType" placeholder="请选择">
+                                <DictionarySelect :list="enterpriseTypeList"/>
+                            </el-select>
                         </td>
                     </tr>
                     <tr>
                         <th>企业区域</th>
-                        <td colspan="2"></td>
+                        <td colspan="5">
+                            <v-distpicker @selected="selectProvince"></v-distpicker>
+                        </td>
+                        
+                    </tr>
+                    <tr>
                         <th>详细地址</th>
-                        <td colspan="2">
+                        <td colspan="5">
                             <input
                                 type="text"
                                 class="input-form"
@@ -95,17 +103,27 @@
 <script>
 import VueAMap from 'vue-amap';
 import {saveOrUpdate} from '@/api/enterprise'
+import DictionarySelect from '@/components/Recursion/dictionarySelect';
+import VDistpicker  from 'v-distpicker'
+import Tools from '@/utils/tools';
+
 let amapManager = new VueAMap.AMapManager();
 
 export default {
   name: 'AddEnterprise',
-  components: {},
+  components: {DictionarySelect,VDistpicker },
   props:{
       isShow:{
           type:Boolean
       },
       isEdit:{
           type:Boolean
+      },
+      editDetail:{
+          type:Object
+      },
+      enterpriseTypeList:{
+          type:Array
       }
   },
   data() {
@@ -125,15 +143,15 @@ export default {
         },
         title:'新增企业',
         enterpriseInfo:{
-            cityCode:'成都市',
-            countyCode:'青白江',
+            cityCode:null,
+            countyCode:null,
             detailedAddress: null,
             enterpriseType: null,
             latitude: null,
             longitude: null,
             mobilNumber: null,
             name: null,
-            provinceCode: '四川省',
+            provinceCode: null,
             status: '启用',
         }
     }
@@ -146,25 +164,58 @@ export default {
       handleClose(){
           this.$emit('close',{isShow:false,isSuccess:false})
       },
+      selectProvince(val){
+          this.enterpriseInfo.provinceCode = val.province.value
+          this.enterpriseInfo.cityCode = val.city.value
+          this.enterpriseInfo.countyCode = val.area.value
+          console.log('选择',val)
+      },
       empty(){
           this.enterpriseInfo={
-            cityCode:'成都市',
-            countyCode:'青白江',
+            cityCode:null,
+            countyCode:null,
             detailedAddress: null,
             enterpriseType: null,
             latitude: null,
             longitude: null,
             mobilNumber: null,
             name: null,
-            provinceCode: '四川省',
+            provinceCode: null,
             status: '启用',
         }
       },
       addEnterprise(){
             console.log('企业',this.enterpriseInfo)
+            if(!Tools.isPhone(this.enterpriseInfo.mobilNumber)){
+                this.$message({
+                    message: '电话格式不正确',
+                    type: 'warning'
+                });
+                return
+            }
             saveOrUpdate(this.enterpriseInfo).then(res=>{
                  this.$emit('close',{isShow:false,isSuccess:true})
+                 this.empty()
             })
+      }
+  },
+  watch:{
+      editDetail(newVal){
+          if(newVal){
+              this.enterpriseInfo={
+                cityCode:newVal.cityCode,
+                countyCode:newVal.countyCode,
+                detailedAddress: newVal.detailedAddress,
+                enterpriseType: newVal.enterpriseType,
+                latitude: newVal.latitude,
+                longitude: newVal.longitude,
+                mobilNumber: newVal.mobilNumber,
+                name: newVal.name,
+                provinceCode: newVal.provinceCode,
+                status: newVal.status,
+                id:newVal.id
+            }
+          }
       }
   }
 }

@@ -42,7 +42,7 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                     <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
-                    <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button>
+                    <!-- <el-button type="danger" @click="deleteList(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
           </el-table-column>
@@ -53,7 +53,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddEnterprise :isShow="isAdd" :isEdit="isEdit" @close="closeAdd"/>
+    <AddEnterprise :isShow="isAdd" :enterpriseTypeList="enterpriseTypeList" :isEdit="isEdit" @close="closeAdd" :editDetail="editDetail"/>
   </div>
 </template>
 
@@ -62,6 +62,7 @@ import AddButton from '@/components/AddButton/index'
 import {getEnterpriseInfoList} from '@/api/enterprise'
 import Paging from '@/components/Paging/index'
 import AddEnterprise from '@/components/AddEnterprise/index'
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'Enterprise',
@@ -75,14 +76,17 @@ export default {
             pageIndex:1,
             pageSize:10,
         },
+        editDetail:{},
         list:[],
-        total:0
+        total:0,
+        enterpriseTypeList:[]
     }
   },
   created() {
   },
   mounted() {
       this.getList()
+      this.getEnterpriseTypeList()
   },
   methods: {
     getPage(val){
@@ -100,8 +104,10 @@ export default {
       }
       this.isAdd = item.isShow
     },
-    editMenu(){
-
+    editMenu(item){
+      this.isAdd = true
+      this.isEdit = true
+      this.editDetail = item
     },
     deleteList(){
 
@@ -115,7 +121,14 @@ export default {
         }).catch(error=>{
             this.loading = false
         })
-    }
+    },
+    getEnterpriseTypeList(){
+      let data = {}
+      data.type = "企业类型"
+      getDictionaryList(data).then(res=>{
+            this.enterpriseTypeList = res.data
+        })
+    },
   }
 }
 </script>
