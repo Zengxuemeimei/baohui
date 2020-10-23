@@ -50,6 +50,11 @@
                     <DictionaryList dictionaryType="设备类型" :list="dictionaryList"  @close="closeAdd"/>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="重复计划">
+                <div class="all-table">
+                    <DictionaryList dictionaryType="重复计划" :list="dictionaryList"  @close="closeAdd"/>
+                </div>
+            </el-tab-pane>
         </el-tabs>
     </main>
     

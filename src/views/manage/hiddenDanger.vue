@@ -11,6 +11,9 @@
         <div class="flex-start">
           <div>
             <label class="filter-label">处理状态：</label>
+            <el-select clearable v-model="hiddenDangerStatus"  placeholder="请选择">
+                <DictionarySelect :list="hiddenDangerStatusList"/>
+              </el-select>
             <!-- <el-select v-model="value" placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -52,7 +55,7 @@
             width="160">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="reportStaffName"
             label="上报人"
             width="146">
           </el-table-column>
@@ -72,7 +75,7 @@
             width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="manageStaffName"
             label="处理人"
             width="146">
           </el-table-column>
@@ -96,7 +99,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
+    <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :hiddenDangerLevelList="hiddenDangerLevelList" :hiddenDangerStatusList="hiddenDangerStatusList" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -108,6 +111,8 @@ import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddHiddenDanger from '@/components/AddHiddenDanger/index'
 import {getHiddenDangerList,getHiddenDangerDetail} from '@/api/hiddenDanger'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'HiddenDanger',
@@ -117,7 +122,8 @@ export default {
     EditButton,
     DelButton,
     Paging,
-    AddHiddenDanger
+    AddHiddenDanger,
+    DictionarySelect
   },
   data() {
     return {
@@ -131,12 +137,17 @@ export default {
       editDetail:{},
       list:[],
       total:0,
+      hiddenDangerStatusList:[],
+      hiddenDangerStatus:null,
+      hiddenDangerLevelList:[]
       }
   },
   created() {
   },
   mounted() {
     this.getList()
+    this.getHiddenDangerStatusList()
+    this.getHiddenDangerLevelList()
   },
   methods: {
     getPage(val){
@@ -180,6 +191,20 @@ export default {
       }).catch(error=>{
           that.loading = false
       })
+    },
+    getHiddenDangerStatusList(){
+      let data = {}
+      data.type = "隐患处理状态"
+      getDictionaryList(data).then(res=>{
+            this.hiddenDangerStatusList = res.data
+        })
+    },
+    getHiddenDangerLevelList(){
+      let data = {}
+      data.type = "隐患级别"
+      getDictionaryList(data).then(res=>{
+            this.hiddenDangerLevelList = res.data
+        })
     },
     tableRowClassName({row, rowIndex}){
         //修改table行的颜色

@@ -4,9 +4,9 @@
       <p class="title">巡更管理-巡更方案</p>
     </header>
     <main class="content-main">
-      <div class="filter-box flex-between">
+      <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
-        <div class="btn-box flex-start">
+        <div class="btn-box flex-start ml20">
             <add-button @addShow="addShow"/>
             <!-- <edit-button />
             <del-button /> -->
@@ -53,14 +53,23 @@
             label="所属部门"
           >
           </el-table-column>
+           <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
+                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                </div>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddPatrolScheme :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
+    <AddPatrolScheme :isShow="isAdd" :isEdit="isEdit" :repetitionTypeList="repetitionTypeList" :caseTypeList="caseTypeList" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -71,8 +80,9 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddPatrolScheme from '@/components/AddPatrolScheme/index'
-import {getKeepWatchPlanList} from '@/api/keepWatch/index'
+import {getKeepWatchPlanList,getPlanDetailList} from '@/api/keepWatch/index'
 import {getDepartmentList} from '@/api/department'
+import {getDictionaryList} from '@/api/dictionary'
 
 export default {
   name: 'PatrolScheme',
@@ -100,6 +110,8 @@ export default {
       total:0,
       loading:false,
       listDepartment:[],
+      caseTypeList:[],
+      repetitionTypeList:[],
       value3:'',
       options: [{
           value: '选项1',
@@ -125,6 +137,8 @@ export default {
   mounted() {
     this.getDepartmentList()
     this.getList()
+    this.getCaseTypeList()
+    this.getRepetitionTypeTypeList()
   },
   methods: {
     getPage(val){
@@ -150,6 +164,13 @@ export default {
         that.isAdd = item.isShow
         that.isEdit = item.isShow 
     },
+    editItem(id){
+      getPlanDetailList({id:id}).then(res=>{
+          this.isAdd = true
+          this.isEdit = true
+          this.editDetail = res.data
+      })
+    },
     getList(){
       let that = this
       let data = that.pageData
@@ -166,6 +187,20 @@ export default {
         let that = this
         getDepartmentList().then(res=>{
           that.listDepartment=res.data
+        })
+    },
+    getCaseTypeList(){
+      let data = {}
+      data.type = "方案类型"
+      getDictionaryList(data).then(res=>{
+            this.caseTypeList = res.data
+        })
+    },
+    getRepetitionTypeTypeList(){
+      let data = {}
+      data.type = "重复计划"
+      getDictionaryList(data).then(res=>{
+            this.repetitionTypeList = res.data
         })
     },
       tableRowClassName({row, rowIndex}){

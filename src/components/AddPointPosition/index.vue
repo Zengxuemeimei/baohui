@@ -29,11 +29,14 @@
                         </td>
                         <th>点位类型</th>
                         <td style="width:300px">
-                          <input
+                          <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="keepWatchPlaceInfo.type"
-                            />
+                            /> -->
+                            <el-select clearable v-model="keepWatchPlaceInfo.type" placeholder="请选择">
+                            <DictionarySelect :list="positionTypeList"/>
+                          </el-select>
                         </td>
                     </tr>
                     <tr>
@@ -89,12 +92,13 @@
 import VueAMap from 'vue-amap';
 import {saveOrUpdate} from '@/api/keepWatch/index'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
 // import AMapUI from 'vue-amap';
 
 let amapManager = new VueAMap.AMapManager();
 export default {
   name: 'AddPointPosition',
-  components: {DepartmentSelect},
+  components: {DepartmentSelect,DictionarySelect},
   props:{
     isShow:{
       type:Boolean
@@ -107,6 +111,9 @@ export default {
     },
     editDetail:{
       type:Object
+    },
+    positionTypeList:{
+      type:Array
     }
   },
   data() {

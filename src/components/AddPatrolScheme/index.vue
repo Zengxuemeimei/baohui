@@ -19,21 +19,29 @@
                                 v-model="keepWatchPlanInfo.name"
                             />
                         </td>
-                        <th>方案状态</th>
-                        <td>
-                            <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlanInfo.status"
-                            />
-                        </td>
+                        
                         <th>方案类型</th>
-                        <td style="width:300px">
-                            <input
+                        <td >
+                            <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="keepWatchPlanInfo.type"
-                            />
+                            /> -->
+                            <el-select clearable v-model="keepWatchPlanInfo.type" placeholder="请选择">
+                                <DictionarySelect :list="caseTypeList"/>
+                            </el-select>
+                        </td>
+                        <th>方案状态</th>
+                        <td style="width:300px">
+                            <!-- <input
+                                type="text"
+                                class="input-form"
+                                v-model="keepWatchPlanInfo.status"
+                            /> -->
+                            <el-radio-group v-model="keepWatchPlanInfo.status">
+                                <el-radio label="启用">启用</el-radio>
+                                <el-radio label="停用">停用</el-radio>
+                            </el-radio-group>
                         </td>
                     </tr>
                     <tr>
@@ -49,12 +57,26 @@
                             </el-select>
                         </td>
                         <th>重复计划</th>
-                        <td colspan="2">
-                            <input
+                        <td colspan="2" >
+                            <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="keepWatchPlanInfo.repetitionType"
-                            />
+                            /> -->
+                            <div class="flex-start">
+                                <div style="width:50%">
+                                <el-radio-group v-model="keepWatchPlanInfo.repetition">
+                                    <el-radio :label="true">是</el-radio>
+                                    <el-radio :label="false">否</el-radio>
+                                </el-radio-group>
+                            </div>
+                           <div style="width:50%;border-left:1px solid #666;">
+                               <el-select clearable :disabled="!keepWatchPlanInfo.repetition" v-model="keepWatchPlanInfo.repetitionType" placeholder="请选择">
+                                    <DictionarySelect :list="repetitionTypeList"/>
+                                </el-select>
+                           </div>
+                            </div>
+                            
                         </td>
                     </tr>
                 </table>
@@ -93,6 +115,7 @@
                                 <el-time-picker
                                     is-range
                                     v-model="timePicker[index].time"
+                                    value-format="HH:mm:ss'"
                                     range-separator="至"
                                     start-placeholder="开始时间"
                                     end-placeholder="结束时间"
@@ -130,11 +153,12 @@
 import {saveOrUpdatePlan,getKeepWatchPlaceList} from '@/api/keepWatch/index'
 import {getStaffList} from '@/api/staff/index'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import moment from 'moment'
 
 export default {
   name: 'AddPatrolScheme',
-  components: {DepartmentSelect},
+  components: {DepartmentSelect,DictionarySelect},
   props:{
       isShow:{
           type:Boolean
@@ -148,6 +172,12 @@ export default {
       editDetail:{
           type:Object
       },
+      caseTypeList:{
+          type:Array
+      },
+      repetitionTypeList:{
+          type:Array
+      }
   },
   data() {
     return {
@@ -167,10 +197,10 @@ export default {
                 }
             ],
             name: null,
-            repetition: true,
+            repetition: false,
             repetitionType: null,
-            status: null,
-            type: '日常巡更'   
+            status: '启用',
+            type: null   
         },
         staffList:[],
         placeList:[]
@@ -220,6 +250,7 @@ export default {
     },
       handleClose() {
         this.$emit('close',{isShow:false,isSuccess:false})
+        this.empty()
       },
       empty(){
         this.timePicker=[
@@ -238,17 +269,19 @@ export default {
                 }
             ],
             name: null,
-            repetition: true,
+            repetition: false,
             repetitionType: null,
-            status: null,
+            status: '启用',
             type: null   
         }
       },
       addPatrolScheme(){
           let list = []
           this.timePicker.forEach((el,index)=>{
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = moment(el.time[0]).format('HH:mm:ss')
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = moment(el.time[1]).format('HH:mm:ss')
+            // this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = moment(el.time[0]).format('HH:mm:ss')
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = el.time[0].slice(0,el.time[0].length-1)
+            // this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = moment(el.time[1]).format('HH:mm:ss')
+            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = el.time[1].slice(0,el.time[1].length-1)
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs.forEach((item,num)=>{
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs[num] = {
                         staffId:item
@@ -260,6 +293,32 @@ export default {
               this.empty()
               this.$emit('close',{isShow:false,isSuccess:true})
           })
+      }
+  },
+  watch:{
+      editDetail(newVal){
+        //   delete newVal.updateTime
+        //   this.keepWatchPlanInfo = newVal
+        if(newVal){
+            console.log('newVal',newVal)
+             this.keepWatchPlanInfo={
+                departmentId: newVal.departmentId,
+                keepWatchPlanPlaces: newVal.keepWatchPlanPlaces,
+                    name: newVal.name,
+                    repetition: newVal.repetition,
+                    repetitionType: newVal.repetitionType,
+                    status: newVal.status,
+                    type: newVal. type  
+                }
+                let list = []
+             newVal.keepWatchPlanPlaces.forEach(el=>{
+                 list.push({
+                     time:[el.startTime+"'",el.endTime+"'"]
+                 })
+             })  
+             this.timePicker = list
+             console.log(this.timePicker) 
+        }
       }
   }
 }

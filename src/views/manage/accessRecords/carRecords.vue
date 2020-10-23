@@ -60,17 +60,17 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="carNumber"
             label="车牌号"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="personName"
             label="车主姓名"
             width="146">
           </el-table-column>
            <el-table-column
-            prop="department"
+            prop="idNumber"
             label="车主身份证号"
             width="270">
           </el-table-column>
@@ -78,11 +78,20 @@
             prop="department"
             label="图片"
             width="146">
-            <div class="headPortrait-box flex-center">
-            </div>
+            <template slot-scope="scope">
+                <div class="headPortrait-box flex-center">
+                    <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.accessImage">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </div>
+             </template>
           </el-table-column>
           <el-table-column
-            prop="address"
             label="视频"
             width="146">
             <div class="headPortrait-box flex-center">
@@ -90,24 +99,24 @@
             </div>
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="liveAddress"
             label="出入地点"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="accessTime"
             label="出入时间"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="direction"
             label="出入方向"
           >
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging  :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
@@ -222,8 +231,7 @@ export default {
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #eeeded;
   margin: 0 auto;
-  color: #ffffff;
 }
 </style>

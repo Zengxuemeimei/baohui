@@ -44,7 +44,7 @@
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
-                  <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
+                  <el-button type="primary" @click="editItem(scope.row)" size="mini">编辑</el-button>
                   <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
@@ -64,9 +64,9 @@
         :close-on-click-modal="false"
         :before-close="handleClose">
         <el-form :model="staffRecordInfo" :rules="rules"  ref="ruleForm" label-width="100px">
-            <el-form-item label="姓名" prop="staffId">
+            <el-form-item label="姓名" prop="staffName">
                 <el-autocomplete
-                    v-model="staffRecordInfo.staffId"
+                    v-model="staffName"
                     :fetch-suggestions="querySearchAsync"
                     @select="changeStaff"
                     placeholder="请输入内容">
@@ -124,10 +124,12 @@ export default {
       total:0,
       loading:false,
       pageData:{
+        keyword:null,
         pageIndex:1,
         recordType:this.recordType
       },
       isAdd:false,
+      isEdit:false,
       staffRecordInfo:{
           staffId:null,
           startTime:null,
@@ -149,7 +151,8 @@ export default {
           {required: true, message: '请选择类型', trigger: 'change' }
         ]
       },
-      staffInfo:null
+      staffInfo:null,
+      staffName:null
     }
   },
   created() {
@@ -182,30 +185,56 @@ export default {
           endTime:null,
           recordType:this.recordType
       },
+      this.$refs.ruleForm.resetFields();
       this.staffInfo=null
+    },
+    editItem(item){
+      this.isAdd =true
+      this.isEdit = true
+      this.staffRecordInfo={
+          staffId:item.staffId,
+          startTime:item.startTime,
+          endTime:item.endTime,
+          recordType:this.recordType,
+          id:item.id,
+          name:item.name,
+          departmentId:item.departmentId
+      }
+      this.staffName = item.name
+
     },
     addEvent(formName){
       let that = this
         that.$refs[formName].validate((valid) => {
           console.log(valid)
           if (valid) {
-            let data = that.staffRecordInfo
-            data.staffId = that.staffInfo.id
-            data.name = that.staffInfo.name
-            data.departmentId = that.staffInfo.departmentId
-            data.idNumber = null
+            let data = {}
+            if(that.isEdit){
+              console.log('1')
+              data = that.staffRecordInfo
+            }else{
+              console.log('2',that.staffInfo)
+              data = that.staffRecordInfo
+              data.staffId = that.staffInfo.id
+              data.name = that.staffInfo.name
+              data.departmentId = that.staffInfo.departmentId
+          
+            }
+              data.idNumber = null
             staffSaveOrUpdate(data).then(res=>{
                 that.isAdd = false
-                that.empty()
+                delete this.pageData.keyword
                 this.getList()
-            })
+                // console.log('page',this.pageData)
+                that.empty()
 
+            })
           }
         })
     },
-    manageSelect(val){
-        // this.staffRecordInfo.staffId = val.id
-    },
+    // manageSelect(val){
+    //     this.staffRecordInfo.staffId = val.id
+    // },
     getList(){
       this.loading= true
       getStaffRecordInfoList(this.pageData).then(res=>{
@@ -217,7 +246,10 @@ export default {
     },
     getStaffList(){
         let that = this
-        let data = this.pageData
+        let data = {
+          keyword:this.pageData.keyword,
+          pageIndex:this.pageData.pageIndex
+        } 
         getStaffList(data).then(res=>{
             let {dataList} =res.data
             dataList.forEach((el,index)=>{

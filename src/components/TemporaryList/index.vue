@@ -13,11 +13,21 @@
         </div>
       </div>
       <ul class="person-menu mt20 mb20" v-if="total > 0">
-        <li v-for="item in list" :key="item" class="">
-          <div class="img-box">
-            <img src="" alt="" />
+        <li v-for="item in list" :key="item.id" class="">
+          <div class="img-box relative">
+            <!-- <img :src="item.accessImage" alt="" /> -->
+            <el-image 
+              style="width:100%;height:100%"
+                fit="cover"
+                :src="item.accessImage">
+                <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                    <i class="el-icon-picture-outline f30"></i>
+                    <span class="mt10">加载失败</span>
+                </div>
+            </el-image>
+            <p class="car-num" v-if="item.carNumber">{{item.carNumber}}</p>
           </div>
-          <el-button type="primary">布控</el-button>
+          <el-button type="primary"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
         </li>
       </ul>
       <div v-if="total == 0" class="flex-center" style="width:100%">
@@ -36,7 +46,7 @@
 
 <script>
 import Paging from '@/components/Paging/index'
-import {getTemporaryInfoList} from '@/api/temporaryInfo/index';
+import {getTemporaryInfoList,setControl} from '@/api/temporaryInfo/index';
 
 export default {
   name: "TemporaryList",
@@ -53,7 +63,8 @@ export default {
       isClearKey:false,
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:16
       },
       total:0,
       loading:false,
@@ -81,6 +92,20 @@ export default {
           that.loading = false
       }).catch(error=>{
          that.loading = false
+      })
+    },
+    setControl(item){
+      let data = {
+        // control :null,
+        id:item.id
+      }
+      if(item.control){
+        data.control = false
+      }else{
+         data.control = true
+      }
+      setControl(data).ten(res=>{
+        this.getList()
       })
     }
   },
@@ -114,9 +139,19 @@ export default {
 .img-box{
     width: 120px;
     height: 120px;
-    background: #d2d2d2;
+    background: #e6e6e6;
     margin-bottom: 3px;
     border-radius: 5px;
+}
+.car-num{
+  background: rgba(0, 0, 0, .6);
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  line-height: 28px;
 }
 .el-button--primary{
     width: 120px;

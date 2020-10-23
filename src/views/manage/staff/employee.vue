@@ -66,7 +66,6 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
-                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
           </el-table-column>
@@ -80,7 +79,6 @@
       <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
       <Loading :loading="loading" />
     </main>
-    <!-- <add-person /> -->
   </div>
 </template>
 
@@ -168,9 +166,6 @@ export default {
         console.log('that.editDetail',that.editDetail)
       })
       
-    },
-    deleteItem(){
-
     },
     addShow(value){
       console.log('addShow',value)

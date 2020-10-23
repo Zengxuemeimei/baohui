@@ -30,11 +30,14 @@
                         </td>
                         <th>隐患级别</th>
                         <td style="width:300px">
-                            <input
+                            <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="hiddenDangerInfo.level"
-                            />
+                            /> -->
+                            <el-select clearable v-model="hiddenDangerInfo.level"  placeholder="请选择">
+                                <DictionarySelect :list="hiddenDangerLevelList"/>
+                            </el-select>
                         </td>
                     </tr>
                     <tr>
@@ -91,11 +94,14 @@
                         </td>
                         <th>处理状态</th>
                         <td style="width:300px">
-                            <input
+                             <el-select clearable v-model="hiddenDangerInfo.manageStatus"  placeholder="请选择">
+                                <DictionarySelect :list="hiddenDangerStatusList"/>
+                            </el-select>
+                            <!-- <input
                                 type="text"
                                 class="input-form"
                                 v-model="hiddenDangerInfo.manageStatus"
-                            />
+                            /> -->
                         </td>
                     </tr>
                     <tr>
@@ -133,11 +139,12 @@
 <script>
 import {getStaffList} from '@/api/staff/index'
 import {saveOrUpdate} from '@/api/hiddenDanger'
+import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import moment from 'moment'
 
 export default {
   name: 'AddHiddenDanger',
-  components: {},
+  components: {DictionarySelect},
   props:{
     isShow: {
       type: Boolean,
@@ -147,6 +154,12 @@ export default {
     },
     editDetail: {
       type: Object,
+    },
+    hiddenDangerLevelList:{
+        type:Array
+    },
+    hiddenDangerStatusList:{
+        type:Array
     }
   },
   data() {
@@ -187,12 +200,33 @@ export default {
   methods: {
     handleClose(done) {
         this.$emit("close", { isShow: false, isSuccess: false });
+        this.empty()
     },
     reportSelect(val){
         this.hiddenDangerInfo.reportStaffId = val.id
     },
     manageSelect(val){
         this.hiddenDangerInfo.manageStaffId = val.id
+    },
+    empty(){
+        this.hiddenDangerInfo={
+            eventDescribe: null,
+            hiddenDangerImageVideoInfos: [
+                {
+                image: null,
+                type: null,
+                video: null
+                }
+            ],
+            level: null,
+            manageDescribe: null,
+            manageStatus: null,
+            manageTime: null,
+            reportTime: null,
+            manageStaffId:null,
+            reportStaffId:null,
+            title: null
+        }
     },
     addHiddenDanger(){
         let data = this.hiddenDangerInfo
@@ -201,6 +235,7 @@ export default {
         console.log(data)
         saveOrUpdate(data).then(res=>{
             this.$emit("close", { isShow: false, isSuccess: true });
+            this.empty()
         })
     },
     getStaffList(){
@@ -237,5 +272,8 @@ export default {
 .person-content{
     height: 60vh;
     overflow: hidden;
+}
+.el-select{
+    width: 100%;
 }
 </style>

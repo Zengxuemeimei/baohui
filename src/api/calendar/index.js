@@ -26,7 +26,14 @@ export function getStaffAttendanceInfoList(params) {
       params
     })
 }
-
+//按月查看考勤
+export function getStaffMonthList(params) { 
+  return request({
+    url: '/staffAttendanceInfo/getAttendanceInfoListByStaff',
+    method: 'get',
+    params
+  })
+}
 export function workSaveOrUpdate(data) { 
     return request({
       url: '/staffWorkCalendarInfo/saveOrUpdate',

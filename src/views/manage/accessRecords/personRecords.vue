@@ -42,7 +42,7 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="person-total flex-center flex-column">
+        <div class="person-total flex-center flex-column" style="color:#fff;">
             <div class="flex-start">
                 <p class="f30">
                     <count-to
@@ -71,59 +71,74 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="personName"
             label="姓名"
             width="146">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="idNumber"
             label="身份证"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="department"
             label="图片"
             width="146">
-            <div class="headPortrait-box flex-center">
-            </div>
+             <template slot-scope="scope">
+                <div class="headPortrait-box flex-center">
+                    <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.accessImage">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </div>
+             </template>
+            
           </el-table-column>
           <el-table-column
-            prop="address"
             label="视频"
             width="146">
-            <div class="headPortrait-box flex-center">
+            <div class="headPortrait-box flex-center" style="backgroud:#000">
               <i class="el-icon-video-camera" />
             </div>
+            <!-- <template slot-scope="scope">
+                <div class="headPortrait-box flex-center">
+                    <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.accessImage">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </div>
+             </template> -->
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="liveAddress"
             label="出入地点"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="accessTime"
             label="出入时间"
             width="270">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="similar"
             label="相似度"
             width="146">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="健康码"
-            width="146">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="所属部门"
-          >
+            prop="healthCodeStatus"
+            label="健康码">
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
@@ -234,13 +249,13 @@ export default {
     position: absolute;
     right: 0;
     bottom: 0;
-    color: #ffffff;
+    /* color: #ffffff; */
 }
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #e7e6e6;
   margin: 0 auto;
-  color: #ffffff;
+  /* color: #ffffff; */
 }
 </style>

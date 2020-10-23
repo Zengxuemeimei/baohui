@@ -11,7 +11,7 @@
         <el-table
          border
          header-cell-class-name="all-table-th"
-          :data="tableData3"
+          :data="list"
           style="width: 100%">
           <el-table-column
             label="序号"
@@ -24,39 +24,35 @@
             width="280">
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="巡更时间"
-            width="146">
-          </el-table-column>
-          <el-table-column
-            prop="department"
+            prop="type"
             label="类型"
             width="146">
           </el-table-column>
           <el-table-column
-            prop="department"
             label="完成进度"
             width="146">
+            <template slot-scope="scope">
+              {{scope.row.checkedCount}}:{{scope.row.checkTotal}}
+            </template>
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="巡更人员"
+            prop="status"
+            label="巡更状态"
             width="146">
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="检查是否正常"
-            width="146">
-          </el-table-column>
-          <el-table-column
-            prop="department"
-            label="所属部门"
-          >
+           <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="success" @click="detailItem(scope.row)" size="mini">详情</el-button>
+                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
@@ -93,54 +89,6 @@ export default {
       isDetail:false,
       list:[],
       total:0,
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
       }
   },
   created() {
@@ -160,11 +108,19 @@ export default {
       this.isClearKey=false
       this.getList()
     },
+    detailItem(){
+
+    },
     getList(){
       let that = this
       let data = that.pageData
+      that.loading = true
       getKeepWatchRecordList(data).then(res=>{
-
+        that.list = res.data.dataList
+        that.total = res.data.total
+        that.loading = false
+      }).catch(error=>{
+        that.loading = false
       })
     },
       tableRowClassName({row, rowIndex}){

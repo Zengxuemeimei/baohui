@@ -7,7 +7,7 @@
       <div class="flex-start">
           <div>
             <label class="filter-label">部门：</label>
-            <el-select clearable v-model="departmentId" placeholder="请选择">
+            <el-select clearable v-model="departmentId" @change="changeDepart" placeholder="请选择">
               <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
@@ -16,6 +16,8 @@
             <el-date-picker
               v-model="month"
               type="month"
+              @change="changeMonth"
+              value-format="yyyy-MM"
               placeholder="选择月">
             </el-date-picker>
           </div>
@@ -23,18 +25,21 @@
       </div>
       <div class="mt20 flex-center" style="100%">
         <div class="calendar-box">
-            <div class="calendar-detail flex-center">
-              <p>上班时间：09：00</p>
-              <p class="ml20">下班时间：18：00</p>
+            <div class="calendar-detail flex-center" >
+              <div v-show="workStartTime || workEndTime" class="flex-start">
+                 <p>上班时间：{{workStartTime}}</p>
+                  <p class="ml20">下班时间：{{workEndTime}}</p>
+              </div>
+             
             </div>
-            <el-calendar v-model="value">
+            <el-calendar v-model="month">
               <template
               slot="dateCell"
                  slot-scope="{data}">
                 <!-- <p class="calendar-date" :class="data.isSelected ? 'is-selected' : ''">
                   {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : ''}}
                 </p> -->
-                <div class="flex-center flex-column" style="width:100%;height:100%" @dblclick="editWork(data.day)">
+                <div class="flex-center flex-column" style="width:100%;height:100%" @dblclick="editWork(data.day)" @click="detailDay(data.day)">
                     <p class="calendar-date">{{data.day.split('-').slice(2).join('-')}}</p>
                     <p :class="item.workType == '休假'?'is-vacation':''" v-for="item in workDayList" :key="item.id">{{item.date == data.day ? item.workType:''}}</p>
                     <!-- <p>{{workDayList[0].date}}</p> -->
@@ -117,7 +122,7 @@ export default {
   components: {DepartmentSelect,AddButton},
   data() {
     return {
-      value:null,
+      // calendarValue:'2020-09',
       listDepartment:[],
       month:null,
       loading:false,
@@ -146,7 +151,9 @@ export default {
           { required: true, message: '请选择上班日期', trigger: 'change' }
         ],
       },
-      workDayList:[]
+      workDayList:[],
+      workStartTime:null,
+      workEndTime:null
     }
   },
   created() {
@@ -158,23 +165,49 @@ export default {
     
   },
   methods: {
+    detailDay(date){
+      this.workDayList.forEach(el=>{
+          if(el.date == date){
+            this.workStartTime = el.workStartTime
+            this.workEndTime = el.wordEndTime
+          }
+      })
+    },
+    changeMonth(val){
+      if(!val){
+          let date = new Date()
+          this.month = moment(date).format('YYYY-MM')
+        }
+        // console.log('时间',val)
+        this.getList()
+    },
+    changeDepart(val){
+        if(!val){
+          this.departmentId = null
+        }
+        this.getList()
+    },
     editWork(date){
       let that = this
-      that.isEdit = true
+      
       that.isAdd = true
       that.title = '编辑'
       that.workDayList.forEach(el=>{
         if(el.date == date){
+           console.log('1',el.wordEndTime)
+           that.isEdit = true
               that.ruleForm = {
-              departmentId:el.departmentId,
-              wordEndTime:el.wordEndTime,
-              workStartTime:el.workStartTime,
-              workDay:[date],
-              workType:el.workType,
-              id:el.id
+                departmentId:el.departmentId,
+                wordEndTime:el.wordEndTime ,
+                workStartTime:el.workStartTime ,
+                workDay:[date],
+                workType:el.workType,
+                id:el.id
           }
-          return
-        }else{
+        }
+      })
+      if(!that.isEdit){
+          // console.log('2',el.wordEndTime)
           that.isEdit = false
           that.title = '新增'
           that.ruleForm = {
@@ -183,10 +216,9 @@ export default {
               workStartTime:null,
               workDay:[date],
               workType:'上班'
-          }
         }
-      })
-      console.log('编辑',date)
+      }
+      console.log('编辑',this.ruleForm)
     },
     addShow(value){
       console.log('addShow',value)
@@ -208,10 +240,12 @@ export default {
           workDay:null,
           workType:'上班'
       }
+      this.title = '新增'
       this.$refs.ruleForm.resetFields();
     },
     handleClose(){
         this.isAdd = false
+        this.isEdit = false
         this.empty()
     },
     addWorkDay(formName){
@@ -254,6 +288,7 @@ export default {
               that.loading = false
               that.empty()
               that.isAdd = false
+              this.month = moment(this.month).format('YYYY-MM')
               that.getList()
             }).catch(error=>{
               that.loading = false

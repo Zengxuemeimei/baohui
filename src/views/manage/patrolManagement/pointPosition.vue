@@ -70,12 +70,12 @@
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage" />
       </div>
       <Loading :loading="loading"/>
     </main>
-    <AddPointPosition :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
+    <AddPointPosition :isShow="isAdd" :positionTypeList="positionTypeList" :isEdit="isEdit" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -89,6 +89,7 @@ import AddPointPosition from '@/components/AddPointPosition/index'
 import {getKeepWatchPlaceList} from '@/api/keepWatch/index'
 import Loading  from '@/components/Loading/index'
 import {getDepartmentList} from '@/api/department'
+import {getDictionaryList} from '@/api/dictionary'
 
 
 export default {
@@ -117,6 +118,7 @@ export default {
       loading:false,
       list:[],
       listDepartment:[],
+      positionTypeList:[],
       value3:'',
       options: [{
           value: '选项1',
@@ -142,6 +144,7 @@ export default {
   mounted() {
     this.getList()
     this.getDepartmentList()
+    this.getPositionTypeList()
   },
   methods: {
     getPage(val){
@@ -188,6 +191,13 @@ export default {
         let that = this
         getDepartmentList().then(res=>{
           that.listDepartment=res.data
+        })
+    },
+    getPositionTypeList(){
+      let data = {}
+      data.type = "点位类型"
+      getDictionaryList(data).then(res=>{
+            this.positionTypeList = res.data
         })
     },
     tableRowClassName({row, rowIndex}){

@@ -9,6 +9,13 @@ export function getKeepWatchPlanList(params) {
       params
     })
 }
+export function getPlanDetailList(params) { 
+  return request({
+    url: '/keepWatchPlanInfo/getById',
+    method: 'get',
+    params
+  })
+}
 
 export function getKeepWatchPlaceList(params) { 
     params.pageSize = 10
@@ -22,7 +29,7 @@ export function getKeepWatchPlaceList(params) {
 export function getKeepWatchRecordList(params) { 
     params.pageSize = 10
     return request({
-      url: '/keepWatchRecordInfo/list',
+      url: '/keepWatchTaskInfo/list',
       method: 'get',
       params
     })

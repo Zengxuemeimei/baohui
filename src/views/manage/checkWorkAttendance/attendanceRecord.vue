@@ -30,22 +30,22 @@
           </el-table-column>
           <el-table-column prop="name" label="姓名" width="270">
           </el-table-column>
-          <el-table-column prop="departmentName" label="身份证号" width="270">
+          <el-table-column prop="idNumber" label="身份证号" width="270">
           </el-table-column>
-          <el-table-column prop="position" label="应出勤天数"> </el-table-column>
-          <el-table-column prop="position" label="实际出勤天数"> </el-table-column>
-          <el-table-column prop="position" label="请假时长"> </el-table-column>
-          <el-table-column prop="position" label="迟到时长"> </el-table-column>
-          <el-table-column prop="position" label="矿工时长"> </el-table-column>
-          <el-table-column prop="position" label="加班时长"> </el-table-column>
-          <el-table-column prop="entryTime" label="入职时间" width="270">
-          </el-table-column>
+          <el-table-column prop="totalCountAttendance" label="应出勤天数"> </el-table-column>
+          <el-table-column prop="actualAttendanceCount" label="实际出勤天数"> </el-table-column>
+          <el-table-column prop="leaveDuration" label="请假时长"> </el-table-column>
+          <el-table-column prop="lateDuration" label="迟到时长"> </el-table-column>
+          <el-table-column prop="absenteeismDuration" label="矿工时长"> </el-table-column>
+          <el-table-column prop="extendDuration" label="加班时长"> </el-table-column>
+          <!-- <el-table-column prop="entryTime" label="入职时间" width="270"> -->
+          <!-- </el-table-column> -->
           <el-table-column label="操作">
             <template slot-scope="scope">
               <div class="flex-start">
                 <el-button
                   type="primary"
-                  @click="editItem(scope.row.id)"
+                  @click="editItem(scope.row)"
                   size="mini"
                   >编辑</el-button
                 >
@@ -67,7 +67,7 @@
 import Paging from '@/components/Paging/index'
 import Loading from '@/components/Loading/index'
 import SearchKey from '@/components/searchKey/index'
-import { getStaffAttendanceInfoList } from '@/api/calendar'
+import { getStaffAttendanceInfoList,getStaffMonthList } from '@/api/calendar'
 import moment from 'moment'
 export default {
   name: "AttendanceRecord",
@@ -121,8 +121,16 @@ export default {
     //   this.getList()
     //   console.log(val)
     // },
-    editItem(){
+    editItem(item){
+      let date = new Date()
 
+      let data={
+        staffId:item.staffId,
+        years: moment(date).format('YYYY-MM')
+      }
+      getStaffMonthList(data).then(res=>{
+
+      })
     },
     getList(){
       let data = this.pageData
