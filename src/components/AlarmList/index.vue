@@ -34,11 +34,11 @@
           style="width: 100%">
           <el-table-column label="序号" width="80" type=index>
           </el-table-column>
-          <el-table-column prop="name" label="事件名称" width="270">
+          <el-table-column prop="name" label="事件名称">
           </el-table-column>
-          <el-table-column prop="comment" label="事件描述" width="270">
+          <el-table-column prop="comment" label="事件描述">
           </el-table-column>
-          <el-table-column prop="imageUrl" label="事件图片" width="120">
+          <el-table-column prop="imageUrl" label="事件图片">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
                     <!-- <img :src="scope.row.imageUrl" /> -->
@@ -54,14 +54,14 @@
             </template>
            
           </el-table-column>
-          <el-table-column prop="videoUrl" label="事件视频" width="120">
+          <el-table-column prop="videoUrl" label="事件视频" >
             <div class="headPortrait-box flex-center">
               <i class="el-icon-video-camera" />
             </div>
           </el-table-column>
-          <el-table-column prop="riskType" label="告警类型" width="270">
+          <el-table-column prop="riskType" label="告警类型" >
           </el-table-column>
-          <el-table-column prop="riskTime" label="告警时间" width="270">
+          <el-table-column prop="riskTime" label="告警时间" >
           </el-table-column>
           <el-table-column prop="manageStatus" label="处置状态"> </el-table-column>
           <el-table-column label="操作"> 

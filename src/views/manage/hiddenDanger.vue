@@ -41,43 +41,35 @@
           </el-table-column>
           <el-table-column
             prop="title"
-            label="标题"
-            width="270">
+            label="标题">
           </el-table-column>
           <el-table-column
             prop="eventDescribe"
-            label="事件描述"
-            width="270">
+            label="事件描述">
           </el-table-column>
           <el-table-column
             prop="reportTime"
-            label="上报时间"
-            width="160">
+            label="上报时间">
           </el-table-column>
           <el-table-column
             prop="reportStaffName"
-            label="上报人"
-            width="146">
+            label="上报人">
           </el-table-column>
           <el-table-column
             prop="level"
-            label="隐患级别"
-            width="146">
+            label="隐患级别">
           </el-table-column>
           <el-table-column
             prop="manageTime"
-            label="处理时间"
-            width="160">
+            label="处理时间">
           </el-table-column>
           <el-table-column
             prop="manageStatus"
-            label="处理状态"
-            width="146">
+            label="处理状态">
           </el-table-column>
           <el-table-column
             prop="manageStaffName"
-            label="处理人"
-            width="146">
+            label="处理人">
           </el-table-column>
           <el-table-column
             prop="manageDescribe"

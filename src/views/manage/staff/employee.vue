@@ -11,7 +11,7 @@
         <div class="flex-start">
           <div>
             <label class="filter-label">部门：</label>
-            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=0;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
+            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=1;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
               <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
@@ -66,6 +66,7 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
+                  <el-button type="success" @click="detailItem(scope.row.id)" size="mini">详情</el-button>
                 </div>
             </template>
           </el-table-column>
@@ -76,7 +77,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
-      <AddPerson :isShow="isAdd" :isEdit="isEdit" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
+      <AddPerson :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :listDepartment="listDepartment" :carTypeList="carTypeList" :editDetail="editDetail" @close="closeAdd" />
       <Loading :loading="loading" />
     </main>
   </div>
@@ -116,6 +117,7 @@ export default {
       },
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       list:[],
       listDepartment:[],
@@ -145,6 +147,7 @@ export default {
       this.getList()
     },
     changeTimeList(val){
+      this.pageData.pageIndex = 1
       this.isClearKey=true
       if(val){
         this.pageData.entryTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
@@ -165,7 +168,15 @@ export default {
         that.editDetail = res.data
         console.log('that.editDetail',that.editDetail)
       })
-      
+    },
+    detailItem(id){
+      let that = this
+      that.isAdd = true
+      that.isDetail = true
+      getStaffDetail({staffId:id}).then(res=>{
+        that.editDetail = res.data
+        console.log('that.editDetail',that.editDetail)
+      })
     },
     addShow(value){
       console.log('addShow',value)
@@ -177,7 +188,9 @@ export default {
             that.getList()
         }
         that.isAdd = item.isShow
-        that.isEdit = item.isShow 
+
+        that.isDetail = item.isShow
+        that.editDetail = null
     },
     getDepartmentList(){
         let that = this

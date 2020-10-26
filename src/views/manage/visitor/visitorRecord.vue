@@ -7,25 +7,15 @@
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key @query="keyWordsQuery"/>
-          <div class="ml50">
+          <!-- <div class="ml50">
               <label class="filter-label">车辆类型：</label>
               <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
                 <DictionarySelect :list="carTypeList"/>
               </el-select>
-              <!-- <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select> -->
-          </div>
+          </div> -->
         </div>
         <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
-            <!-- <edit-button /> -->
-            <!-- <del-button /> -->
         </div>
       </div>
       <div class="all-table">
@@ -49,7 +39,7 @@
                     <el-image 
                     fit="scale-down"
                     lazy
-                    :src="scope.row.photoUrl">
+                    :src="scope.row.image">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
                     </div>

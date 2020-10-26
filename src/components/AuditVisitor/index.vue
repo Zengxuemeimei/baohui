@@ -68,16 +68,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>审核情况</th>
-                    <td>
+                    <th v-show="!isDetail">审核情况</th>
+                    <td v-show="!isDetail">
                         <el-radio-group v-model="result">
                             <el-radio label="PASS">通过</el-radio>
                             <el-radio label="UNPASS">未通过</el-radio>
                         </el-radio-group>
                     </td>
                     <th>未通过原因</th>
-                    <td colspan="3">
+                    <td colspan="5">
                         <input
+                            :disabled="isDetail || result=='PASS'"
                             type="text"
                             class="input-form"
                             v-model="failComment"
@@ -88,7 +89,17 @@
             <span class="person-info-title">采集照片</span>
             <div class="visitor-img-box flex-start ml50">
                 <div class="img-box">
-                    <img :src="editDetail.image" alt="" @error="defaultBackImg">
+                    <!-- <img :src="editDetail.image" alt="" @error="defaultBackImg"> -->
+                    <el-image 
+                        style="width:350px;height:250px"
+                        fit="cover"
+                        :src="editDetail.image">
+                        <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                        <i class="el-icon-picture-outline f30"></i>
+                        <span class="mt10" >{{editDetail.image?'加载失败':'暂无照片'}}</span>
+                        <!-- <span class="mt10" v-show="!imgSrc">拍摄照片</span> -->
+                        </div>
+                    </el-image>
                 </div>
             </div>
         </div>
@@ -108,6 +119,9 @@ export default {
   components: {},
   props:{
       isShow:{
+          type:Boolean
+      },
+      isDetail:{
           type:Boolean
       },
       editDetail:{
@@ -147,6 +161,13 @@ export default {
             this.$emit("close", { isShow: false, isSuccess: true });
         })
     }
+  },
+  watch:{
+      editDetail(newVal){
+          if(newVal){
+              this.failComment = newVal.failComment
+          }
+      }
   }
 }
 </script>

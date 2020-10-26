@@ -9,7 +9,7 @@
           <search-key @query="keyWordsQuery"/>
           <div class="ml50">
               <label class="filter-label">车辆类型：</label>
-              <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
+              <el-select clearable v-model="pageData.carType" @change="changeCarType" placeholder="请选择">
                 <DictionarySelect :list="carTypeList"/>
               </el-select>
           </div>
@@ -40,7 +40,7 @@
                   <el-image 
                     fit="scale-down"
                     lazy
-                    :src="scope.row.photoUrl">
+                    :src="scope.row.photoUrl[0]">
                     <div slot="error" class="image-slot">
                       <i class="el-icon-picture-outline"></i>
                     </div>
@@ -111,7 +111,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
-        type:null
+        carType:null
       },
       isAdd:false,
       isEdit:false,
@@ -183,6 +183,9 @@ export default {
       let data = this.pageData
       that.loading = true
       getCustomerList(data).then(res=>{
+        res.data.dataList.forEach(el=>{
+          el.photoUrl = el.photoUrl.split(",")
+        })
         that.list = res.data.dataList
         that.total = res.data.total
         that.loading = false

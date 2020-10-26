@@ -104,7 +104,7 @@
       </div>
       <span slot="footer" class="dialog-footer" v-if="!isDetail">
         <el-button @click="handleClose">取 消</el-button>
-        <el-button type="primary" @click="AddVisitor">确 定</el-button>
+        <el-button type="primary" @click="AddVisitor" :loading="loading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -140,14 +140,15 @@ export default {
       thisContext: null,
       thisVideo: null,
       openVideo: false,
+      loading:false,
       visitorInfo: {
-        idNumber: null,
-        image: null,
-        intervieweeName: null,
-        leaveTime: null,
-        mobile: null,
-        name: null,
-        visitTime: null,
+        idNumber: '',
+        image: '',
+        intervieweeName: '',
+        leaveTime: '',
+        mobile: '',
+        name: '',
+        visitTime: '',
       },
     };
   },
@@ -165,13 +166,13 @@ export default {
       },
     empty(){
       this.visitorInfo={
-        idNumber: null,
-        image: null,
-        intervieweeName: null,
-        leaveTime: null,
-        mobile: null,
-        name: null,
-        visitTime: null,
+        idNumber: '',
+        image: '',
+        intervieweeName: '',
+        leaveTime: '',
+        mobile: '',
+        name: '',
+        visitTime: '',
       }
       this.imgSrc=null
     },
@@ -179,8 +180,6 @@ export default {
       let that = this;
       let data = that.visitorInfo;
       let fd = new FormData()
-      data.leaveTime = moment(data.leaveTime).format('YYYY-MM-DD hh:mm:ss')
-      data.visitTime = moment(data.visitTime).format('YYYY-MM-DD hh:mm:ss')
       if(!Tools.isPhone(data.mobile)){
         that.$message({
             message: '电话号码格式不正确',
@@ -195,17 +194,62 @@ export default {
         });
         return
       }
+      if(Tools.isEmpty(data.leaveTime)){
+        that.$message({
+            message: '请选择离开时间',
+            type: 'warning'
+        });
+        return
+      }
+      if(Tools.isEmpty(data.visitTime)){
+        that.$message({
+            message: '请选择访问时间',
+            type: 'warning'
+        });
+        return
+      }
+      if(Tools.isEmpty(data.name)){
+        that.$message({
+            message: '请输入访客姓名',
+            type: 'warning'
+        });
+        return
+      }
+      if(Tools.isEmpty(data.intervieweeName)){
+        that.$message({
+            message: '请输入访问对象',
+            type: 'warning'
+        });
+        return
+      }
+      if(Tools.isEmpty(data.image)){
+          that.$message({
+              message: '请拍摄头像',
+              type: 'warning'
+          });
+          return
+        }
+      data.leaveTime = moment(data.leaveTime).format('YYYY-MM-DD HH:mm:ss')
+      data.visitTime = moment(data.visitTime).format('YYYY-MM-DD HH:mm:ss')
       fd.append('idNumber',data.idNumber)
-      fd.append('imgFile',data.image)
       fd.append('intervieweeName',data.intervieweeName)
       fd.append('leaveTime',data.leaveTime)
+      fd.append('imgFile',data.image)
       fd.append('mobile',data.mobile)
       fd.append('name',data.name)
       fd.append('visitTime',data.visitTime)
+      that.loading = true
       saveOrUpdate(fd).then((res) => {
+        that.$message({
+            message: '新增访客成功，请到审核页面查看',
+            type: 'success'
+        });
+        that.loading = false
          this.$emit("close", { isShow: false, isSuccess: true });
          this.empty()
-      });
+      }).catch(error=>{
+        that.loading = false
+      })
     }, 
     setImage() {
       this.visitorInfo.image = Tools.takePhoto(this)
@@ -220,10 +264,6 @@ export default {
               Tools.getCompetence(this,'videoCamera','canvasCamera')
             });
         } 
-      } else {
-        // if(this.isDetail){
-        //   this.stopNavigator();
-        // }
       }
     },
     editDetail(newVal){

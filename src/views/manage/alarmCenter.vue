@@ -5,10 +5,10 @@
     </header>
     <el-tabs v-model="alarmStatus" type="card" @tab-click="handleClick">
         <el-tab-pane label="全部" name="全部">
-          <AlarmList :alarmStatusList="alarmStatusList"  :staffList="staffList" :alarmTypeList="alarmTypeList"/>
+          <AlarmList v-if="alarmStatus == '全部'" :alarmStatusList="alarmStatusList"  :staffList="staffList" :alarmTypeList="alarmTypeList"/>
         </el-tab-pane>
         <el-tab-pane :label="item.name" :name="item.name" v-for="item in alarmStatusList" :key="item.code">
-           <AlarmList :alarmStatusList="alarmStatusList" :manageStatus="item.name" :staffList="staffList" :alarmTypeList="alarmTypeList"/>
+           <AlarmList v-if="item.name == alarmStatus" :alarmStatusList="alarmStatusList" :manageStatus="item.name" :staffList="staffList" :alarmTypeList="alarmTypeList"/>
         </el-tab-pane>
         <!-- <el-tab-pane label="已处理" name="processed">
            <AlarmList :manageStatus="manageStatus"/>

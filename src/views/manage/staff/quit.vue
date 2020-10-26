@@ -47,22 +47,28 @@
           </el-table-column>
           <el-table-column
             prop="departmentName"
-            label="部门"
-            width="270">
+            label="部门">
           </el-table-column>
           <el-table-column
             prop="position"
-            width="270"
             label="岗位">
           </el-table-column>
           <el-table-column
             prop="entryTime"
-            label="入职时间"
-            width="270">
+            label="入职时间">
           </el-table-column>
           <el-table-column
             prop="quitTime"
             label="离职时间">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <!-- <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button> -->
+                  <el-button type="success" @click="detailItem(scope.row.id)" size="mini">详情</el-button>
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -71,6 +77,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
       <Loading :loading="loading" />
+      <AddPerson :isShow="isAdd" :isDetail="isDetail" :editDetail="editDetail" @close="closeAdd" />
     </main>
   </div>
 </template>
@@ -83,6 +90,7 @@ import Loading from '@/components/Loading/index'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import {getStaffList,getStaffDetail} from '@/api/staff/index'
 import {getDepartmentList} from '@/api/department'
+import AddPerson from '@/components/AddPerson/index'
 import moment from 'moment'
 
 export default {
@@ -91,7 +99,8 @@ export default {
     SearchKey,
     Loading,
     Paging,
-    DepartmentSelect
+    DepartmentSelect,
+    AddPerson
   },
   data() {
     return {
@@ -102,6 +111,10 @@ export default {
         quitTimeStartTime:null,
         quitTimeEndTime:null
       },
+      isAdd:false,
+      isDetail:false,
+      editDetail:null,
+      total:0,
       list:[],
       listDepartment:[],
       loading:false,
@@ -136,14 +149,30 @@ export default {
         this.pageData.departmentId = null
       }
       this.getList()
-
+    },
+    closeAdd(item){
+        let that = this
+        if(item.isSuccess){
+            that.getList()
+        }
+        that.isAdd = item.isShow
+        that.isDetail = item.isShow
+        that.editDetail = null
+    },
+    detailItem(id){
+      let that = this
+      that.isAdd = true
+      that.isDetail = true
+      getStaffDetail({staffId:id}).then(res=>{
+        that.editDetail = res.data
+      })
     },
     changeTimeList(val){
       this.isClearKey=true;
       this.pageData.pageIndex = 1
       if(val){
-        this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD hh:mm:ss')
-        this.pageData.quitTimeEndTime = moment(val[1]).format('YYYY-MM-DD hh:mm:ss')
+        this.pageData.quitTimeStartTime = moment(val[0]).format('YYYY-MM-DD HH:mm:ss')
+        this.pageData.quitTimeEndTime = moment(val[1]).format('YYYY-MM-DD HH:mm:ss')
       }else{
         this.pageData.quitTimeStartTime = null
         this.pageData.quitTimeEndTime = null

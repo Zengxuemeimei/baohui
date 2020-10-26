@@ -111,9 +111,10 @@
                   </el-image>
                 </div>
                 <div class="alarm-video-box ml20 relative">
-                    <div class="play-box position-center flex-center">
+                    <video style="width:100%;height:250px"  src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" controls></video>
+                    <!-- <div class="play-box position-center flex-center">
                         <i class="el-icon-caret-right" />
-                    </div>
+                    </div> -->
                 </div>
             </div>
             </el-scrollbar>
@@ -220,7 +221,7 @@ export default {
 .alarm-video-box{
     width: 350px;
     height: 250px;
-    background: rgb(225, 225, 226);
+    /* background: rgb(27, 27, 27); */
 }
 .play-box{
     width: 50px;

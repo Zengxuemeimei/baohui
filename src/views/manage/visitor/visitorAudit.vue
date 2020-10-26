@@ -70,19 +70,20 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" v-if="isAll" icon="el-icon-edit" size="small" @click="isAudit=true;audit(scope.row)">审核</el-button>
-                  <el-button type="danger" v-else size="small" @click="deleteVisitor(scope.row.id)">删除</el-button>
+                  <el-button type="success" v-if="!isAll" icon="el-icon-edit" size="small" @click="isAudit=true;detailItem(scope.row)">详情</el-button>
+                  <el-button type="danger" v-if="!isAll" size="small" @click="deleteVisitor(scope.row.id)">删除</el-button>
                 </div>
             </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
       <Loading :loading="loading" />
     </main>
-    <AuditVisitor :isShow="isAudit" @close="closeAudit" :editDetail="editDetail"/>
+    <AuditVisitor :isShow="isAudit" @close="closeAudit" :isDetail="isDetail" :editDetail="editDetail"/>
   </div>
 </template>
 
@@ -112,6 +113,7 @@ export default {
       loading:false,
       isAll:true,
       isAudit:false,
+      isDetail:false,
       editDetail:{},
       total:0,
       } 
@@ -123,6 +125,10 @@ export default {
   },
   methods: {
     audit(item){
+      this.editDetail = item
+    },
+    detailItem(item){
+      this.isDetail = true
       this.editDetail = item
     },
     defaultBackImg(event){
@@ -175,6 +181,7 @@ export default {
             that.getList()
         }
         that.isAudit = item.isShow
+        that.isDetail = item.isShow
     },
     keyWordsQuery(val){
       this.pageData.keyword = val

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="新增客户"
+      :title="title"
       :visible.sync="isShow"
       width="1284px"
       :close-on-click-modal="false"
@@ -53,10 +53,10 @@
           </tr>
         </table>
         <div class="camera_outer mb40 ml50 flex-start flex-end">
-          <div class="upload-img-box mr20 " v-show="isEdit || isDetail ">
+          <div class="upload-img-box mr20 " v-show="isEdit || isDetail " v-for="item in photoEditUrl" :key="item">
               <el-image
                 style="width: 148px; height: 148px"
-                  :src="customerInfo.photoUrl"
+                  :src="item"
                   fit="cover">
                   <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
                       <i class="el-icon-picture-outline f30"></i>
@@ -65,14 +65,16 @@
                 </el-image>
           </div>
           <el-upload
-          v-if="!isDetail"
-            action="http://192.168.1.103:9092/file/upload/customer"
+            v-if="!isDetail"
+            action=""
+            :auto-upload="false"
             list-type="picture-card"
             accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
-            :headers="token"
             ref="uploadImg"
-            :on-success="uploadCustomer">
-            <span>上传资料</span>
+            :limit="1"
+            :on-remove="removeCustomer"
+            :on-change="uploadCustomer">
+            <span>上传头像</span>
           </el-upload>
           <!-- <video id="videoCamera" class="mr20" :width="videoWidth" :height="videoHeight" autoplay></video>
                 <canvas style="display:none;" ref="canvas" id="canvasCamera" :width="videoWidth" :height="videoHeight"></canvas>
@@ -154,6 +156,7 @@ export default {
       token:{
             Authorization:store.getters.token
       },
+      title:"新增客户",
       videoWidth: 350,
       videoHeight: 250,
       imgSrc: null,
@@ -164,17 +167,19 @@ export default {
       customerInfo: {
         customerCarInfos: [
           {
-            carColour: null,
-            carNumber: null,
-            carType: null,
+            carColour: '',
+            carNumber: '',
+            carType: '',
           },
         ],
-        mobile: null,
-        idNumber: null,
-        name: null,
-        photoUrl: null,
+        customerEnterpriseName:'',
+        mobile: '',
+        idNumber: '',
+        name: '',
+        photoUrl: '',
       },
       photoUrl:[],
+      photoEditUrl:[]
     };
   },
   created() {},
@@ -190,38 +195,40 @@ export default {
       },
     handleClose(done) {
       this.empty()
-      if(!this.isDetail){
-      this.$refs.uploadImg.clearFiles()
-
-      }
       this.$emit("close", { isShow: false, isSuccess: false });
     },
     addCar(){
         this.customerInfo.customerCarInfos.push({
-            carColour: null,
-            carNumber: null,
-            carType: null,
+            carColour: '',
+            carNumber: '',
+            carType: '',
         })
     },
     empty(){
+       if(!this.isDetail){
+          this.$refs.uploadImg.clearFiles()
+      }
       this.customerInfo= {
         customerCarInfos: [
           {
-            carColour: null,
-            carNumber: null,
-            carType: null,
+            carColour: '',
+            carNumber: '',
+            carType: '',
           },
         ],
-        mobile: null,
-        idNumber: null,
-        name: null,
-        photoUrl: null,
+        customerEnterpriseName:'',
+        mobile: '',
+        idNumber: '',
+        name: '',
+        photoUrl: '',
       }
-      this.photoUrl=[]
+      this.photoUrl=[],
+      this.photoEditUrl=[]
     },
     addCustomer() {
       let that = this;
       let data = that.customerInfo;
+      let fd = new FormData()
       if(!Tools.isPhone(data.mobile)){
         that.$message({
               message: "电话格式不正确",
@@ -236,14 +243,22 @@ export default {
             });
         return
       }
-      if (that.isEdit) {
-        data.updateTime = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
-      } else {
-        data.creatTime = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
+      fd.append('mobile',data.mobile)
+      fd.append('idNumber',data.idNumber)
+      fd.append('name',data.name)
+      fd.append('customerEnterpriseName',data.customerEnterpriseName)
+      fd.append('enterpriseId',store.getters.enterpriseId)
+      fd.append('customerCarInfoList',JSON.stringify(data.customerCarInfos))
+      if(that.photoUrl.length>0){
+         that.photoUrl.forEach(el=>{
+            fd.append('customerFile',el.raw)
+        })
       }
-      this.customerInfo.photoUrl = this.photoUrl.toString()
+      if(that.isEdit){
+          fd.append('id',data.id)
+      }
       that.loading = true;
-      saveOrUpdate(data)
+      saveOrUpdate(fd)
         .then((res) => {
           that.loading = false;
           if (that.isEdit) {
@@ -265,109 +280,33 @@ export default {
           that.loading = false;
         });
     },
-    uploadCustomer(file){
-      this.photoUrl.push(file[0]) ;
+    uploadCustomer(file,fileList){
+      this.photoUrl=fileList;
+      console.log('wenjian',fileList)
     },
-    getCompetence() {
-      //打开摄像头
-      console.log("调用摄像头", navigator.mediaDevices);
-      var _this = this;
-      _this.thisCancas = document.getElementById("canvasCamera");
-      // console.log('_this.thisCancas',_this.thisCancas)
-      _this.thisContext = _this.thisCancas.getContext("2d");
-      _this.thisVideo = document.getElementById("videoCamera");
-      _this.thisVideo.style.display = "block";
-      // 获取媒体属性，旧版本浏览器可能不支持mediaDevices，我们首先设置一个空对象
-      if (navigator.mediaDevices === undefined) {
-        navigator.mediaDevices = {};
-      }
-      // 一些浏览器实现了部分mediaDevices，我们不能只分配一个对象
-      // 使用getUserMedia，因为它会覆盖现有的属性。
-      // 这里，如果缺少getUserMedia属性，就添加它。
-      if (navigator.mediaDevices.getUserMedia === undefined) {
-        navigator.mediaDevices.getUserMedia = function (constraints) {
-          // 首先获取现存的getUserMedia(如果存在)
-          var getUserMedia =
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia ||
-            navigator.getUserMedia;
-          // 有些浏览器不支持，会返回错误信息
-          // 保持接口一致
-          if (!getUserMedia) {
-            //不存在则报错
-            return Promise.reject(
-              new Error("getUserMedia is not implemented in this browser")
-            );
-          }
-          // 否则，使用Promise将调用包装到旧的navigator.getUserMedia
-          return new Promise(function (resolve, reject) {
-            getUserMedia.call(navigator, constraints, resolve, reject);
-          });
-        };
-      }
-      var constraints = {
-        audio: false,
-        video: {
-          width: this.videoWidth,
-          height: this.videoHeight,
-          transform: "scaleX(-1)",
-        },
-      };
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
-          // 旧的浏览器可能没有srcObject
-          if ("srcObject" in _this.thisVideo) {
-            _this.thisVideo.srcObject = stream;
-          } else {
-            // 避免在新的浏览器中使用它，因为它正在被弃用。
-            _this.thisVideo.src = window.URL.createObjectURL(stream);
-          }
-          _this.thisVideo.onloadedmetadata = function (e) {
-            _this.thisVideo.play();
-          };
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    setImage() {
-      var _this = this;
-      // canvas画图
-      _this.thisContext.drawImage(
-        _this.thisVideo,
-        0,
-        0,
-        _this.videoWidth,
-        _this.videoHeight
-      );
-      // 获取图片base64链接
-      var image = this.thisCancas.toDataURL("image/png");
-      _this.imgSrc = image; //赋值并预览图片
-      _this.customerInfo.photoUrl = image;
-      console.log("image", image);
-    },
-    // 关闭摄像头
-    stopNavigator() {
-      this.thisVideo.srcObject.getTracks()[0].stop();
-    },
+    removeCustomer(file,fileList){
+      this.photoUrl=fileList;
+    }
   },
   watch: {
     editDetail(newVal){
       if(newVal){
         this.customerInfo = newVal
+        if(newVal.photoUrl){
+          this.photoEditUrl = newVal.photoUrl.split(",");
+        }
+      }
+    },
+    isEdit(newVal){
+      if(newVal){
+        this.title = "编辑客户"
+      }
+    },
+    isDetail(newVal){
+       if(newVal){
+        this.title = "客户详情"
       }
     }
-    // isShow(newVal) {
-    //   if (newVal) {
-    //     let that = this;
-    //     that.$nextTick(() => {
-    //       that.getCompetence();
-    //     });
-    //   } else {
-    //     this.stopNavigator();
-    //   }
-    // },
   },
 };
 </script>

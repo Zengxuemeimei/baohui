@@ -19,7 +19,7 @@ export function getCustomerDetail(params) {
 }
 
 export function saveOrUpdate(data) { 
-    data.enterpriseId = store.getters.enterpriseId
+    // data.enterpriseId = store.getters.enterpriseId
     return request({
       url: '/customerInfo/saveOrUpdate',
       method: 'post',

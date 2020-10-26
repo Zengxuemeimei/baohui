@@ -111,7 +111,7 @@ Tools.takePhoto=function(that){
     var image = _this.thisCancas.toDataURL("image/png");
     _this.imgSrc = image; //赋值并预览图片
     // _this.visitorInfo.image = Tools.dataURLtoFile(image,'file')
-    return Tools.dataURLtoFile(image,'file')
+    return Tools.dataURLtoFile(image,'file.png')
 },
 
 module.exports = Tools

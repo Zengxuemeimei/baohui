@@ -17,12 +17,13 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.name"
                 />
               </td>
               <th>性别</th>
               <td>
-                <el-radio-group v-model="personInfo.sex">
+                <el-radio-group :disabled="isDetail" v-model="personInfo.sex">
                   <el-radio :label="true">女</el-radio>
                   <el-radio :label="false">男</el-radio>
                 </el-radio-group>
@@ -32,6 +33,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.age"
                 />
               </td>
@@ -40,6 +42,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.mobileNumber"
                 />
               </td>
@@ -50,6 +53,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.education"
                 />
               </td>
@@ -58,6 +62,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.major"
                 />
               </td>
@@ -67,8 +72,8 @@
               <td>
                 <el-select
                   v-model="personInfo.departmentId"
-                  placeholder="请选择"
-                >
+                  :disabled="isDetail"
+                  placeholder="请选择">
                   <DepartmentSelect :list="listDepartment" />
                 </el-select>
               </td>
@@ -77,6 +82,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.position"
                 />
               </td>
@@ -85,6 +91,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.emergencyContact"
                 />
               </td>
@@ -93,6 +100,7 @@
                 <input
                   type="text"
                   class="input-form"
+                  :disabled="isDetail"
                   v-model="personInfo.emergencyContactMobile"
                 />
               </td>
@@ -102,6 +110,7 @@
               <td colspan="3">
                 <el-date-picker
                   v-model="personInfo.entryTime"
+                  :disabled="isDetail"
                   type="datetime"
                   placeholder="选择日期"
                 >
@@ -111,6 +120,7 @@
               <td colspan="3">
                 <el-date-picker
                   v-model="personInfo.formalTime"
+                  :disabled="isDetail"
                   type="datetime"
                   placeholder="选择日期"
                 >
@@ -122,6 +132,7 @@
               <td colspan="3">
                 <el-date-picker
                   v-model="personInfo.expireTime"
+                  :disabled="isDetail"
                   type="datetime"
                   placeholder="选择日期"
                 >
@@ -130,7 +141,7 @@
               <th>离职时间</th>
               <td colspan="3">
                 <el-date-picker
-                  :disabled="!isEdit"
+                  :disabled="!isEdit || isDetail"
                   v-model="personInfo.quitTime"
                   type="datetime"
                   placeholder="选择日期"
@@ -153,9 +164,8 @@
                 :width="videoWidth"
                 :height="videoHeight"
             ></canvas>
-            <i class="el-icon-camera take-photo" @click="setImage"/>
+            <i class="el-icon-camera take-photo" v-show="!isDetail" @click="setImage"/>
             <div class="img_bg_camera flex-start flex-end ml20">
-                <!-- <img :src="imgSrc" alt class="tx_img" @error="defaultBackImg"/> -->
                 <el-image 
                     style="width:350px;height:250px"
                         fit="cover"
@@ -163,7 +173,6 @@
                         <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
                         <i class="el-icon-picture-outline f30"></i>
                         <span class="mt10" >{{imgSrc?'加载失败':'拍摄照片'}}</span>
-                        <!-- <span class="mt10" v-show="!imgSrc">拍摄照片</span> -->
                         </div>
                     </el-image>
             </div>
@@ -171,17 +180,28 @@
           <span class="person-info-title">文档资料</span>
           <div class="ml50 mb40">
             <div class="flex-start flex-wrap">
-              <!-- <div class="upload-img-box mr20 relative"  v-for="item in fileUrl" :key="item">
-                            <img class="upload-img"  :src="item" alt="" @error="defaultBackImg">
-                        </div> -->
+              <div class="upload-img-box mr20 relative"  v-for="item in fileEditUrl" :key="item">
+                <el-image 
+                    class="upload-img-box "
+                        fit="cover"
+                        :src="item">
+                        <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                        <i class="el-icon-picture-outline f30"></i>
+                        <span class="mt10" >{{item?'加载失败':''}}</span>
+                        </div>
+                </el-image>
+              </div>
               <el-upload
                 action=""
+                multiple
+                v-if="!isDetail"
                 list-type="picture-card"
                 accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
                 :headers="token"
                 :auto-upload="false"
                 :on-change="uploadStaff"
-              >
+                ref="staff"
+                :on-remove="removeStaff">
                 <span>上传资料</span>
               </el-upload>
             </div>
@@ -192,18 +212,21 @@
               <div v-for="item in carList" :key="item.carNumber">
                 <div
                   class="upload-img-box mr20 relative mb20"
-                  v-show="item.carImage"
-                >
-                  <img
-                    class="upload-img"
-                    :src="item.carImage"
-                    @error="defaultBackImg"
-                  />
+                  v-show="item.carImage">
+                    <el-image 
+                      class="upload-img-box "
+                          fit="cover"
+                          :src="item.carImage">
+                          <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
+                          <i class="el-icon-picture-outline f30"></i>
+                          <span class="mt10" >{{item?'加载失败':''}}</span>
+                          </div>
+                   </el-image>
                   <p class="car-num">{{ item.carNumber }}</p>
                 </div>
               </div>
             </div>
-            <el-button type="text" @click="addCar"
+            <el-button v-show="!isDetail" type="text" @click="addCar"
               ><i class="el-icon-circle-plus-outline" /><span
                 style="display: inline-block; margin-left: 10px"
                 >新增车辆</span
@@ -222,35 +245,30 @@
                     class="input-form"
                     v-model="item.carNumber"
                   />
-                  <LicenseKeyboard v-model="item.carNumber" title="软键盘" />
+                  <LicenseKeyboard v-show="!isDetail" v-model="item.carNumber" title="软键盘" />
                 </td>
                 <th>车辆类型</th>
                 <td>
-                  <!-- <input type="text" class="input-form" v-model="item.carType"> -->
-                  <el-select v-model="item.carType" placeholder="请选择">
-                    <!-- <el-option :value="null" label="无父级"></el-option> -->
-                    <DepartmentSelect :list="carTypeList" />
+                  <el-select v-model="item.carType" :disabled="isDetail" placeholder="请选择">
+                    <DictionarySelect :list="carTypeList" />
                   </el-select>
                 </td>
-                <th>上传车辆图片</th>
-                <td>
+                <th v-show="!isDetail">上传车辆图片</th>
+                <td v-show="!isDetail">
                   <el-upload
                     action=""
                     :headers="token"
                     :on-change="uploadCar"
                     :show-file-list="false"
-                    :auto-upload="false"
-                  >
+                    :auto-upload="false">
                     <el-button
                       size="small"
                       type="primary"
-                      @click="uploadCarParent(index, item.carNumber)"
-                      >点击上传</el-button
-                    >
+                      @click="uploadCarParent(index, item.carNumber)">点击上传</el-button>
                   </el-upload>
                 </td>
-                <th v-if="personInfo.staffCarInfoList.length > 1">操作</th>
-                <td v-if="personInfo.staffCarInfoList.length > 1">
+                <th v-if="personInfo.staffCarInfoList.length > 1 && !isDetail">操作</th>
+                <td v-if="personInfo.staffCarInfoList.length > 1 && !isDetail ">
                   <el-button
                     type="danger"
                     size="small"
@@ -274,23 +292,27 @@
 </template>
 
 <script>
+import DictionarySelect from "@/components/Recursion/dictionarySelect";
 import DepartmentSelect from "@/components/Recursion/departmentSelect";
 import moment from "moment";
 import store from "@/store";
-import { saveOrUpdate } from "@/api/staff/index";
 import { uploadFile } from "@/api/upload";
 import DictionaryList from "@/components/Recursion/dictionaryList";
 import Tools from "@/utils/tools";
+import {addPersonUtils,emptyUtils} from "@/utils/addPersonUtils";
 
 export default {
   name: "AddPerson",
-  components: { DepartmentSelect },
+  components: { DictionarySelect,DepartmentSelect },
   props: {
     isShow: {
       type: Boolean,
     },
     isEdit: {
       type: Boolean,
+    },
+    isDetail:{
+      type:Boolean
     },
     listDepartment: {
       type: Array,
@@ -316,6 +338,7 @@ export default {
         Authorization: store.getters.token,
       },
       fileUrl: [],
+      fileEditUrl:[],
       carList: [
         {
           carNumber: null,
@@ -362,102 +385,14 @@ export default {
   methods: {
     deleteCar(index) {
       this.personInfo.staffCarInfoList.splice(index, 1);
+      this.carList.splice(index,1)
     },
     setImage() {
         this.personInfo.faceImageFile = Tools.takePhoto(this) 
     },
     addPerson() {
       let that = this;
-      if (!Tools.isPhone(that.personInfo.emergencyContactMobile)) {
-        that.$message({
-          message: "紧急联系人电话号码格式不正确",
-          type: "warning",
-        });
-        return;
-      }
-      if (!Tools.isPhone(that.personInfo.mobileNumber)) {
-        that.$message({
-          message: "电话号码格式不正确",
-          type: "warning",
-        });
-        return;
-      }
-      if (that.personInfo.entryTime) {
-        that.personInfo.entryTime = moment(that.personInfo.entryTime).format(
-          "YYYY-MM-DD hh:mm:ss"
-        );
-      }
-      if (that.personInfo.expireTime) {
-        that.personInfo.expireTime = moment(that.personInfo.expireTime).format(
-          "YYYY-MM-DD hh:mm:ss"
-        );
-      }
-
-      if (that.personInfo.quitTime) {
-        that.personInfo.quitTime = moment(that.personInfo.quitTime).format(
-          "YYYY-MM-DD hh:mm:ss"
-        );
-      }
-      if (that.personInfo.formalTime) {
-        that.personInfo.formalTime = moment(that.personInfo.formalTime).format(
-          "YYYY-MM-DD hh:mm:ss"
-        );
-      }
-      console.log("personInfo", that.personInfo);
-      that.loading = true;
-      let fd = new FormData();
-      let data = this.personInfo;
-      fd.append("contractScanning", data.contractScanning);
-      fd.append("departmentId", data.departmentId);
-      fd.append("education", data.education);
-      fd.append("email", data.email);
-      fd.append("emergencyContact", data.emergencyContact);
-      fd.append("emergencyContactMobile", data.emergencyContactMobile);
-      fd.append("entryTime", data.entryTime);
-      fd.append("expireTime", data.expireTime);
-      fd.append("quitTime", data.quitTime);
-      fd.append("faceImage", data.faceImage);
-      fd.append("formalTime", data.formalTime);
-      fd.append("homeAddress", data.homeAddress);
-      fd.append("idNumberScanning", data.idNumberScanning);
-      fd.append("major", data.major);
-      fd.append("mobileNumber", data.mobileNumber);
-      fd.append("name", data.name);
-      fd.append("age", data.age);
-      this.fileUrl.forEach((el, index) => {
-        fd.append(`fileUrlFile`, el);
-      });
-      fd.append("position", data.position);
-      fd.append("sex", data.sex);
-      fd.append("staffCarInfos", JSON.stringify(data.staffCarInfoList));
-      fd.append("faceImageFile", data.faceImageFile);
-      this.carList.forEach((el, index) => {
-        fd.append('staffCar', el.file);
-      });
-      saveOrUpdate(fd)
-        .then((res) => {
-          that.loading = false;
-          if (that.isEdit) {
-            that.$message({
-              message: "添加人员成功",
-              type: "success",
-            });
-          } else {
-            that.$message({
-              message: "编辑人员成功",
-              type: "success",
-            });
-          }
-          that.$emit("close", { isShow: false, isSuccess: true });
-        })
-        .catch((error) => {
-          that.loading = false;
-        });
-    },
-    defaultBackImg(event) {
-      if (event.type == "error") {
-        event.target.src = require("@/assets/default_pic.png");
-      }
+      addPersonUtils(that)
     },
     addCar() {
       this.personInfo.staffCarInfoList.push({
@@ -473,49 +408,24 @@ export default {
       console.log(this.personInfo.staffCarInfoList);
     },
     empty() {
-      this.fileUrl = [];
-      this.carIndex = 0;
-      this.carList = [
-        {
-          carNumber: null,
-          carImage: null,
-          file: null,
-        },
-      ];
-      this.personInfo = {
-        contractScanning: '', //合同
-        departmentId: '',
-        education: '',
-        email: '',
-        emergencyContact: '', //紧急联系人
-        entryTime: '',
-        expireTime: '', //过期
-        quitTime: '',
-        faceImage: '',
-        formalTime: '', //转正
-        homeAddress: '', //住址
-        idNumberScanning: '',
-        major: '', //专业
-        mobileNumber: '',
-        name: '',
-        age: '',
-        fileUrl: [],
-        position: '',
-        sex: '',
-        staffCarInfoList: [
-          {
-            carNumber: '',
-            carType: '',
-          },
-        ],
-      };
+      if(this.fileUrl.length > 0){
+        this.$refs.staff.clearFiles()
+      }
+      emptyUtils(this)
     },
     handleClose() {
-      this.empty();
       this.$emit("close", { isShow: false, isSuccess: false });
+      this.empty();
+
     },
-    uploadStaff(file) {
-      this.fileUrl.push(file.raw);
+    uploadStaff(file,fileList) {
+      console.log('文件',fileList)
+      this.fileUrl = fileList
+      // this.fileUrl.push(file.raw);
+    },
+    removeStaff(file,fileList){
+      this.fileUrl = fileList
+      console.log('文件',fileList)
     },
     uploadCarParent(index, carNumber) {
       this.carIndex = index;
@@ -528,13 +438,17 @@ export default {
   },
   watch: {
     editDetail(newVal) {
+      console.log('editDetail',newVal)
       if (newVal) {
         delete newVal.creatTime;
         delete newVal.status;
         delete newVal.updateTime;
         delete newVal.userId;
         this.personInfo = newVal;
-        this.fileUrl = newVal.fileUrl.split(",");
+        this.imgSrc = newVal.faceImage
+        if(newVal.fileUrl){
+          this.fileEditUrl = newVal.fileUrl.split(",");
+        }
         let list = [];
         newVal.staffCarInfoList.forEach((el) => {
           list.push({
@@ -545,10 +459,13 @@ export default {
         this.carList = list;
       }
     },
-    isShow(){
-        this.$nextTick(() => {
+    isShow(newVal){
+      if(newVal){
+          this.$nextTick(() => {
             Tools.getCompetence(this,'videoStaff','canvasStaff')
-        });
+          });
+      }
+        
     }
   },
 };
@@ -598,6 +515,9 @@ export default {
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
+}
+#videoStaff{
+  background: #efefef;
 }
 </style>
 
