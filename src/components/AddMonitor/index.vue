@@ -1,12 +1,11 @@
 <template>
   <div>
     <el-dialog
-        title="新增地址"
+        :title="title"
         :visible.sync="isShow"
-        width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="person-content">
+        <div class="">
             <el-scrollbar style="height:100%">
                 <span class="person-info-title">地址信息</span>
                 <table class="person-table mb40 ml50" border="1">
@@ -51,13 +50,20 @@ export default {
     isEdit:{
       type:Boolean
     },
+    isDetail:{
+      type:Boolean
+    },
+    editDetail:{
+      type:Object
+    }
   },
   data() {
     return {
         videoInfo:{
           address: null,
           name:null,
-          videoUrl: null
+          videoUrl: null,
+          title:'新增地址'
         }
     }
   },
@@ -68,6 +74,7 @@ export default {
   methods: {
       handleClose() {
         this.empty()
+       
         this.$emit("close", { isShow: false, isSuccess: false });
       },
       empty(){
@@ -76,6 +83,7 @@ export default {
           name:null,
           videoUrl: null
         }
+        this.title='新增地址'
       },
       addMonitor(){
         let data = this.videoInfo
@@ -84,6 +92,28 @@ export default {
           this.$emit("close", { isShow: false, isSuccess: true });
         })
       }
+  },
+  watch:{
+    isEdit(newVal){
+      if(newVal){
+        this.title='编辑地址'
+      }
+    },
+    isDetail(newVal){
+      if(newVal){
+        this.title='地址详情'
+      }
+    },
+    editDetail(newVal){
+      if(newVal){
+          this.videoInfo={
+          address: newVal.address,
+          name:newVal.name,
+          videoUrl: newVal.videoUrl,
+          id:newVal.id
+        }
+      }
+    }
   }
 }
 </script>

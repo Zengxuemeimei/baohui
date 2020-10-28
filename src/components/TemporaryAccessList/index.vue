@@ -16,30 +16,36 @@
         <el-table
           border
           header-cell-class-name="all-table-th"
-          :row-class-name="tableRowClassName"
-          ref="multipleTable"
-          :data="tableData3"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column label="序号" width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+          :data="list"
+          style="width: 100%">
+          <el-table-column label="序号" type="index" width="80">
           </el-table-column>
-          <el-table-column prop="headPortrait" label="人员图片" width="270">
-            <div class="headPortrait-box">
-              <img src="" alt="" />
-            </div>
+          <el-table-column prop="headPortrait" label="人员图片" width="120">
+            <template slot-scope="scope">
+                <div class="headPortrait-box flex-center">
+                    <!-- <img :src="scope.row.image"  @error="defaultBackImg"> -->
+                    <el-image 
+                    fit="scale-down"
+                    lazy
+                    :src="scope.row.accessImage">
+                    <div slot="error" class="image-slot " style="height:100%">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </div>
+            </template>
           </el-table-column>
-          <el-table-column prop="address" label="出入时间" width="270">
+          <el-table-column label="出入时间">
+            <template slot-scope="scope">
+              {{scope.row.accessTime | dateFormat}}
+            </template>
           </el-table-column>
           <el-table-column prop="address" label="出入方向"> </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
-        <paging />
+        <p></p>
+        <paging v-if="total > 0" :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
   </div>
@@ -47,68 +53,80 @@
 
 <script>
 import Paging from '@/components/Paging/index'
+import { getAccessPersonList,getAccessCarList } from '@/api/accessRecords'
 export default {
   name: 'TemporaryAccessList',
   components: {
     Paging
   },
+  props:{
+    temporary:{
+      type:String,
+    }
+  },
   data() {
     return {
-      tableData3: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: [],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      total:0,
+      list:[],
+      input22:null,
+      pageData:{
+        keyword:null,
+        pageIndex:1,
+      },
+      loading:false
     }
   },
   created() {
   },
   mounted() {
+    if(this.temporary == 'person'){
+      this.getPersonList()
+    }else{
+      this.getCarList()
+    }
   },
   methods: {
+    getPage(val){
+      console.log('waimian',val)
+        this.pageData.pageIndex = val
+        this.getList()
+    },
+    getPersonList(){
+      let that = this
+      let data = that.pageData
+      data.temporary = true
+      that.loading = true
+      getAccessPersonList(data).then(res=>{
+          that.list = res.data.dataList
+          that.total = res.data.total
+          that.loading = false
+      }).catch(error=>{
+         that.loading = false
+      })
+    },
+    getCarList(){
+      let that = this
+      let data = that.pageData
+      data.temporary = true
+      that.loading = true
+      getAccessCarList(data).then(res=>{
+          that.list = res.data.dataList
+          that.total = res.data.total
+          that.loading = false
+      }).catch(error=>{
+         that.loading = false
+      })
+    },
+  },
+  watch:{
+    temporary(newVal){
+      console.log('切换',newVal)
+        if(newVal == 'person'){
+          this.getPersonList()
+        }else{
+          this.getCarList()
+        }
+    }
   }
 }
 </script>
@@ -116,8 +134,8 @@ export default {
 .headPortrait-box{
   width: 31px;
   height: 27px;
-  background: #000000;
+  background: #dad8d8;
   margin: 0 auto;
-  color: #ffffff;
+  /* color: #ffffff; */
 }
 </style>

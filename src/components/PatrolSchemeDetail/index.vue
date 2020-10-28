@@ -2,34 +2,36 @@
   <div>
     <el-dialog
         title="巡更记录详情"
-        :visible.sync="isShow"
+        :visible.sync="isDetail"
         width="1284px"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="person-content">
+        <div class="person-content" v-if="editDetail">
             <el-scrollbar style="height:100%">
                 <span class="person-info-title">详情信息</span>
                 <table class="person-table mb20 ml50" border="1">
                     <tr>
                         <th>方案名称</th>
-                        <td></td>
-                        <th>巡更时间</th>
-                        <td></td>
+                        <td>{{editDetail.name}}</td>
+                        <!-- <th>巡更时间</th>
+                        <td></td> -->
                         <th>方案类型</th>
-                        <td style="width:300px"></td>
+                        <td style="width:300px">{{editDetail.type}}</td>
                     </tr>
                     <tr>
                         <th>所属部门</th>
                         <td colspan="1"></td>
                         <th>完成进度</th>
-                        <td colspan="1"></td>
-                        <th>巡检人员</th>
-                        <td colspan="1"></td>
+                        <td colspan="1">
+                            {{editDetail.checkedCount/editDetail.checkTotal}}%
+                        </td>
+                        <!-- <th>巡检人员</th>
+                        <td colspan="1"></td> -->
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <th>巡检记录描述</th>
                         <td colspan="4"></td>
-                    </tr>
+                    </tr> -->
                 </table>
                 <div class="ml50">
                     <div class="flex-start">
@@ -43,12 +45,12 @@
                             <th style="width:220px">巡更人员</th>
                             <th style="width:210px">是否异常</th>
                         </tr>
-                        <tr>
-                            <td style="width:80px">1</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                        <tr v-for="(item,index) in editDetail.keepWatchTaskPlaceInfoList" :key="item.id">
+                            <td style="width:80px">{{index+1}}</td>
+                            <td>{{item.placeName}}</td>
+                            <td>{{item.checkTime}}</td>
+                            <td>{{item.checkStaffName}}</td>
+                            <td>{{item.resultDescribe}}</td>
                         </tr>
                     </table>
                     <div class="flex-start mt10">
@@ -74,11 +76,16 @@ export default {
   props:{
       isDetail:{
           type:Boolean
+      },
+      editDetail:{
+          type:Object
       }
   },
   data() {
     return {
-        // dialogVisible:true
+        detail:{
+            name:null
+        }
     }
   },
   created() {
@@ -86,8 +93,8 @@ export default {
   mounted() {
   },
   methods: {
-      handleClose(done) {
-        this.dialogVisible = false
+      handleClose() {
+        this.$emit("close", { isShow: false, isSuccess: false });
       },
   }
 }

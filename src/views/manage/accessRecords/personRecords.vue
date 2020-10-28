@@ -11,30 +11,24 @@
         <div class="flex-start">
           <div>
             <label class="filter-label">所属部门：</label>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=1;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
+              <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
           <div class="ml20">
             <label class="filter-label">进/出：</label>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+            <el-select clearable v-model="pageData.directionType" @change="changeDirectionType" placeholder="请选择">
+              <el-option label="进" value="进"></el-option>
+              <el-option label="出" value="出"></el-option>
             </el-select>
           </div>
           <div class="filter-time ml20">
             <label class="filter-label">进出时间：</label>
             <el-date-picker
-              v-model="value3"
+              clearable
+              @change="changeTime"
+              v-model="accessTime"
+              value-format="yyyy-MM-dd HH:mm:ss"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -42,7 +36,7 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="person-total flex-center flex-column" style="color:#fff;">
+        <!-- <div class="person-total flex-center flex-column" style="color:#fff;">
             <div class="flex-start">
                 <p class="f30">
                     <count-to
@@ -57,7 +51,7 @@
                 <p class="f14 ml5 mt5">人</p>
             </div>
             <p class="mt5 f14">今日人员进出数量</p>
-        </div>
+        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -72,17 +66,14 @@
           </el-table-column>
           <el-table-column
             prop="personName"
-            label="姓名"
-            width="146">
+            label="姓名">
           </el-table-column>
           <el-table-column
             prop="idNumber"
-            label="身份证"
-            width="270">
+            label="身份证">
           </el-table-column>
           <el-table-column
-            label="图片"
-            width="146">
+            label="图片">
              <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
                     <el-image 
@@ -98,38 +89,25 @@
             
           </el-table-column>
           <el-table-column
-            label="视频"
-            width="146">
+            label="视频">
             <div class="headPortrait-box flex-center" style="backgroud:#000">
               <i class="el-icon-video-camera" />
             </div>
-            <!-- <template slot-scope="scope">
-                <div class="headPortrait-box flex-center">
-                    <el-image 
-                    fit="scale-down"
-                    lazy
-                    :src="scope.row.accessImage">
-                    <div slot="error" class="image-slot " style="height:100%">
-                      <i class="el-icon-picture-outline"></i>
-                    </div>
-                  </el-image>
-                </div>
-             </template> -->
           </el-table-column>
           <el-table-column
             prop="liveAddress"
-            label="出入地点"
-            width="270">
+            label="出入地点">
           </el-table-column>
           <el-table-column
             prop="accessTime"
-            label="出入时间"
-            width="270">
+            label="出入时间">
+            <template slot-scope="scope">
+              {{scope.row.accessTime | dateFormat}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="similar"
-            label="相似度"
-            width="146">
+            label="相似度">
           </el-table-column>
           <el-table-column
             prop="healthCodeStatus"
@@ -152,7 +130,8 @@ import Paging from '@/components/Paging/index'
 import SearchKey from '@/components/searchKey/index'
 import AccessPerson from '@/components/AccessDetail/person'
 import {getAccessPersonList} from '@/api/accessRecords/index'
-
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+import {getDepartmentList} from '@/api/department'
 
 export default {
   name: 'PersonRecords',
@@ -160,7 +139,8 @@ export default {
       SearchKey,
       countTo,
       Paging,
-      AccessPerson
+      AccessPerson,
+      DepartmentSelect
   },
   data() {
     return {
@@ -168,35 +148,20 @@ export default {
         keyword:null,
         pageIndex:1
       },
+      accessTime:null,
       list:[],
       isDetail:false,
       loading:false,
       editDetail:{},
       total:0,
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      listDepartment:[],
     }
   },
   created() {
   },
   mounted() {
     this.getList()
+    this.getDepartmentList()
   },
   methods: {
     getPage(val){
@@ -220,8 +185,29 @@ export default {
           }
           that.isDetail = item.isShow
       },
+      changeTime(val){
+        console.log('time',val)
+        if(val){
+          this.pageData.accessStartTime = new Date(val[0]).getTime()
+          this.pageData.accessEndTime = new Date(val[1]).getTime()
+        }else{
+          this.pageData.accessStartTime = null
+          this.pageData.accessEndTime = null 
+        }
+          this.getList()
+      },
+      changeDirectionType(val){
+        if(val){
+          this.pageData.directionType = val
+        }else{
+          this.pageData.directionType = null
+        }
+        this.pageData.pageIndex = 1
+        this.getList()
+      },
       getList(){
         let data = this.pageData
+        data.temporary = false
         let that = this
         that.loading = true
         getAccessPersonList(data).then(res=>{
@@ -232,6 +218,12 @@ export default {
             that.loading = false
         })
       },
+      getDepartmentList(){
+        let that = this
+        getDepartmentList().then(res=>{
+          that.listDepartment=res.data
+        })
+    },
       tableRowClassName({row, rowIndex}){
         //修改table行的颜色
         if(rowIndex%2 != 1){

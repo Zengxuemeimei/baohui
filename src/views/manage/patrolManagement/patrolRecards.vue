@@ -56,7 +56,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <PatrolSchemeDetail :isDetail="isDetail"/>
+    <PatrolSchemeDetail :isDetail="isDetail" :editDetail="editDetail" @close="closeDetail"/>
   </div>
 </template>
 
@@ -67,7 +67,7 @@ import EditButton from '@/components/EditButton/index'
 import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import PatrolSchemeDetail from '@/components/PatrolSchemeDetail/index'
-import {getKeepWatchRecordList} from '@/api/keepWatch/index'
+import {getKeepWatchRecordList,getKeepWatchTaskDetail} from '@/api/keepWatch/index'
 
 export default {
   name: 'PatrolRecards',
@@ -87,6 +87,7 @@ export default {
         pageIndex:1
       },
       isDetail:false,
+      editDetail:null,
       list:[],
       total:0,
       }
@@ -108,8 +109,15 @@ export default {
       this.isClearKey=false
       this.getList()
     },
-    detailItem(){
-
+    detailItem(item){
+      this.isDetail = true
+      getKeepWatchTaskDetail({taskId:item.id}).then(res=>{
+          this.editDetail = res.data
+      })
+    },
+    closeDetail(item){
+        this.isDetail = false
+        this.editDetail = null
     },
     getList(){
       let that = this

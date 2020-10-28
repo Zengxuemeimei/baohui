@@ -14,6 +14,7 @@
                         <th>方案名称</th>
                         <td>
                             <input
+                                :disabled="isDetail"
                                 type="text"
                                 class="input-form"
                                 v-model="keepWatchPlanInfo.name"
@@ -21,24 +22,14 @@
                         </td>
                         
                         <th>方案类型</th>
-                        <td >
-                            <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlanInfo.type"
-                            /> -->
-                            <el-select clearable v-model="keepWatchPlanInfo.type" placeholder="请选择">
+                        <td>
+                            <el-select clearable :disabled="isDetail" v-model="keepWatchPlanInfo.type" placeholder="请选择">
                                 <DictionarySelect :list="caseTypeList"/>
                             </el-select>
                         </td>
                         <th>方案状态</th>
                         <td style="width:300px">
-                            <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlanInfo.status"
-                            /> -->
-                            <el-radio-group v-model="keepWatchPlanInfo.status">
+                            <el-radio-group :disabled="isDetail" v-model="keepWatchPlanInfo.status">
                                 <el-radio label="启用">启用</el-radio>
                                 <el-radio label="停用">停用</el-radio>
                             </el-radio-group>
@@ -47,31 +38,21 @@
                     <tr>
                         <th>所属部门</th>
                         <td colspan="2">
-                            <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlanInfo.departmentId"
-                            /> -->
-                            <el-select v-model="keepWatchPlanInfo.departmentId" placeholder="请选择">
+                            <el-select :disabled="isDetail" v-model="keepWatchPlanInfo.departmentId" placeholder="请选择">
                                 <DepartmentSelect :list="listDepartment"/>
                             </el-select>
                         </td>
                         <th>重复计划</th>
                         <td colspan="2" >
-                            <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlanInfo.repetitionType"
-                            /> -->
                             <div class="flex-start">
                                 <div style="width:50%">
-                                <el-radio-group v-model="keepWatchPlanInfo.repetition">
+                                <el-radio-group :disabled="isDetail" v-model="keepWatchPlanInfo.repetition">
                                     <el-radio :label="true">是</el-radio>
                                     <el-radio :label="false">否</el-radio>
                                 </el-radio-group>
                             </div>
                            <div style="width:50%;border-left:1px solid #666;">
-                               <el-select clearable :disabled="!keepWatchPlanInfo.repetition" v-model="keepWatchPlanInfo.repetitionType" placeholder="请选择">
+                               <el-select clearable :disabled="!keepWatchPlanInfo.repetition || isDetail" v-model="keepWatchPlanInfo.repetitionType" placeholder="请选择">
                                     <DictionarySelect :list="repetitionTypeList"/>
                                 </el-select>
                            </div>
@@ -83,10 +64,9 @@
                 <div class="ml50">
                     <div class="flex-start">
                         <p>巡更点位设置</p>
-                        <div class="ml5">
+                        <div class="ml5" v-if="!isDetail">
                             <el-button class="el-icon-circle-plus-outline" @click="addPlace" type="text"> 新增</el-button>
                         </div>
-                        <!-- <i class="el-icon-circle-plus-outline" /> -->
                     </div>
                     <table class="person-table mt10" border="1">
                         <tr>
@@ -98,11 +78,7 @@
                         <tr v-for="(item,index) in keepWatchPlanInfo.keepWatchPlanPlaces" :key="index">
                             <td style="width:80px">{{index+1}}</td>
                             <td style="width:200px">
-                                <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="item.placeId"/> -->
-                                <el-select v-model="item.placeId" placeholder="请选择">
+                                <el-select :disabled="isDetail" v-model="item.placeId" placeholder="请选择">
                                         <el-option
                                         v-for="item in placeList"
                                         :key="item.id"
@@ -114,6 +90,7 @@
                             <td>
                                 <el-time-picker
                                     is-range
+                                    :disabled="isDetail"
                                     v-model="timePicker[index].time"
                                     value-format="HH:mm:ss'"
                                     range-separator="至"
@@ -123,11 +100,17 @@
                                 </el-time-picker>
                             </td>
                             <td style="width:532px">
-                                 <!-- <input
-                                    type="text"
-                                    class="input-form"
-                                    v-model="item.keepWatchPlaceStaffs"/> -->
-                                    <el-select v-model="item.keepWatchPlaceStaffs" multiple placeholder="请选择">
+                                    <el-select
+                                        :disabled="isDetail"
+                                        v-model="item.keepWatchPlaceStaffs"
+                                        @change="handlChange"
+                                        multiple
+                                        filterable
+                                        remote
+                                        reserve-keyword
+                                        placeholder="请输入关键词"
+                                        :remote-method="checkedStaffs"
+                                        :loading="loading">
                                         <el-option
                                         v-for="item in staffList"
                                         :key="item.id"
@@ -141,7 +124,7 @@
                 </div>
             </el-scrollbar>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer" class="dialog-footer" v-if="!isDetail">
             <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="addPatrolScheme">确 定</el-button>
         </span>
@@ -164,6 +147,9 @@ export default {
           type:Boolean
       },
       isEdit:{
+          type:Boolean
+      },
+      isDetail:{
           type:Boolean
       },
       listDepartment:{
@@ -202,6 +188,7 @@ export default {
             status: '启用',
             type: null   
         },
+        loading:false,
         staffList:[],
         placeList:[]
     }
@@ -209,7 +196,11 @@ export default {
   created() {
   },
   mounted() {
-      this.getStaffList()
+      this.getStaffList({
+        keyword:null,
+        pageIndex:1,
+        pageSize:100
+      })
       this.getPlaceList()
   },
   methods: {
@@ -224,13 +215,18 @@ export default {
                 time:null
           })
       },
-      getStaffList(){
+      handlChange(val){
+          console.log('人员',val)
+      },
+      checkedStaffs(val){
+          this.getStaffList({
+                keyword:val,
+                pageIndex:1,
+                pageSize:100
+            })
+      },
+      getStaffList(data){
         let that = this
-        let data = {
-            keyword:null,
-            pageIndex:1,
-            pageSize:100
-        }
         getStaffList(data).then(res=>{
             let {dataList} =res.data
             dataList.forEach((el,index)=>{
@@ -278,9 +274,7 @@ export default {
       addPatrolScheme(){
           let list = []
           this.timePicker.forEach((el,index)=>{
-            // this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = moment(el.time[0]).format('HH:mm:ss')
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = el.time[0].slice(0,el.time[0].length-1)
-            // this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = moment(el.time[1]).format('HH:mm:ss')
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = el.time[1].slice(0,el.time[1].length-1)
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs.forEach((item,num)=>{
             this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs[num] = {
@@ -302,22 +296,32 @@ export default {
         if(newVal){
             console.log('newVal',newVal)
              this.keepWatchPlanInfo={
-                departmentId: newVal.departmentId,
-                keepWatchPlanPlaces: newVal.keepWatchPlanPlaces,
+                    departmentId: newVal.departmentId,
+                    keepWatchPlanPlaces: newVal.keepWatchPlanPlaces,
                     name: newVal.name,
                     repetition: newVal.repetition,
                     repetitionType: newVal.repetitionType,
                     status: newVal.status,
-                    type: newVal. type  
+                    type: newVal.type,
+                    id:newVal.id 
                 }
                 let list = []
+                let staff_list = [] 
+
              newVal.keepWatchPlanPlaces.forEach(el=>{
                  list.push({
                      time:[el.startTime+"'",el.endTime+"'"]
                  })
-             })  
+                 el.keepWatchPlaceStaffs.forEach(staff=>{
+                     staff_list.push(staff.staffId)
+                 })
+                 el.keepWatchPlaceStaffs = staff_list
+                 staff_list=[]
+             }) 
+            //  this.keepWatchPlanInfo.keepWatchPlanPlaces.keepWatchPlaceStaffs = staff_list
              this.timePicker = list
              console.log(this.timePicker) 
+             console.log('编辑',newVal.keepWatchPlanPlaces) 
         }
       }
   }

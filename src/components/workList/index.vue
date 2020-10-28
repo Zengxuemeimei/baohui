@@ -45,7 +45,7 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" @click="editItem(scope.row)" size="mini">编辑</el-button>
-                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                  <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button>
                 </div>
             </template>
           </el-table-column>
@@ -65,12 +65,28 @@
         :before-close="handleClose">
         <el-form :model="staffRecordInfo" :rules="rules"  ref="ruleForm" label-width="100px">
             <el-form-item label="姓名" prop="staffName">
-                <el-autocomplete
+                <!-- <el-autocomplete
                     v-model="staffName"
                     :fetch-suggestions="querySearchAsync"
                     @select="changeStaff"
                     placeholder="请输入内容">
-                </el-autocomplete>
+                </el-autocomplete> -->
+                <el-select
+                    v-model="staffRecordInfo.staffId"
+                    filterable
+                    remote
+                    @change="getStaffInfo"
+                    reserve-keyword
+                    placeholder="请输入关键词"
+                    :remote-method="changeStaff"
+                    :loading="loading">
+                        <el-option
+                            v-for="item in staffList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                        </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="开始时间" prop="startTime">
               <el-date-picker
@@ -104,7 +120,7 @@
 </template>
 
 <script>
-import { getStaffRecordInfoList, staffSaveOrUpdate } from '@/api/calendar'
+import { getStaffRecordInfoList, staffSaveOrUpdate,deleteLeaveRecord } from '@/api/calendar'
 import Paging from '@/components/Paging/index'
 import Loading from '@/components/Loading/index'
 import AddButton from '@/components/AddButton/index'
@@ -171,12 +187,41 @@ export default {
       this.isAdd = false
     },
     changeStaff(val){
-      this.staffInfo = val
-      console.log('信息' ,val)
+      this.pageData.keyword = val
+      this.getStaffList()
+    },
+    getStaffInfo(id){
+        this.staffList.forEach(el=>{
+          if(id == el.id){
+            this.staffInfo = el
+          }
+        })
     },
     addShow(value){
       console.log('addShow',value)
       this.isAdd = value
+    },
+    deleteItem(id){
+       this.$confirm('此操作将永久删除该信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteLeaveRecord({id:id}).then(res=>{
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.getList()
+          })
+          
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+       
     },
     empty(){
       this.staffRecordInfo={
@@ -200,7 +245,7 @@ export default {
           name:item.name,
           departmentId:item.departmentId
       }
-      this.staffName = item.name
+      // this.staffInfo.staffId = item.staffId
 
     },
     addEvent(formName){
@@ -215,7 +260,7 @@ export default {
             }else{
               console.log('2',that.staffInfo)
               data = that.staffRecordInfo
-              data.staffId = that.staffInfo.id
+              // data.staffId = that.staffInfo.id
               data.name = that.staffInfo.name
               data.departmentId = that.staffInfo.departmentId
           
@@ -232,13 +277,11 @@ export default {
           }
         })
     },
-    // manageSelect(val){
-    //     this.staffRecordInfo.staffId = val.id
-    // },
     getList(){
       this.loading= true
       getStaffRecordInfoList(this.pageData).then(res=>{
         this.list = res.data.dataList
+        this.total = res.data.total
         this.loading= false
       }).catch(error=>{
         this.loading= false
@@ -257,18 +300,7 @@ export default {
             })
             that.staffList = dataList
         })
-    },
-    querySearchAsync(queryString, callback) {
-        // let  staffList = that.staffList;
-        this.pageData.keyword = queryString
-        this.getStaffList()
-        // var results = queryString ? staffList.filter(this.createStateFilter(queryString)) : staffList;
-        callback(this.staffList);
-        // clearTimeout(this.timeout);
-        // this.timeout = setTimeout(() => {
-          
-        // }, 3000 * Math.random());
-      },
+    }
   }
 }
 </script>

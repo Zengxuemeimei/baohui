@@ -4,23 +4,22 @@
       <p class="title">实时监控-监控地址列表</p>
     </header>
     <main class="content-main">
-      <div class="key-words-box">
-        <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
-      </div>
       <div class="filter-box flex-between">
         <div class="flex-start">
-          <div>
+          <div class="">
+            <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
+          </div>
+          <div class="flex-start ml20">
             <label class="filter-label">部门：</label>
             <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=0;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
               <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
+           <div class="btn-box flex-start ml20">
+              <add-button @addShow="addShow"/>
+          </div>
         </div>
-        <div class="btn-box flex-start">
-            <add-button @addShow="addShow"/>
-            <!-- <edit-button />
-            <del-button /> -->
-        </div>
+       
       </div>
       <div class="all-table">
         <el-table
@@ -45,13 +44,22 @@
           </el-table-column>
           <el-table-column
             prop="address"
-            label="点位地址"
-          >
+            label="点位地址">
+          </el-table-column>
+          <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <div class="flex-start">
+                  <el-button type="primary" @click="editItem(scope.row)" size="mini">编辑</el-button>
+                  <!-- <el-button type="success" @click="detailItem(scope.row)" size="mini">详情</el-button> -->
+                  <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
+                </div>
+            </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">
-        <p>双击进入详情页面</p>
+        <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
@@ -91,6 +99,7 @@ export default {
       },
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       list:[],
       total:0,
@@ -119,12 +128,18 @@ export default {
       console.log('addShow',value)
       this.isAdd = value
     },
+    editItem(item){
+      this.isAdd = true
+      this.isEdit = true
+      this.editDetail = item
+    },
     closeAdd(item){
         let that = this
         if(item.isSuccess){
             that.getList()
         }
         that.isAdd = item.isShow
+        that.editDetail = null
         that.isEdit = item.isShow 
     },
     getDepartmentList(){

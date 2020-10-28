@@ -32,16 +32,13 @@
               </div>
              
             </div>
-            <el-calendar v-model="month">
+            <el-calendar v-model="calendarMonth">
               <template
               slot="dateCell"
                  slot-scope="{data}">
-                <!-- <p class="calendar-date" :class="data.isSelected ? 'is-selected' : ''">
-                  {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : ''}}
-                </p> -->
                 <div class="flex-center flex-column" style="width:100%;height:100%" @dblclick="editWork(data.day)" @click="detailDay(data.day)">
                     <p class="calendar-date">{{data.day.split('-').slice(2).join('-')}}</p>
-                    <p :class="item.workType == '休假'?'is-vacation':''" v-for="item in workDayList" :key="item.id">{{item.date == data.day ? item.workType:''}}</p>
+                    <p :class="item.workType == '休假'?'is-vacation':''" class="work" v-for="item in workDayList" :key="item.id">{{item.date == data.day ? item.workType:''}}</p>
                     <!-- <p>{{workDayList[0].date}}</p> -->
                 </div>
                 
@@ -60,12 +57,12 @@
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
                 <el-form-item label="部门" prop="departmentId">
                     <div class="input-box">
-                        <el-select clearable v-model="ruleForm.departmentId" placeholder="请选择">
+                        <el-select :disabled="isEdit" clearable v-model="ruleForm.departmentId" placeholder="请选择">
                           <DepartmentSelect :list="listDepartment"/>
                         </el-select>
                     </div>
                 </el-form-item>
-                <el-form-item label="上班时间" prop="workStartTime">
+                <el-form-item label="上班时间" prop="workStartTime" v-if="ruleForm.workType != '休假'">
                     <div class="input-box">
                         <el-time-picker
                             v-model="ruleForm.workStartTime"
@@ -74,7 +71,7 @@
                         </el-time-picker>
                     </div>
                 </el-form-item>
-                <el-form-item label="下班时间" prop="wordEndTime">
+                <el-form-item label="下班时间" prop="wordEndTime" v-if="ruleForm.workType != '休假'">
                     <div class="input-box">
                         <el-time-picker
                             v-model="ruleForm.wordEndTime"
@@ -83,16 +80,27 @@
                         </el-time-picker>
                     </div>
                 </el-form-item>
-                <el-form-item label="上班日期" prop="workDay">
+                <el-form-item label="上班日期" prop="workDay" v-if="ruleForm.workType != '休假'">
                     <div class="input-box">
                         <el-date-picker
                           type="dates"
+                          :disabled="isEdit"
                           v-model="ruleForm.workDay"
                           placeholder="选择一个或多个日期">
                         </el-date-picker>
                     </div>
                 </el-form-item>
-                <el-form-item prop="workDay">
+                <el-form-item label="休假日期" prop="workDay" v-if="ruleForm.workType == '休假'">
+                    <div class="input-box">
+                        <el-date-picker
+                          type="dates"
+                          :disabled="isEdit"
+                          v-model="ruleForm.workDay"
+                          placeholder="选择一个或多个日期">
+                        </el-date-picker>
+                    </div>
+                </el-form-item>
+                <el-form-item>
                     <div class="input-box">
                        <el-radio-group v-model="ruleForm.workType">
                           <el-radio-button value="上班" label="上班"></el-radio-button>
@@ -125,6 +133,7 @@ export default {
       // calendarValue:'2020-09',
       listDepartment:[],
       month:null,
+      calendarMonth:null,
       loading:false,
       departmentId:null,
       isAdd:false,
@@ -148,7 +157,7 @@ export default {
           { required: true, message: '请选择下班时间', trigger: 'change' }
         ],
         workDay:[
-          { required: true, message: '请选择上班日期', trigger: 'change' }
+          { required: true, message: '请选择日期', trigger: 'change' }
         ],
       },
       workDayList:[],
@@ -162,7 +171,6 @@ export default {
     this.getDepartmentList()
     let date = new Date()
     this.month = moment(date).format('YYYY-MM')
-    
   },
   methods: {
     detailDay(date){
@@ -170,15 +178,16 @@ export default {
           if(el.date == date){
             this.workStartTime = el.workStartTime
             this.workEndTime = el.wordEndTime
-          }
+          }     
       })
+      if(date.substring(0,7) !== this.month){
+          this.month =  moment(date).format('YYYY-MM')
+          this.getList()
+      }
     },
     changeMonth(val){
-      if(!val){
-          let date = new Date()
-          this.month = moment(date).format('YYYY-MM')
-        }
-        // console.log('时间',val)
+        this.calendarMonth = new Date(val)
+        // this.month = moment(val).format('YYYY-MM')
         this.getList()
     },
     changeDepart(val){
@@ -304,10 +313,11 @@ export default {
       }
       getCalendarList(data).then(res=>{
         res.data.dataList.forEach((el,index)=>{
-          let month = el.workDay[1] < 10? '0'+ el.workDay[1] :el.workDay[1]
-          let day = el.workDay[2] < 10? '0'+ el.workDay[2] :el.workDay[2]
+          // let month = el.workDay[1] < 10? '0'+ el.workDay[1] :el.workDay[1]
+          // let day = el.workDay[2] < 10? '0'+ el.workDay[2] :el.workDay[2]
           //  el.workDay[3] < 10 ? '0'+ el.workDay[3] : el.workDay[3]
-          res.data.dataList[index].date = el.workDay[0] + '-' + month + '-' +day
+          // res.data.dataList[index].date = el.workDay[0] + '-' + month + '-' +day
+          res.data.dataList[index].date = el.workDay
         })
           this.workDayList = res.data.dataList
           console.log(this.workDayList)
@@ -330,6 +340,21 @@ export default {
 }
 .calendar-date{
   text-align: center;
+  line-height: 30px;
+  width: 50%;
 }
 
+.work{
+    background: #66b1ff;
+    color: #fff;
+    width: 50%;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 5px;
+    /* margin-top: 5px; */
+    /* position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%); */
+}
 </style>

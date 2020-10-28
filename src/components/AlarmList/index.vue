@@ -62,6 +62,9 @@
           <el-table-column prop="riskType" label="告警类型" >
           </el-table-column>
           <el-table-column prop="riskTime" label="告警时间" >
+            <template slot-scope="scope">
+              {{scope.row.riskTime | dateFormat}}
+            </template>
           </el-table-column>
           <el-table-column prop="manageStatus" label="处置状态"> </el-table-column>
           <el-table-column label="操作"> 

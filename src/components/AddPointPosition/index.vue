@@ -29,11 +29,6 @@
                         </td>
                         <th>点位类型</th>
                         <td style="width:300px">
-                          <!-- <input
-                                type="text"
-                                class="input-form"
-                                v-model="keepWatchPlaceInfo.type"
-                            /> -->
                             <el-select clearable v-model="keepWatchPlaceInfo.type" placeholder="请选择">
                             <DictionarySelect :list="positionTypeList"/>
                           </el-select>
@@ -75,7 +70,9 @@
                     </tr>
                 </table>
                 <div class="amap-wrapper map ml50">
-                    <el-amap vid="amapDemo"  :center="center" :map-manager="amapManager" :zoom="12" :events="events" class="amap-demo">
+                  <el-amap-search-box class="search-box" :searchOption="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
+                    <el-amap vid="amapDemo"  :center="center" :map-manager="amapManager" :zoom="16" :events="events" class="amap-demo">
+                      <el-amap-marker v-for="marker in markers" :key="marker[0]" :position="marker" ></el-amap-marker>
                     </el-amap>
                 </div>
             </el-scrollbar>
@@ -120,7 +117,12 @@ export default {
     let that = this
     return {
         center: [121.59996, 31.197646],
+        markers:[],
         amapManager,
+        searchOption: {
+            city: '上海',
+            citylimit: false
+        },
         events: {
             init(o) {
               console.log(o.getCenter())
@@ -156,6 +158,23 @@ export default {
             that.$emit('close',{isShow:false,isSuccess:true})
         })
     },
+    onSearchResult(pois) {
+          let latSum = 0;
+          let lngSum = 0;
+          if (pois.length > 0) {
+            pois.forEach(poi => {
+              let {lng, lat} = poi;
+              lngSum += lng;
+              latSum += lat;
+              this.markers.push([poi.lng, poi.lat]);
+            });
+            let center = {
+              lng: lngSum / pois.length,
+              lat: latSum / pois.length
+            };
+            this.center = [center.lng, center.lat];
+          }
+    },
     empty(){
       this.keepWatchPlaceInfo={
             departmentId:null,
@@ -174,7 +193,13 @@ export default {
   },
   watch:{
     editDetail(newVal){
-       this.keepWatchPlaceInfo = newVal
+      if(newVal){
+        this.keepWatchPlaceInfo = newVal
+        this.center = [newVal.longitude,newVal.latitude]
+        this.markers = [
+          [newVal.longitude,newVal.latitude]
+        ]
+      }
     }
   }
 }
@@ -183,8 +208,14 @@ export default {
 .map{
     width: 80%;
     height: 400px;
+    position: relative;
 }
 .el-select{
   width: 100%;
+}
+.search-box {
+      position: absolute;
+      top: 25px;
+      left: 20px;
 }
 </style>

@@ -193,7 +193,7 @@
     cursor: pointer;
 }
 .is-vacation{
-    color: #aaaaaa;
+    background: rgb(108, 219, 108) !important;
 }
 .img_bg_camera{
     background: #edeeee;
@@ -201,6 +201,18 @@
 .take-photo {
     font-size: 60px;
     cursor: pointer;
+}
+.el-button-group{
+    display: none ;
+}
+.el-calendar__body{
+    padding: 0 0 35px;
+}
+.el-calendar-table thead{
+    background: #efefef;
+}
+table .el-input.is-disabled .el-input__inner{
+    background-color: #fff;
 }
 //车牌背景
 .app-license-keyboard .license-container{

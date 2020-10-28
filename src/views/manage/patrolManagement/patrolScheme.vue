@@ -8,8 +8,6 @@
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
         <div class="btn-box flex-start ml20">
             <add-button @addShow="addShow"/>
-            <!-- <edit-button />
-            <del-button /> -->
         </div>
       </div>
       <div class="all-table">
@@ -38,26 +36,16 @@
             label="状态"
             width="280">
           </el-table-column>
-          <!-- <el-table-column
-            prop="department"
-            label="巡更人员"
-            width="280">
-          </el-table-column>
           <el-table-column
-            prop="department"
-            label="巡更点位"
-            width="146">
-          </el-table-column> -->
-          <el-table-column
-            prop="department"
-            label="所属部门"
-          >
+            prop="departmentName"
+            label="所属部门">
           </el-table-column>
            <el-table-column
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" @click="editItem(scope.row.id)" size="mini">编辑</el-button>
+                  <el-button type="success" @click="detailItem(scope.row.id)" size="mini">详情</el-button>
                   <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
@@ -69,7 +57,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddPatrolScheme :isShow="isAdd" :isEdit="isEdit" :repetitionTypeList="repetitionTypeList" :caseTypeList="caseTypeList" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
+    <AddPatrolScheme :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :repetitionTypeList="repetitionTypeList" :caseTypeList="caseTypeList" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -105,6 +93,7 @@ export default {
       },
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       list:[],
       total:0,
@@ -112,25 +101,7 @@ export default {
       listDepartment:[],
       caseTypeList:[],
       repetitionTypeList:[],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
-      }
+    }
   },
   created() {
   },
@@ -163,11 +134,20 @@ export default {
         }
         that.isAdd = item.isShow
         that.isEdit = item.isShow 
+        that.isDetail = item.isShow 
+        that.editDetail = null
     },
     editItem(id){
       getPlanDetailList({id:id}).then(res=>{
           this.isAdd = true
           this.isEdit = true
+          this.editDetail = res.data
+      })
+    },
+    detailItem(id){
+       getPlanDetailList({id:id}).then(res=>{
+          this.isAdd = true
+          this.isDetail = true
           this.editDetail = res.data
       })
     },

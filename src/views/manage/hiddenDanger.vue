@@ -4,29 +4,20 @@
       <p class="title">安全隐患管理</p>
     </header>
     <main class="content-main">
-      <div class="key-words-box">
-        <search-key @query="keyWordsQuery"/>
-      </div>
-      <div class="filter-box flex-between">
-        <div class="flex-start">
-          <div>
-            <label class="filter-label">处理状态：</label>
-            <el-select clearable v-model="hiddenDangerStatus"  placeholder="请选择">
-                <DictionarySelect :list="hiddenDangerStatusList"/>
-              </el-select>
-            <!-- <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select> -->
+      
+      <div class="filter-box ">
+          <div class="key-words-box flex-start">
+            <search-key @query="keyWordsQuery"/>
+            <div class="flex-start ml20">
+              <label class="filter-label">处理状态：</label>
+              <el-select clearable v-model="hiddenDangerStatus" @change="changeStatus"  placeholder="请选择">
+                  <DictionarySelect :list="hiddenDangerStatusList"/>
+                </el-select>
+            </div>
+            <div class="btn-box flex-start ml20">
+                <add-button @addShow="addShow"/>
+            </div>
           </div>
-        </div>
-        <div class="btn-box flex-start">
-            <add-button @addShow="addShow"/>
-        </div>
       </div>
       <div class="all-table">
         <el-table
@@ -80,6 +71,7 @@
             <template slot-scope="scope">
                 <div class="flex-start">
                   <el-button type="primary" @click="editItem(scope.row)"  size="mini">编辑</el-button>
+                  <el-button type="success" @click="detailItem(scope.row)"  size="mini">详情</el-button>
                   <!-- <el-button type="danger" @click="deleteItem(scope.row.id)" size="mini">删除</el-button> -->
                 </div>
             </template>
@@ -91,7 +83,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
     </main>
-    <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :hiddenDangerLevelList="hiddenDangerLevelList" :hiddenDangerStatusList="hiddenDangerStatusList" :editDetail="editDetail" @close="closeAdd"/>
+    <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :hiddenDangerLevelList="hiddenDangerLevelList" :hiddenDangerStatusList="hiddenDangerStatusList" :editDetail="editDetail" @close="closeAdd"/>
   </div>
 </template>
 
@@ -126,6 +118,7 @@ export default {
       loading:false,
       isAdd:false,
       isEdit:false,
+      isDetail:false,
       editDetail:{},
       list:[],
       total:0,
@@ -170,7 +163,16 @@ export default {
       getHiddenDangerDetail({id:item.id}).then(res=>{
           this.editDetail = res.data
       })
-      
+    },
+    detailItem(item){
+      this.isAdd = true
+      this.isDetail = true
+      getHiddenDangerDetail({id:item.id}).then(res=>{
+          this.editDetail = res.data
+      })
+    },
+    changeStatus(){
+        
     },
     getList(){
       let data = this.pageData

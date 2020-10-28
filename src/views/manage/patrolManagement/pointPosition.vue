@@ -4,12 +4,10 @@
       <p class="title">巡更管理-点位管理</p>
     </header>
     <main class="content-main">
-      <div class="filter-box flex-between">
+      <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
-        <div class="btn-box flex-start">
+        <div class="btn-box flex-start ml20">
             <add-button @addShow="addShow"/>
-            <!-- <edit-button />
-            <del-button /> -->
         </div>
       </div>
       <div class="all-table">
@@ -25,36 +23,30 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="点位名称"
-            width="280">
+            label="点位名称">
           </el-table-column>
           <el-table-column
             prop="number"
-            label="点位编号"
-            width="280">
+            label="点位编号">
           </el-table-column>
           <el-table-column
             prop="type"
-            label="点位类型"
-            width="280">
+            label="点位类型">
           </el-table-column>
           <el-table-column
             prop="detailedAddress"
-            label="点位详细位置"
-            width="280">
+            label="点位详细位置">
           </el-table-column>
           <el-table-column
             prop="longitude"
-            label="经度"
-            width="146">
+            label="经度">
           </el-table-column>
           <el-table-column
             prop="latitude"
-            label="纬度"
-            width="146">
+            label="纬度">
           </el-table-column>
           <el-table-column
-            prop="department"
+            prop="departmentName"
             label="所属部门"
           >
           </el-table-column>

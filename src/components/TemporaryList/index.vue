@@ -27,7 +27,8 @@
             </el-image>
             <p class="car-num" v-if="item.carNumber">{{item.carNumber}}</p>
           </div>
-          <el-button type="primary"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
+          <el-button type="primary" v-show="item.control"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
+          <el-button type="danger" v-show="!item.control"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
         </li>
       </ul>
       <div v-if="total == 0" class="flex-center" style="width:100%">
@@ -96,7 +97,6 @@ export default {
     },
     setControl(item){
       let data = {
-        // control :null,
         id:item.id
       }
       if(item.control){
@@ -104,7 +104,7 @@ export default {
       }else{
          data.control = true
       }
-      setControl(data).ten(res=>{
+      setControl(data).then(res=>{
         this.getList()
       })
     }
@@ -127,10 +127,6 @@ export default {
     grid-row-gap: 75px;
     grid-column-gap: 30px;
 }
-/* .person-menu li{
-    width: 120px;
-    margin-bottom: 75px;
-} */
 .person-menu:after {
     content: "";
     width: 120px;
@@ -153,10 +149,13 @@ export default {
   text-align: center;
   line-height: 28px;
 }
-.el-button--primary{
+.el-button--primary,.person-menu .el-button--danger{
     width: 120px;
     height: 30px;
     line-height: 30px;
     padding: 0;
+}
+.person-menu .el-button--danger{
+  margin-left: 0;
 }
 </style>

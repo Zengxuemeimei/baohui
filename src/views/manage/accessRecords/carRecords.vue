@@ -11,19 +11,18 @@
         <div class="flex-start">
           <div>
             <label class="filter-label">进/出：</label>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+            <el-select clearable v-model="pageData.directionType" @change="changeDirectionType" placeholder="请选择">
+              <el-option label="进" value="进"></el-option>
+              <el-option label="出" value="出"></el-option>
             </el-select>
           </div>
           <div class="filter-time ml20">
             <label class="filter-label">进出时间：</label>
             <el-date-picker
-              v-model="value3"
+               clearable
+              @change="changeTime"
+              v-model="accessTime"
+              value-format="yyyy-MM-dd HH:mm:ss"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -31,7 +30,7 @@
             </el-date-picker>
           </div>
         </div>
-        <div class="person-total flex-center flex-column">
+        <!-- <div class="person-total flex-center flex-column">
             <div class="flex-start">
                 <p class="f30">
                     <count-to
@@ -46,7 +45,7 @@
                 <p class="f14 ml5 mt5">辆</p>
             </div>
             <p class="mt5 f14">今日车辆进出数量</p>
-        </div>
+        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -61,23 +60,19 @@
           </el-table-column>
           <el-table-column
             prop="carNumber"
-            label="车牌号"
-            width="270">
+            label="车牌号">
           </el-table-column>
           <el-table-column
             prop="personName"
-            label="车主姓名"
-            width="146">
+            label="车主姓名">
           </el-table-column>
            <el-table-column
             prop="idNumber"
-            label="车主身份证号"
-            width="270">
+            label="车主身份证号">
           </el-table-column>
           <el-table-column
             prop="department"
-            label="图片"
-            width="146">
+            label="图片">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
                     <el-image 
@@ -92,26 +87,25 @@
              </template>
           </el-table-column>
           <el-table-column
-            label="视频"
-            width="146">
+            label="视频">
             <div class="headPortrait-box flex-center">
               <i class="el-icon-video-camera" />
             </div>
           </el-table-column>
           <el-table-column
             prop="liveAddress"
-            label="出入地点"
-            width="270">
+            label="出入地点">
           </el-table-column>
           <el-table-column
             prop="accessTime"
-            label="出入时间"
-            width="270">
+            label="出入时间">
+            <template slot-scope="scope">
+              {{scope.row.accessTime | dateFormat}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="direction"
-            label="出入方向"
-          >
+            label="出入方向">
           </el-table-column>
         </el-table>
       </div>
@@ -150,24 +144,7 @@ export default {
       loading:false,
       editDetail:{},
       total:0,
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
+      accessTime:null,
     }
   },
   created() {
@@ -197,8 +174,28 @@ export default {
           }
           that.isDetail = item.isShow
       },
+      changeTime(val){
+        if(val){
+          this.pageData.accessStartTime = new Date(val[0]).getTime()
+          this.pageData.accessEndTime = new Date(val[1]).getTime()
+        }else{
+          this.pageData.accessStartTime = null
+          this.pageData.accessEndTime = null 
+        }
+          this.getList()
+      },
+      changeDirectionType(val){
+        if(val){
+          this.pageData.directionType = val
+        }else{
+          this.pageData.directionType = null
+        }
+        this.pageData.pageIndex = 1
+        this.getList()
+      },
       getList(){
         let data = this.pageData
+        data.temporary = false
         let that = this
         that.loading = true
         getAccessCarList(data).then(res=>{

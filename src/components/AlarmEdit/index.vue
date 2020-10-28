@@ -49,8 +49,8 @@
                     <th>告警时间</th>
                     <td>
                         <el-date-picker
-                            type="date"
                             v-model="alarmInfo.riskTime"
+                            type="datetime"
                             placeholder="选择日期">
                         </el-date-picker>
                     </td>
@@ -75,17 +75,21 @@
                 <tr>
                     <th>处理人</th>
                     <td>
-                        <!-- <input
-                            type="text"
-                            class="input-form"
+                        <el-select
                             v-model="alarmInfo.manageStaffId"
-                        /> -->
-                        <el-autocomplete
-                                v-model="alarmInfo.manageStaffName"
-                                :fetch-suggestions="querySearchAsync"
-                                @select="manageSelect"
-                                placeholder="请输入内容">
-                        </el-autocomplete>
+                            filterable
+                            remote
+                            reserve-keyword
+                            placeholder="请输入关键词"
+                            :remote-method="changeManage"
+                            :loading="loading">
+                            <el-option
+                            v-for="item in staffList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                            </el-option>
+                        </el-select>
                     </td>
                     <th>处理结果描述</th>
                     <td colspan="3">
@@ -130,6 +134,7 @@
 <script>
 import {saveOrUpdate} from '@/api/alarmCenter'
 import {getStaffList} from '@/api/staff/index'
+import moment from 'moment'
 
 export default {
   name: 'AlarmEdit',
@@ -157,6 +162,7 @@ export default {
             keyword:null,
             pageIndex:1
         },
+        loading:false,
         manageStaffId:null
     }
   },
@@ -168,21 +174,12 @@ export default {
       handleClose() {
         this.$emit("close", { isShow: false, isSuccess: false });
     },
-    manageSelect(val){
-        this.manageStaffId = val.id
-    },
-    querySearchAsync(queryString, callback) {
-        // let  staffList = that.staffList;
-        this.pageData.keyword = queryString
+    changeManage(val){
+        console.log('关键字',val)
+        this.pageData.keyword = val
         this.getStaffList()
-        // var results = queryString ? staffList.filter(this.createStateFilter(queryString)) : staffList;
-        callback(this.staffList);
-        // clearTimeout(this.timeout);
-        // this.timeout = setTimeout(() => {
-          
-        // }, 3000 * Math.random());
-      },
-      getStaffList(){
+    },
+    getStaffList(){
         let that = this
         let data = this.pageData
         getStaffList(data).then(res=>{
@@ -198,12 +195,10 @@ export default {
         data.name = this.alarmInfo.name
         data.comment = this.alarmInfo.comment
         data.riskType = this.alarmInfo.riskType
-        data.riskTime = this.alarmInfo.riskTime
+        data.riskTime = moment(this.alarmInfo.riskTime).valueOf()
         data.manageStatus = this.alarmInfo.manageStatus
-        data.manageStaffId = this.manageStaffId
+        data.manageStaffId = this.alarmInfo.manageStaffId
         data.resultDescribe = this.alarmInfo.resultDescribe
-        data.imageUrl = this.alarmInfo.imageUrl
-        data.videoUrl = this.alarmInfo.videoUrl
         data.id = this.alarmInfo.id
         saveOrUpdate(data).then(res=>{
             this.$emit("close", { isShow: false, isSuccess: true });

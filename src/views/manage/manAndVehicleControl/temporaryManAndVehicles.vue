@@ -5,10 +5,10 @@
     </header>
     <el-tabs v-model="activeName2" type="card" >
         <el-tab-pane label="临时人员" name="person">
-            <TemporaryList controlType='人员'/>
+            <TemporaryList v-if="activeName2 == 'person'" controlType='人员'/>
         </el-tab-pane>
         <el-tab-pane label="临时车辆" name="car">
-            <TemporaryList controlType='车辆'/>
+            <TemporaryList v-if="activeName2 == 'car'" controlType='车辆'/>
         </el-tab-pane>
     </el-tabs>
   </div>

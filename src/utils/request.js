@@ -64,7 +64,7 @@ service.interceptors.response.use(
         })
       }
       if (res.code === '400') {
-        // to re-login
+        console.log('测试400',res.msg)
         Message({
           message: res.msg || '网络故障，请稍后再试',
           type: 'error',
@@ -72,7 +72,6 @@ service.interceptors.response.use(
         })
       }
       if (res.code === '401') {
-        // to re-login
         next(`/login?redirect=${this.$route.path}`)
       }
       return Promise.reject(new Error(res.msg || '网络故障，请稍后再试'))

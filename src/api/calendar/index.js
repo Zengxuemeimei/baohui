@@ -26,10 +26,43 @@ export function getStaffAttendanceInfoList(params) {
       params
     })
 }
+//删除请假，加班记录
+export function deleteLeaveRecord(params) { 
+  return request({
+    url: '/staffRecordInfo/deleteById',
+    method: 'get',
+    params
+  })
+}
+
 //按月查看考勤
 export function getStaffMonthList(params) { 
   return request({
     url: '/staffAttendanceInfo/getAttendanceInfoListByStaff',
+    method: 'get',
+    params
+  })
+}
+//查看员工考勤信息
+export function getStaffDayDetail(params) { 
+  return request({
+    url: '/staffAttendanceInfo/getSignInfoByStaff',
+    method: 'get',
+    params
+  })
+}
+//修改考勤记录
+export function updateCheckWork(data) { 
+  return request({
+    url: '/staffAttendanceInfo/update',
+    method: 'post',
+    data
+  })
+}
+//审核考勤
+export function examine(params) { 
+  return request({
+    url: 'staffAttendanceInfo/approvalCurrentMonth',
     method: 'get',
     params
   })

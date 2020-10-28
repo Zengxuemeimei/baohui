@@ -26,6 +26,14 @@ export function getKeepWatchPlaceList(params) {
     })
 }
 
+export function getKeepWatchTaskDetail(params) { 
+  return request({
+    url: '/keepWatchTaskInfo/getByTaskId',
+    method: 'get',
+    params
+  })
+}
+
 export function getKeepWatchRecordList(params) { 
     params.pageSize = 10
     return request({
