@@ -15,6 +15,7 @@
         <template slot-scope="scope">
           <div class="flex-start">
             <el-button type="primary" @click="editMenu(scope.row)" size="mini">编辑</el-button>
+            <el-button type="danger" @click="deleteDictionary(scope.row.id)" size="mini">删除</el-button>
           </div>
         </template>
       </el-table-column>
@@ -24,7 +25,7 @@
         <paging :total="total" @getCurrentPage="getPage"/>
     </div> -->
     <el-dialog
-        title="新增字典"
+        :title="title"
         :visible.sync="isAdd"
         width="500px"
         :close-on-click-modal="false"
@@ -65,7 +66,7 @@
 <script>
 import AddButton from '@/components/AddButton/index'
 import Paging from '@/components/Paging/index'
-import {saveOrUpdate} from '@/api/dictionary'
+import {saveOrUpdate,updateStatus} from '@/api/dictionary'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 
 export default {
@@ -104,6 +105,7 @@ export default {
                 {required: true, message: '请输入数据名称', trigger: 'blur'}
             ]
         },
+        title:'新增字典'
     }
   },
   created() {},
@@ -123,6 +125,7 @@ export default {
     },
      editMenu(item){
         let that = this
+        that.title = '编辑字典'
         that.isAdd = true
         that.isEdit = true
         that.dictionaryForm.parentId = item.parentId
@@ -133,6 +136,30 @@ export default {
     },
     addShow(val){
         this.isAdd = val
+        this.title = '新增字典'
+    },
+    deleteDictionary(id){
+        let that = this
+        that.$confirm('此操作将永久删除该字典, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          updateStatus({id:id}).then(res=>{
+              that.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.$emit("close", { isShow: false, isSuccess: true });
+          })
+          
+        }).catch(() => {
+          that.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      
     },
     handleClose(){
         this.isAdd = false
@@ -148,6 +175,7 @@ export default {
             status:'启用',
             orderNum:null
         }
+        this.title = '新增字典'
     },
     getRowClassName({row, rowIndex}){
       if(row.children.length <= 0){

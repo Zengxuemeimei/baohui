@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-        title="新增方案"
+        :title="title"
         :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
@@ -190,7 +190,8 @@ export default {
         },
         loading:false,
         staffList:[],
-        placeList:[]
+        placeList:[],
+        title:'新增方案'
     }
   },
   created() {
@@ -270,6 +271,7 @@ export default {
             status: '启用',
             type: null   
         }
+        this.title = '新增方案'
       },
       addPatrolScheme(){
           let list = []
@@ -323,6 +325,16 @@ export default {
              console.log(this.timePicker) 
              console.log('编辑',newVal.keepWatchPlanPlaces) 
         }
+      },
+      isDetail(newVal){
+          if(newVal){
+              this.title = '方案详情'
+          }
+      },
+      isEdit(newVal){
+          if(newVal){
+              this.title = '编辑方案'
+          }
       }
   }
 }

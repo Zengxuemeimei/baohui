@@ -25,7 +25,7 @@ export function logout() {
   })
 }
 export function getList(params) {
-  params.pageSize=10
+  // params.pageSize=10
   params.enterpriseId = store.getters.enterpriseId
   return request({
     url: '/userInfo/list',

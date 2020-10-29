@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import store from '@/store'
 
 export function getAlarmInfoList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     params.enterpriseId = store.getters.enterpriseId
     return request({
       url: '/alarmInfo/list',

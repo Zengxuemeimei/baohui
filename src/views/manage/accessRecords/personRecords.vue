@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">出入记录-人员管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box">
         <search-key @query="keyWordsQuery"/>
       </div>
@@ -79,6 +79,7 @@
                     <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.accessImage">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -88,12 +89,12 @@
              </template>
             
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="视频">
             <div class="headPortrait-box flex-center" style="backgroud:#000">
               <i class="el-icon-video-camera" />
             </div>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="liveAddress"
             label="出入地点">
@@ -119,6 +120,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AccessPerson :isShow="isDetail" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -132,6 +134,7 @@ import AccessPerson from '@/components/AccessDetail/person'
 import {getAccessPersonList} from '@/api/accessRecords/index'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import {getDepartmentList} from '@/api/department'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'PersonRecords',
@@ -140,13 +143,15 @@ export default {
       countTo,
       Paging,
       AccessPerson,
-      DepartmentSelect
+      DepartmentSelect,
+      Loading
   },
   data() {
     return {
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:10
       },
       accessTime:null,
       list:[],
@@ -155,6 +160,7 @@ export default {
       editDetail:{},
       total:0,
       listDepartment:[],
+      imgList:[]
     }
   },
   created() {
@@ -211,8 +217,14 @@ export default {
         let that = this
         that.loading = true
         getAccessPersonList(data).then(res=>{
-            that.list = res.data.dataList
-            that.total = res.data.total
+            let {dataList,total} = res.data
+            that.list = dataList
+            that.total = total
+            let img_list = []
+            dataList.forEach(el=>{
+                img_list.push(el.accessImage)
+            })
+          that.imgList = img_list
             that.loading = false
         }).catch(error=>{
             that.loading = false

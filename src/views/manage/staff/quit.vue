@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">员工管理-离职员工</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
       </div>
@@ -130,7 +130,6 @@ export default {
   },
   methods: {
     getPage(val){
-      console.log('waimian',val)
         this.pageData.pageIndex = val
         this.getList()
     },
@@ -176,10 +175,8 @@ export default {
       }else{
         this.pageData.quitTimeStartTime = null
         this.pageData.quitTimeEndTime = null
-      }
-      
+      } 
       this.getList()
-      console.log(val)
     },
     getDepartmentList(){
         let that = this

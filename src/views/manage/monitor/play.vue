@@ -7,14 +7,24 @@
       <div class="flex-start mb20">
         <div>
           <label class="filter-label">播放地址：</label>
-          <!-- <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select> -->
+          <el-select
+            v-model="playUrl"
+            filterable
+            remote
+            @change="changeAddress"
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="changeMonitor"
+            :loading="loading"
+          >
+            <el-option
+              v-for="item in list"
+              :key="item.id"
+              :label="item.name"
+              :value="item.videoUrl"
+            >
+            </el-option>
+          </el-select>
         </div>
       </div>
       <div class="video-box">
@@ -23,88 +33,62 @@
     </main>
   </div>
 </template>
-
 <script>
-// streamedian('test_video')
-</script>
+import {getMonitorList} from '@/api/monitor/index'
+import Tools from '@/utils/tools';
 
-<script>
 export default {
   name: "",
   components: {},
   data() {
     return {
       value: null,
-      playerLists: [],
-      videoLists: [],
+      // playerLists: [],
+      // videoLists: [],
+      playerRTSP:null,
+      playUrl:null,
+      loading:false,
+      list:[],
+      pageData:{
+        keyword:null,
+        pageIndex:1,
+        pageSize:20,
+      }
     };
   },
   created() {},
   mounted() {
-    this.streamedian("test_video");
+    // this.streamedian("test_video");
+    this.getList()
+  },
+  destroyed(){
+    console.log('销毁')
+    Tools.destroyRTSP(this)
   },
   methods: {
-    streamedian(Vid, url) {
-      url =
-        "rtsp://admin:abcdef00@hlstest.tpddns.cn:10554/Streaming/Channels/102";
-      let errHandler = function (err) {
-        console.log("errHandler", err.message);
-      };
-
-      var playerOptions = {
-        socket: "ws://148.70.230.200:9640/ws/",
-        redirectNativeMediaErrors: true,
-        bufferDuration: 30,
-        errorHandler: errHandler,
-        // infoHandler: infHandler
-      };
-
-      var html5Player = document.getElementById(Vid);
-      html5Player.src = url;
-      var player = Streamedian.player(Vid, playerOptions);
-      var nativePlayer = document.getElementById(Vid);
-      nativePlayer.addEventListener("play", function () {
-        //监听播放
-        console.log("开始播放");
-        console.log(nativePlayer.currentTime, nativePlayer.buffered.end(0));
-        setTimeout(function () {
-          nativePlayer.currentTime = nativePlayer.buffered.end(0);
-        }, 500);
-      });
-      if (!!window.chrome) {
-        document.addEventListener("visibilitychange", function () {
-          if (document.visibilityState === "hidden") {
-            console.log("————————————————");
-            console.log(document.visibilityState);
-            // console.log(me.state.playerId);
-            console.log(this.videoLists);
-            console.log(player);
-            console.log("————————————————");
-            for (i of this.videoLists) {
-              i.pause();
-            }
-            nativePlayer.pause();
-          } else {
-            for (i of this.videoLists) {
-              i.play();
-            }
-            // Automatic jump to buffer end for view live video when returning to the web page.
-            setTimeout(function () {
-              nativePlayer.currentTime = nativePlayer.buffered.end(0);
-            }, 3000); // Delay for a few seconds is required for the player has time to update the timeline.
-          }
-        });
-      }
-      // player.destroy();
-      // player = null;
-      // html5Player.src = url;
-      // player = Streamedian.player(me.state.playerId, playerOptions);
-      this.playerLists.push(player);
-      this.videoLists.push(nativePlayer);
-      // console.log("————————————————");
-      // console.log(me.state.playerList);
-      // console.log("————————————————");
+    changeMonitor(val){
+      this.pageData.keyword = val
+      this.getList()
     },
+    changeAddress(val){
+      if(this.playerRTSP){
+        Tools.destroyRTSP(this)
+      }
+      Tools.streamedian("test_video",val,this)
+    },
+    getList(){
+      let data = this.pageData
+      let that = this
+      that.loading = true
+      getMonitorList(data).then(res=>{
+          that.list = res.data.dataList
+          that.loading = false
+          // that.total = res.data.total
+      }).catch(error=>{
+          that.loading = false
+      })
+    },
+    
   },
 };
 </script>
@@ -114,7 +98,7 @@ export default {
   height: 750px;
   /* background: #000000; */
 }
-.video-box  video{
+.video-box video {
   width: 100%;
   height: 100%;
 }

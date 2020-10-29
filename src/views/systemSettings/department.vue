@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">部门管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-between">
         <!-- <search-key @query="keyWordsQuery" /> -->
         <div class="btn-box flex-start">
@@ -21,6 +21,7 @@
         <p></p>
         <paging />
       </div> -->
+      <Loading :loading="loading" />
     </main>
     <AddDepartment
       :isShow="isAdd"
@@ -35,11 +36,10 @@
 <script>
 import SearchKey from "@/components/searchKey/index";
 import AddButton from "@/components/AddButton/index";
-import EditButton from "@/components/EditButton/index";
-import DelButton from "@/components/DelButton/index";
 import Paging from "@/components/Paging/index";
 import DepartmentList from "@/components/Recursion/departmentList";
 import AddDepartment from "@/components/AddDepartment/index";
+import Loading from '@/components/Loading/index'
 import {
   getDepartmentList,
   saveOrUpdate,
@@ -50,11 +50,10 @@ export default {
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
     AddDepartment,
     DepartmentList,
+    Loading
   },
   data() {
     return {
@@ -62,11 +61,12 @@ export default {
       listPaging: [],
       pageData: {
         keyword: null,
-        pageIndex: 0,
+        pageIndex: 1,
       },
       isAdd: false,
       isEdit: false,
       editDetail: {},
+      loading:false
     };
   },
   created() {},
@@ -76,7 +76,7 @@ export default {
   methods: {
     keyWordsQuery(val) {
       this.pageData.keyword = val;
-      this.pageData.pageIndex = 0;
+      this.pageData.pageIndex = 1;
       this.getList();
     },
     addShow(value) {
@@ -119,9 +119,13 @@ export default {
     },
     getList() {
       let that = this;
+      that.loading = true
       getDepartmentList().then((res) => {
+        that.loading = false
         that.list = res.data;
-      });
+      }).catch(error=>{
+        that.loading = false
+      })
     },
   },
 };

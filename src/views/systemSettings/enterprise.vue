@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">企业管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
         <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
         </div>
@@ -52,6 +52,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddEnterprise :isShow="isAdd" :enterpriseTypeList="enterpriseTypeList" :isEdit="isEdit" @close="closeAdd" :editDetail="editDetail"/>
   </div>
@@ -63,10 +64,11 @@ import {getEnterpriseInfoList} from '@/api/enterprise'
 import Paging from '@/components/Paging/index'
 import AddEnterprise from '@/components/AddEnterprise/index'
 import {getDictionaryList} from '@/api/dictionary'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'Enterprise',
-  components: {AddButton,Paging,AddEnterprise},
+  components: {AddButton,Paging,AddEnterprise,Loading},
   data() {
     return {
         isAdd:false,
@@ -79,7 +81,8 @@ export default {
         editDetail:{},
         list:[],
         total:0,
-        enterpriseTypeList:[]
+        enterpriseTypeList:[],
+        loading:false
     }
   },
   created() {
@@ -103,6 +106,8 @@ export default {
           this.getList()
       }
       this.isAdd = item.isShow
+      this.isEdit = item.isShow
+      this.editDetail = null
     },
     editMenu(item){
       this.isAdd = true

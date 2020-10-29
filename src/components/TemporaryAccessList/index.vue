@@ -1,6 +1,6 @@
 <template>
   <div>
-      <main class="content-main">
+      <main class="content-main relative">
       <div class="key-box flex-start">
         <div class="key-input-box">
           <el-input placeholder="请选择图片" v-model="input22">
@@ -23,10 +23,10 @@
           <el-table-column prop="headPortrait" label="人员图片" width="120">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
-                    <!-- <img :src="scope.row.image"  @error="defaultBackImg"> -->
                     <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.accessImage">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -47,6 +47,7 @@
         <p></p>
         <paging v-if="total > 0" :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
   </div>
 </template>
@@ -54,10 +55,13 @@
 <script>
 import Paging from '@/components/Paging/index'
 import { getAccessPersonList,getAccessCarList } from '@/api/accessRecords'
+import Loading from "@/components/Loading/index";
+
 export default {
   name: 'TemporaryAccessList',
   components: {
-    Paging
+    Paging,
+    Loading
   },
   props:{
     temporary:{
@@ -72,8 +76,10 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10
       },
-      loading:false
+      loading:false,
+      imgList:[]
     }
   },
   created() {
@@ -87,9 +93,12 @@ export default {
   },
   methods: {
     getPage(val){
-      console.log('waimian',val)
         this.pageData.pageIndex = val
-        this.getList()
+        if(this.temporary == 'person'){
+          this.getPersonList()
+        }else{
+          this.getCarList()
+        }
     },
     getPersonList(){
       let that = this
@@ -97,8 +106,14 @@ export default {
       data.temporary = true
       that.loading = true
       getAccessPersonList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+        let {dataList,total} = res.data
+        let img_list = []
+        dataList.forEach(el=>{
+          img_list.push(el.image)
+        })
+          this.imgList = img_list
+          that.list = dataList
+          that.total = total
           that.loading = false
       }).catch(error=>{
          that.loading = false
@@ -110,8 +125,14 @@ export default {
       data.temporary = true
       that.loading = true
       getAccessCarList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+          let {dataList,total} = res.data
+          let img_list = []
+          dataList.forEach(el=>{
+            img_list.push(el.image)
+          })
+          this.imgList = img_list
+          that.list = dataList
+          that.total = total
           that.loading = false
       }).catch(error=>{
          that.loading = false
@@ -120,7 +141,6 @@ export default {
   },
   watch:{
     temporary(newVal){
-      console.log('切换',newVal)
         if(newVal == 'person'){
           this.getPersonList()
         }else{

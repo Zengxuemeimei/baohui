@@ -63,8 +63,9 @@ export default {
           address: null,
           name:null,
           videoUrl: null,
-          title:'新增地址'
-        }
+        },
+        title:'新增地址'
+
     }
   },
   created() {
@@ -73,9 +74,8 @@ export default {
   },
   methods: {
       handleClose() {
-        this.empty()
-       
         this.$emit("close", { isShow: false, isSuccess: false });
+        this.empty()
       },
       empty(){
          this.videoInfo={

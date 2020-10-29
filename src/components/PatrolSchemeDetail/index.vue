@@ -20,18 +20,12 @@
                     </tr>
                     <tr>
                         <th>所属部门</th>
-                        <td colspan="1"></td>
+                        <td colspan="1">{{editDetail.departmentName}}</td>
                         <th>完成进度</th>
                         <td colspan="1">
                             {{editDetail.checkedCount/editDetail.checkTotal}}%
                         </td>
-                        <!-- <th>巡检人员</th>
-                        <td colspan="1"></td> -->
                     </tr>
-                    <!-- <tr>
-                        <th>巡检记录描述</th>
-                        <td colspan="4"></td>
-                    </tr> -->
                 </table>
                 <div class="ml50">
                     <div class="flex-start">
@@ -60,10 +54,7 @@
                 </div>
             </el-scrollbar>
         </div>
-        <!-- <span slot="footer" class="dialog-footer">
-            <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-        </span> -->
+        
     </el-dialog>
   </div>
 </template>

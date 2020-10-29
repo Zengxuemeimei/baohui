@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">巡更管理-巡更记录</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-between">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
       </div>
@@ -20,27 +20,25 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="方案名称"
-            width="280">
+            label="方案名称">
           </el-table-column>
           <el-table-column
             prop="type"
-            label="类型"
-            width="146">
+            label="类型">
           </el-table-column>
           <el-table-column
-            label="完成进度"
-            width="146">
+            label="完成进度">
             <template slot-scope="scope">
               {{scope.row.checkedCount}}:{{scope.row.checkTotal}}
             </template>
           </el-table-column>
           <el-table-column
             prop="status"
-            label="巡更状态"
-            width="146">
+            label="巡更状态">
           </el-table-column>
            <el-table-column
+           fixed="right"
+           width="200px"
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
@@ -55,6 +53,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <PatrolSchemeDetail :isDetail="isDetail" :editDetail="editDetail" @close="closeDetail"/>
   </div>
@@ -68,6 +67,7 @@ import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import PatrolSchemeDetail from '@/components/PatrolSchemeDetail/index'
 import {getKeepWatchRecordList,getKeepWatchTaskDetail} from '@/api/keepWatch/index'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'PatrolRecards',
@@ -77,19 +77,22 @@ export default {
     EditButton,
     DelButton,
     Paging,
-    PatrolSchemeDetail
+    PatrolSchemeDetail,
+    Loading
   },
   data() {
     return {
       isClearKey:false,
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:10
       },
       isDetail:false,
       editDetail:null,
       list:[],
       total:0,
+      loading:false
       }
   },
   created() {

@@ -76,6 +76,7 @@ export default {
   methods: {
     handleClose(){
         this.$emit("close", { isShow: false, isSuccess: false });
+        this.detailList = []
     },
     staffDetail(date){
         let data = {

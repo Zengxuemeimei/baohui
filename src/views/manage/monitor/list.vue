@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">实时监控-监控地址列表</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-between">
         <div class="flex-start">
           <div class="">
@@ -34,19 +34,19 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="点位名称"
-            width="280">
+            label="点位名称">
           </el-table-column>
           <el-table-column
             prop="videoUrl"
-            label="视频播放地址"
-            width="280">
+            label="视频播放地址">
           </el-table-column>
           <el-table-column
             prop="address"
             label="点位地址">
           </el-table-column>
           <el-table-column
+            fixed="right"
+            width="200px"
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
@@ -62,6 +62,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddMonitor :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -70,24 +71,22 @@
 <script>
 import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddMonitor from '@/components/AddMonitor/index'
 import {getDepartmentList} from '@/api/department'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import {getMonitorList} from '@/api/monitor/index'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'MonitorList',
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
     AddMonitor,
-    DepartmentSelect
+    DepartmentSelect,
+    Loading
   },
   data() {
     return {
@@ -95,6 +94,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         departmentId:null
       },
       isAdd:false,
@@ -103,7 +103,8 @@ export default {
       editDetail:{},
       list:[],
       total:0,
-      listDepartment:[]
+      listDepartment:[],
+      loading:false
       }
   },
   created() {

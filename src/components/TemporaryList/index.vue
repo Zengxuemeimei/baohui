@@ -12,13 +12,13 @@
           <el-button type="danger">以图搜图</el-button>
         </div>
       </div>
-      <ul class="person-menu mt20 mb20" v-if="total > 0">
+      <ul class="person-menu mt20 mb20 relative" v-if="total > 0">
         <li v-for="item in list" :key="item.id" class="">
           <div class="img-box relative">
-            <!-- <img :src="item.accessImage" alt="" /> -->
             <el-image 
               style="width:100%;height:100%"
                 fit="cover"
+                :preview-src-list="imgList"
                 :src="item.accessImage">
                 <div slot="error" class="image-slot flex-center flex-column" style="height:100%">
                     <i class="el-icon-picture-outline f30"></i>
@@ -30,8 +30,10 @@
           <el-button type="primary" v-show="item.control"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
           <el-button type="danger" v-show="!item.control"  @click="setControl(item)">{{item.control?'撤控':'布控'}}</el-button>
         </li>
+        <Loading :loading="loading" />
+
       </ul>
-      <div v-if="total == 0" class="flex-center" style="width:100%">
+      <div v-if="isNoData" class="flex-center" style="width:100%">
           <div>
               <img src="@/assets/no_data.png" alt="">
               <p style="text-align: center;">暂无数据</p>
@@ -48,11 +50,13 @@
 <script>
 import Paging from '@/components/Paging/index'
 import {getTemporaryInfoList,setControl} from '@/api/temporaryInfo/index';
+import Loading from "@/components/Loading/index";
 
 export default {
   name: "TemporaryList",
   components: {
-      Paging
+      Paging,
+      Loading
   },
   props:{
     controlType:{
@@ -65,11 +69,13 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
-        pageSize:16
+        pageSize:10
       },
+      imgList:[],
       total:0,
       loading:false,
-      list:[]
+      list:[],
+      isNoData:false
     }
   },
   created() {},
@@ -88,8 +94,19 @@ export default {
       data.controlType = that.controlType
       that.loading = true
       getTemporaryInfoList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+        let {dataList,total} = res.data
+          that.list = dataList
+          that.total = total
+          let img_list = []
+          dataList.forEach(el=>{
+              img_list.push(el.accessImage)
+          })
+          that.imgList = img_list
+          if(res.data.total == 0){
+            this.isNoData = true
+          }else{
+            this.isNoData = false
+          }
           that.loading = false
       }).catch(error=>{
          that.loading = false

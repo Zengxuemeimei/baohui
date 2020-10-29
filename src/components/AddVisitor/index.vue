@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-dialog
-      title="新增访客"
+      :title="title"
       :visible.sync="isShow"
       width="1284px"
       :close-on-click-modal="false"
       :before-close="handleClose"
     >
-      <div class="person-content">
+      <div class="person-content" style="height:auto;">
         <span class="person-info-title">访客基本信息</span>
         <table class="person-table mb40 ml50" border="1">
           <tr>
@@ -88,7 +88,6 @@
           ></canvas>
           <i class="el-icon-camera take-photo" @click="setImage" v-if="!isDetail"/>
           <div class="img_bg_camera flex-start flex-end ml20">
-            <!-- <img :src="imgSrc" alt class="tx_img" @error="defaultBackImg"/> -->
               <el-image 
                   style="width:350px;height:250px"
                     fit="cover"
@@ -141,6 +140,7 @@ export default {
       thisVideo: null,
       openVideo: false,
       loading:false,
+      title:'新增访客',
       visitorInfo: {
         idNumber: '',
         image: '',
@@ -159,11 +159,6 @@ export default {
       this.$emit("close", { isShow: false, isSuccess: false });
       this.empty()
     },
-     defaultBackImg(event){
-          if(event.type == "error") {
-          event.target.src= require("@/assets/default_pic.png")
-        }
-      },
     empty(){
       this.visitorInfo={
         idNumber: '',
@@ -175,6 +170,7 @@ export default {
         visitTime: '',
       }
       this.imgSrc=null
+       this.title = "新增访客"
     },
     AddVisitor() {
       let that = this;
@@ -265,6 +261,11 @@ export default {
             });
         } 
       }
+    },
+    isDetail(newVal){
+        if(newVal){
+          this.title = "访客信息"
+        }
     },
     editDetail(newVal){
       if(newVal){

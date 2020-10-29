@@ -84,7 +84,7 @@ export default {
             status:"启用"
         }
         this.$refs.ruleForm.resetFields();
-        console.log(this.roleForm)
+        this.title = "新增角色"
       },
       AddRole(formName){
           let that = this
@@ -93,9 +93,9 @@ export default {
           if (valid) {
               let date = new Date()
             if(that.isEdit){
-              that.roleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+              that.roleForm.updateTime = moment(date).format('YYYY-MM-DD HH:mm:ss')
             }else{
-              that.roleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
+              that.roleForm.creatTime = moment(date).format('YYYY-MM-DD HH:mm:ss')
             }
             saveOrUpdate(that.roleForm).then(res=>{
               if(that.isEdit){

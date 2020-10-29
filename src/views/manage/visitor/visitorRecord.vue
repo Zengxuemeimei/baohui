@@ -3,22 +3,16 @@
     <header class="content-header">
       <p class="title">访客管理-访客记录</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key @query="keyWordsQuery"/>
-          <!-- <div class="ml50">
-              <label class="filter-label">车辆类型：</label>
-              <el-select clearable v-model="pageData.type" @change="changeCarType" placeholder="请选择">
-                <DictionarySelect :list="carTypeList"/>
-              </el-select>
-          </div> -->
-        </div>
-        <div class="btn-box flex-start">
+          <div class="btn-box flex-start ml20">
             <add-button @addShow="addShow"/>
+          </div>
         </div>
       </div>
-      <div class="all-table">
+      <div class="all-table ">
         <el-table
          border
          header-cell-class-name="all-table-th"
@@ -35,10 +29,10 @@
             width="120">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
-                    <!-- <img :src="scope.row.image"  @error="defaultBackImg"> -->
                     <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.image">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -81,7 +75,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
-      <Loading :loading="loading" />
+        <Loading :loading="loading" />
     </main>
     <AddVisitor :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -116,8 +110,8 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
-        status:'PASS',
-        type:null
+        pageSize:10,
+        status:'PASS'
       },
       list:[],
       loading:false,
@@ -126,14 +120,13 @@ export default {
       isDetail:false,
       editDetail:{},
       total:0,
-      carTypeList:[]
+      imgList:[]
       } 
   },
   created() {
   },
   mounted() {
     this.getList()
-    this.getCarTypeList()
   },
   methods: {
     defaultBackImg(event){
@@ -179,19 +172,18 @@ export default {
       let that = this
       that.loading = true
       getVisitorList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+        let {dataList,total} = res.data
+        let img_list = []
+        dataList.forEach(el=>{
+          img_list.push(el.image)
+        })
+          this.imgList = img_list
+          that.list = dataList
+          that.total = total
           that.loading = false
       }).catch(error=>{
           that.loading = false
       })
-    },
-    getCarTypeList(){
-      let data = {}
-      data.type = "车辆类型"
-      getDictionaryList(data).then(res=>{
-            this.carTypeList = res.data
-        })
     },
     tableRowClassName({row, rowIndex}){
         //修改table行的颜色

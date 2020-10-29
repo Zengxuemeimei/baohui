@@ -26,3 +26,11 @@ export function updateStatus(params) {
       params
     })
 }
+
+// export function updateStatus(params) { 
+//   return request({
+//     url: '/dictionaryInfo/updateStatus',
+//     method: 'get',
+//     params
+//   })
+// }

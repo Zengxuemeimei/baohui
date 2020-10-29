@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">巡更管理-点位管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
         <div class="btn-box flex-start ml20">
@@ -74,8 +74,6 @@
 <script>
 import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
-// import EditButton from '@/components/EditButton/index'
-// import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddPointPosition from '@/components/AddPointPosition/index'
 import {getKeepWatchPlaceList} from '@/api/keepWatch/index'
@@ -89,8 +87,6 @@ export default {
   components: {
     SearchKey,
     AddButton,
-    // EditButton,
-    // DelButton,
     Paging,
     AddPointPosition,
     Loading
@@ -101,6 +97,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         departmentId:null
       },
       total:0,
@@ -111,24 +108,6 @@ export default {
       list:[],
       listDepartment:[],
       positionTypeList:[],
-      value3:'',
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: ''
       }
   },
   created() {

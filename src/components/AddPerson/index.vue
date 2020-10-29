@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="新增人员"
+      :title="title"
       :visible.sync="isShow"
       width="1280px"
       :close-on-click-modal="false"
@@ -178,6 +178,7 @@
             </div>
             </div>
           <span class="person-info-title">文档资料</span>
+          <p class="mb20 ml20 red" v-show="!isDetail">*上传图片支持jpg,png,jpeg格式</p>
           <div class="ml50 mb40">
             <div class="flex-start flex-wrap">
               <div class="upload-img-box mr20 relative"  v-for="item in fileEditUrl" :key="item">
@@ -207,6 +208,7 @@
             </div>
           </div>
           <span class="person-info-title">车辆信息</span>
+          <p class="mb20 ml20 red" v-show="!isDetail">*上传图片支持jpg,png,jpeg格式 </p> 
           <div class="person-car-info ml50 mb40">
             <div class="flex-start flex-wrap">
               <div v-for="item in carList" :key="item.carNumber">
@@ -257,6 +259,7 @@
                 <td v-show="!isDetail">
                   <el-upload
                     action=""
+                    accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
                     :headers="token"
                     :on-change="uploadCar"
                     :show-file-list="false"
@@ -281,7 +284,7 @@
           </div>
         </el-scrollbar>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" class="dialog-footer" v-show="!isDetail">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="addPerson" :loading="loading"
           >确 定</el-button
@@ -376,6 +379,7 @@ export default {
         ],
       },
       loading: false,
+      title:'新增人员'
     };
   },
   created() {},
@@ -405,12 +409,12 @@ export default {
         carImage: null,
         file: null,
       });
-      console.log(this.personInfo.staffCarInfoList);
     },
     empty() {
       if(this.fileUrl.length > 0){
         this.$refs.staff.clearFiles()
       }
+      this.title = '新增人员'
       emptyUtils(this)
     },
     handleClose() {
@@ -419,13 +423,11 @@ export default {
 
     },
     uploadStaff(file,fileList) {
-      console.log('文件',fileList)
       this.fileUrl = fileList
-      // this.fileUrl.push(file.raw);
     },
     removeStaff(file,fileList){
       this.fileUrl = fileList
-      console.log('文件',fileList)
+      
     },
     uploadCarParent(index, carNumber) {
       this.carIndex = index;
@@ -438,7 +440,6 @@ export default {
   },
   watch: {
     editDetail(newVal) {
-      console.log('editDetail',newVal)
       if (newVal) {
         delete newVal.creatTime;
         delete newVal.status;
@@ -457,6 +458,16 @@ export default {
           });
         });
         this.carList = list;
+      }
+    },
+    isEdit(newVal){
+      if(newVal){
+        this.title = '编辑人员'
+      }
+    },
+    isDetail(newVal){
+       if(newVal){
+         this.title = '人员详情'
       }
     },
     isShow(newVal){

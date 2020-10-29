@@ -3,7 +3,7 @@
      <div class="btn-box flex-start">
             <add-button @addShow="addShow" />
         </div>
-      <div class="all-table">
+      <div class="all-table relative">
         <el-table
          border
          header-cell-class-name="all-table-th"
@@ -58,7 +58,7 @@
         <Loading :loading="loading" />
       </div>
       <el-dialog
-        title="登记"
+        :title="title"
         :visible.sync="isAdd"
         width="500px"
         :close-on-click-modal="false"
@@ -139,9 +139,11 @@ export default {
       list:[],
       total:0,
       loading:false,
+      title:'登记',
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         recordType:this.recordType
       },
       isAdd:false,
@@ -185,6 +187,8 @@ export default {
     },
     handleClose(){
       this.isAdd = false
+      this.isEdit = false
+      this.empty()
     },
     changeStaff(val){
       this.pageData.keyword = val
@@ -232,6 +236,7 @@ export default {
       },
       this.$refs.ruleForm.resetFields();
       this.staffInfo=null
+      this.title = '登记'
     },
     editItem(item){
       this.isAdd =true
@@ -245,6 +250,7 @@ export default {
           name:item.name,
           departmentId:item.departmentId
       }
+      this.title = '编辑'
       // this.staffInfo.staffId = item.staffId
 
     },

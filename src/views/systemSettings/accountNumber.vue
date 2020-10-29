@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">账号管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery"/>
         <div class="btn-box flex-start ml20" >
@@ -67,8 +67,6 @@
 <script>
 import SearchKey from '@/components/searchKey/index'
 import AddButton from '@/components/AddButton/index'
-import EditButton from '@/components/EditButton/index'
-import DelButton from '@/components/DelButton/index'
 import Paging from '@/components/Paging/index'
 import AddAccountNumber from '@/components/AddAccountNumber/index'
 import {getList,deleteAccountNum} from '@/api/user'
@@ -79,8 +77,6 @@ export default {
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
     AddAccountNumber,
     Loading
@@ -90,7 +86,8 @@ export default {
       list: [],
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:10
       },
       isAdd:false,
       isEdit:false,

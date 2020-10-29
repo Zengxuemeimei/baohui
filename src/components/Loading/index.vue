@@ -1,5 +1,5 @@
 <template>
-  <div class="loading-mask" v-show="isLoading">
+  <div class="loading-mask" v-show="loading">
       <!-- <i class="el-icon-loading loading-icon position-center" /> -->
       <!-- <i class="el-icon-refresh loading-icon position-center" /> -->
       <!-- <i class="el-icon-refresh-right loading-icon position-center" /> -->
@@ -13,7 +13,7 @@ export default {
   name: 'Loading',
   components: {},
   props:{
-    isLoading:{
+    loading:{
       type:Boolean
     }
   },
@@ -34,7 +34,7 @@ export default {
 .loading-mask{
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.87);
+    /* background: rgba(255, 255, 255, 0.87); */
     position: absolute;
     left: 0;
     top: 0;

@@ -4,7 +4,6 @@ import { saveOrUpdate } from "@/api/staff/index";
 // const AddPersonUtils={}
 
 export function addPersonUtils(that){
-  console.log('addPersonUtils',that)
     if (!Tools.isPhone(that.personInfo.emergencyContactMobile)) {
         that.$message({
           message: "紧急联系人电话号码格式不正确",
@@ -48,8 +47,6 @@ export function addPersonUtils(that){
       }else{
         that.personInfo.formalTime = ""
       }
-      console.log("personInfo", that.personInfo);
-      that.loading = true;
       let fd = new FormData();
       let data = that.personInfo;
       if(that.isEdit){
@@ -72,9 +69,21 @@ export function addPersonUtils(that){
       fd.append("name", data.name);
       fd.append("age", data.age);
       if(that.fileUrl.length > 0){
+        let flag = false
         that.fileUrl.forEach((el, index) => {
-          fd.append(`fileUrlFile`, el.raw);
+          if(Tools.beforeAvatarUpload(el.raw)){
+            fd.append(`fileUrlFile`,el.raw);
+          }else{
+            flag = true
+          }
         });
+        if(flag){
+          that.$message({
+            message: '上传图片格式不支持,请检查',
+            type: 'warning'
+          });
+          return
+        }
       }
       fd.append("position", data.position);
       fd.append("sex", data.sex);
@@ -89,12 +98,25 @@ export function addPersonUtils(that){
         fd.append("faceImageFile", data.faceImageFile);
       }
       if(that.carList.length > 0){
+        let isPic = false
           that.carList.forEach((el, index) => {
             if(el.file){
-              fd.append('staffCar', el.file);
+              if(Tools.beforeAvatarUpload(el.file)){
+                fd.append('staffCar', el.file);
+              }else{
+                isPic = true
+              }
             }  
+          });
+          if(isPic){
+            that.$message({
+              message: '上传图片格式不支持,请检查',
+              type: 'warning'
             });
+            return
+          }
       }
+      that.loading = true;
       saveOrUpdate(fd)
         .then((res) => {
           that.loading = false;

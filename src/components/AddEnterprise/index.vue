@@ -87,7 +87,9 @@
                     </tr>
                 </table>
                 <div class="amap-wrapper map ml50">
-                    <el-amap vid="amap"  :center="center" :map-manager="amapManager" :zoom="12" :events="events" class="amap-demo">
+                    <el-amap-search-box class="search-box" :searchOption="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
+                    <el-amap vid="amap"  :center="center" :map-manager="amapManager" :zoom="16" :events="events" class="amap-demo">
+                        <el-amap-marker v-for="marker in markers" :key="marker[0]" :position="marker" ></el-amap-marker>
                     </el-amap>
                 </div>
             </el-scrollbar>
@@ -131,6 +133,10 @@ export default {
     return {
         center: [121.59996, 31.197646],
         amapManager,
+        searchOption: {
+            city: '全国',
+            citylimit: false
+        },
         events: {
             init(o) {
               console.log(o.getCenter())
@@ -153,7 +159,8 @@ export default {
             name: null,
             provinceCode: null,
             status: '启用',
-        }
+        },
+        markers:[],
     }
   },
   created() {
@@ -163,7 +170,25 @@ export default {
   methods: {
       handleClose(){
           this.$emit('close',{isShow:false,isSuccess:false})
+          this.empty()
       },
+      onSearchResult(pois) {
+          let latSum = 0;
+          let lngSum = 0;
+          if (pois.length > 0) {
+            pois.forEach(poi => {
+              let {lng, lat} = poi;
+              lngSum += lng;
+              latSum += lat;
+              this.markers.push([poi.lng, poi.lat]);
+            });
+            let center = {
+              lng: lngSum / pois.length,
+              lat: latSum / pois.length
+            };
+            this.center = [center.lng, center.lat];
+          }
+    },
       selectProvince(val){
           this.enterpriseInfo.provinceCode = val.province.value
           this.enterpriseInfo.cityCode = val.city.value
@@ -183,6 +208,8 @@ export default {
             provinceCode: null,
             status: '启用',
         }
+        this.center = [121.59996, 31.197646]
+        this.title = ' 新增企业'
       },
       addEnterprise(){
             console.log('企业',this.enterpriseInfo)
@@ -215,7 +242,16 @@ export default {
                 status: newVal.status,
                 id:newVal.id
             }
+            this.center = [newVal.longitude,newVal.latitude]
+            this.markers = [
+                [newVal.longitude,newVal.latitude]
+            ]
           }
+      },
+      isEdit(newVal){
+        if(newVal){
+            this.title = '编辑企业'
+        }
       }
   }
 }
@@ -224,5 +260,11 @@ export default {
 .map{
     width: 80%;
     height: 400px;
+    position: relative;
+}
+.search-box {
+      position: absolute;
+      top: 25px;
+      left: 20px;
 }
 </style>

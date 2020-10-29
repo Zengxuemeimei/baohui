@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key @query="keyWordsQuery"/>
@@ -22,9 +22,6 @@
             </el-date-picker>
           </div>
         </div>
-        <!-- <div class="btn-box flex-start">
-          <edit-button />
-        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -45,6 +42,7 @@
                     <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.imageUrl">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -54,11 +52,11 @@
             </template>
            
           </el-table-column>
-          <el-table-column prop="videoUrl" label="事件视频" >
+          <!-- <el-table-column prop="videoUrl" label="事件视频" >
             <div class="headPortrait-box flex-center">
               <i class="el-icon-video-camera" />
             </div>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column prop="riskType" label="告警类型" >
           </el-table-column>
           <el-table-column prop="riskTime" label="告警时间" >
@@ -80,6 +78,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AlarmEdit :isEdit="isEdit" @close="closeEdit" :alarmInfo="detail" :staffList="staffList" :alarmStatusList="alarmStatusList" :alarmTypeList="alarmTypeList"/>
   </div>
@@ -92,16 +91,18 @@ import Paging from '@/components/Paging/index'
 import AlarmEdit from '@/components/AlarmEdit/index'
 import {getAlarmInfoList} from '@/api/alarmCenter'
 import DictionarySelect from '@/components/Recursion/dictionarySelect'
+import Loading from "@/components/Loading/index";
 import moment from 'moment'
+
 
 export default {
   name: 'AlarmList',
   components: {
     SearchKey,
-    EditButton,
     Paging,
     AlarmEdit,
-    DictionarySelect
+    DictionarySelect,
+    Loading
   },
   props:{
     manageStatus:{
@@ -122,6 +123,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         manageStatus:null
       },
       list:[],
@@ -130,7 +132,8 @@ export default {
       loading:false,
       alarmType:null,
       alarmTime:null,
-      detail:null
+      detail:null,
+      imgList:[]
       } 
   },
   created() {
@@ -190,8 +193,14 @@ export default {
       }
       that.loading = true
       getAlarmInfoList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+         let {dataList,total} = res.data
+        let img_list = []
+        dataList.forEach(el=>{
+          img_list.push(el.image)
+        })
+          this.imgList = img_list
+          that.list = dataList
+          that.total = total
           that.loading = false
       }).catch(error=>{
         that.loading = false
@@ -200,17 +209,7 @@ export default {
     handleClick(tab, event) {
         console.log(tab, event);
     }
-  },
-  // watch:{
-  //   manageStatus(newVal){
-  //     if(newVal == '全部'){
-  //       this.pageData.manageStatus = null
-  //     }else{
-  //       this.pageData.manageStatus = newVal
-  //     }
-  //     this.getList()
-  //   }
-  // }
+  }
 }
 </script>
 <style scoped>

@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">巡更管理-巡更方案</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey"/>
         <div class="btn-box flex-start ml20">
@@ -41,6 +41,8 @@
             label="所属部门">
           </el-table-column>
            <el-table-column
+           width="200"
+           fixed="right"
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
@@ -56,6 +58,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddPatrolScheme :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :repetitionTypeList="repetitionTypeList" :caseTypeList="caseTypeList" :listDepartment="listDepartment" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -71,6 +74,7 @@ import AddPatrolScheme from '@/components/AddPatrolScheme/index'
 import {getKeepWatchPlanList,getPlanDetailList} from '@/api/keepWatch/index'
 import {getDepartmentList} from '@/api/department'
 import {getDictionaryList} from '@/api/dictionary'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'PatrolScheme',
@@ -80,7 +84,8 @@ export default {
     EditButton,
     DelButton,
     Paging,
-    AddPatrolScheme
+    AddPatrolScheme,
+    Loading
   },
   data() {
     return {
@@ -88,6 +93,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         departmentId:null,
         staffId:null
       },

@@ -1,7 +1,7 @@
 <template>
   <div>
       <el-dialog
-        title="新增点位"
+        :title="title"
         :visible.sync="isShow"
         width="1284px"
         :close-on-click-modal="false"
@@ -120,7 +120,7 @@ export default {
         markers:[],
         amapManager,
         searchOption: {
-            city: '上海',
+            city: '全国',
             citylimit: false
         },
         events: {
@@ -142,7 +142,8 @@ export default {
             number: null,
             type: null,
             orderNum:null
-          }
+          },
+          title:'新增点位'
     }
   },
   created() {
@@ -185,6 +186,7 @@ export default {
             number: null,
             type: null
           }
+      this.title = '新增点位'
     },
     handleClose() {
       this.empty()
@@ -200,6 +202,11 @@ export default {
           [newVal.longitude,newVal.latitude]
         ]
       }
+    },
+    isEdit(newVal){
+        if(newVal){
+          this.title = '编辑点位'
+        }
     }
   }
 }

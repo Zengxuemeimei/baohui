@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">考勤管理-考勤记录</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey" />
         <div class="filter-time ml20">
@@ -55,6 +55,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <CheckWorkDetail :isDetail="isDetail" @close="closeDetail" :staffId="staffId" :list="staffMonthList"/>
     <CheckWorkEdit :isEdit="isEdit" :editDetail="editDetail" @close="closeDetail"/>
@@ -87,6 +88,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         years:null
       },
       isDetail:false,
@@ -153,6 +155,7 @@ export default {
       this.isDetail = item.isShow
       this.isEdit = item.isShow
       this.editDetail = null
+      this.staffMonthList = null
       if(item.isSuccess){
         this.getList()
       }

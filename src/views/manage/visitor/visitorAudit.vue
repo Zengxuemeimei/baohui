@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">访客管理-访客记录</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box flex-between">
         <div class="flex-start">
           <search-key @query="keyWordsQuery"/>
@@ -12,9 +12,6 @@
               <el-button :style="{'background':isAll?'':'#53779D','color':isAll?'':'#ffffff'}" @click="getUnPassList">审核未通过</el-button>
           </div>
         </div>
-        <!-- <div class="btn-box flex-start">
-            <el-button type="primary" icon="el-icon-edit" @click="isAudit=true">审核</el-button>
-        </div> -->
       </div>
       <div class="all-table">
         <el-table
@@ -37,6 +34,7 @@
                   <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.image">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -107,8 +105,10 @@ export default {
        pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         status:'REVIEWED'
       },
+      imgList:[],
       list:[],
       loading:false,
       isAll:true,
@@ -193,8 +193,14 @@ export default {
       let that = this
       that.loading = true
       getVisitorList(data).then(res=>{
-          that.list = res.data.dataList
-          that.total = res.data.total
+         let {dataList,total} = res.data
+        let img_list = []
+        dataList.forEach(el=>{
+          img_list.push(el.image)
+        })
+          this.imgList = img_list
+          that.list = dataList
+          that.total = total
           that.loading = false
       }).catch(error=>{
           that.loading = false

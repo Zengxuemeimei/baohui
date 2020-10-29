@@ -52,8 +52,9 @@
             </td>
           </tr>
         </table>
+        <p class="mb20 ml20 red" v-show="!isDetail">*上传图片支持jpg,png,jpeg格式 </p> 
         <div class="camera_outer mb40 ml50 flex-start flex-end">
-          <div class="upload-img-box mr20 " v-show="isEdit || isDetail " v-for="item in photoEditUrl" :key="item">
+          <div class="upload-img-box mr20 " v-show="isEdit || isDetail " v-for="(item,index) in photoEditUrl" :key="index">
               <el-image
                 style="width: 148px; height: 148px"
                   :src="item"
@@ -224,6 +225,7 @@ export default {
       }
       this.photoUrl=[],
       this.photoEditUrl=[]
+      this.title = "新增客户"
     },
     addCustomer() {
       let that = this;
@@ -250,9 +252,21 @@ export default {
       fd.append('enterpriseId',store.getters.enterpriseId)
       fd.append('customerCarInfoList',JSON.stringify(data.customerCarInfos))
       if(that.photoUrl.length>0){
+        let flag = false
          that.photoUrl.forEach(el=>{
-            fd.append('customerFile',el.raw)
+           if(Tools.beforeAvatarUpload(el.raw)){
+             fd.append('customerFile',el.raw)
+           }else{
+             flag=true
+           }  
         })
+        if(flag){
+           that.$message({
+              message: '上传图片格式不支持,请检查',
+              type: 'warning'
+            });
+          return
+        }
       }
       if(that.isEdit){
           fd.append('id',data.id)
@@ -282,7 +296,6 @@ export default {
     },
     uploadCustomer(file,fileList){
       this.photoUrl=fileList;
-      console.log('wenjian',fileList)
     },
     removeCustomer(file,fileList){
       this.photoUrl=fileList;

@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">设备管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="btn-box flex-start">
             <add-button @addShow="addShow"/>
         </div>
@@ -56,6 +56,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddEquipment :isShow="isAdd" :isEdit="isEdit" @close="closeAdd" :editDetail="editDetail" :equipmentList="equipmentList" :enterpriseInfolist="enterpriseInfolist"/>
   </div>
@@ -68,10 +69,11 @@ import AddEquipment from '@/components/AddEquipment/index'
 import Paging from '@/components/Paging/index'
 import {getEnterpriseInfoList} from '@/api/enterprise'
 import {getDictionaryList} from '@/api/dictionary'
+import Loading from '@/components/Loading/index'
 
 export default {
   name: 'Equipment',
-  components: {AddButton,AddEquipment,Paging},
+  components: {AddButton,AddEquipment,Paging,Loading},
   data() {
     return {
       isAdd:false,
@@ -86,7 +88,8 @@ export default {
         enterpriseId:null
       },
       enterpriseInfolist:[],
-      equipmentList:[]
+      equipmentList:[],
+      loading:false
     }
   },
   created() {

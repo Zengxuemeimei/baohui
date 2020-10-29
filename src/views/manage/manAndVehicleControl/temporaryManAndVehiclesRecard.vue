@@ -5,10 +5,10 @@
     </header>
     <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
         <el-tab-pane label="人员出入记录" name="person">
-            <TemporaryAccessList v-if="activeName2 == 'person'" :temporary="activeName2"/>
+            <TemporaryAccessList  :temporary="activeName2"/>
         </el-tab-pane>
         <el-tab-pane label="车辆出入记录" name="car">
-            <TemporaryAccessList v-if="activeName2 == 'car'" :temporary="activeName2"/>
+            <TemporaryAccessList  :temporary="activeName2"/>
         </el-tab-pane>
     </el-tabs>
   </div>

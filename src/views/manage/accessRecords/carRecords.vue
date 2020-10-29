@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">出入记录-车辆管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="key-words-box">
         <search-key @query="keyWordsQuery"/>
       </div>
@@ -78,6 +78,7 @@
                     <el-image 
                     fit="scale-down"
                     lazy
+                    :preview-src-list="imgList"
                     :src="scope.row.accessImage">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
@@ -86,12 +87,12 @@
                 </div>
              </template>
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="视频">
             <div class="headPortrait-box flex-center">
               <i class="el-icon-video-camera" />
             </div>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="liveAddress"
             label="出入地点">
@@ -113,6 +114,7 @@
         <p></p>
         <paging  :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <!-- <AccessPerson :isShow="isDetail" :editDetail="editDetail" @close="closeAdd"/> -->
   </div>
@@ -124,6 +126,7 @@ import Paging from '@/components/Paging/index'
 import SearchKey from '@/components/searchKey/index'
 import AccessPerson from '@/components/AccessDetail/person'
 import {getAccessCarList} from '@/api/accessRecords/index'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'CarRecords',
@@ -131,13 +134,15 @@ export default {
       SearchKey,
       countTo,
       Paging,
-      AccessPerson
+      AccessPerson,
+      Loading
   },
   data() {
     return {
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:10
       },
       list:[],
       isDetail:false,
@@ -145,6 +150,7 @@ export default {
       editDetail:{},
       total:0,
       accessTime:null,
+      imgList:[]
     }
   },
   created() {
@@ -199,8 +205,14 @@ export default {
         let that = this
         that.loading = true
         getAccessCarList(data).then(res=>{
-            that.list = res.data.dataList
-            that.total = res.data.total
+            let {dataList,total} = res.data
+          that.list = dataList
+          that.total = total
+          let img_list = []
+          dataList.forEach(el=>{
+              img_list.push(el.accessImage)
+          })
+          that.imgList = img_list
             that.loading = false
         }).catch(error=>{
             that.loading = false

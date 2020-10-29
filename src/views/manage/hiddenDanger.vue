@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">安全隐患管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       
       <div class="filter-box ">
           <div class="key-words-box flex-start">
@@ -82,6 +82,7 @@
         <p></p>
         <paging :total="total" @getCurrentPage="getPage"/>
       </div>
+      <Loading :loading="loading" />
     </main>
     <AddHiddenDanger :isShow="isAdd" :isEdit="isEdit" :isDetail="isDetail" :hiddenDangerLevelList="hiddenDangerLevelList" :hiddenDangerStatusList="hiddenDangerStatusList" :editDetail="editDetail" @close="closeAdd"/>
   </div>
@@ -97,23 +98,24 @@ import AddHiddenDanger from '@/components/AddHiddenDanger/index'
 import {getHiddenDangerList,getHiddenDangerDetail} from '@/api/hiddenDanger'
 import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import {getDictionaryList} from '@/api/dictionary'
+import Loading from "@/components/Loading/index";
 
 export default {
   name: 'HiddenDanger',
   components: {
     SearchKey,
     AddButton,
-    EditButton,
-    DelButton,
     Paging,
     AddHiddenDanger,
-    DictionarySelect
+    DictionarySelect,
+    Loading
   },
   data() {
     return {
       pageData:{
         keyword:null,
-        pageIndex:1
+        pageIndex:1,
+        pageSize:10
       },
       loading:false,
       isAdd:false,

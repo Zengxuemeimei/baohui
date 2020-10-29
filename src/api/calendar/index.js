@@ -10,7 +10,7 @@ export function getCalendarList(params) {
 }
 
 export function getStaffRecordInfoList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     return request({
       url: '/staffRecordInfo/list',
       method: 'get',
@@ -19,7 +19,7 @@ export function getStaffRecordInfoList(params) {
 }
 //考勤记录
 export function getStaffAttendanceInfoList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     return request({
       url: '/staffAttendanceInfo/list',
       method: 'get',

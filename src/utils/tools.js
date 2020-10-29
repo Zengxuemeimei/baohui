@@ -113,5 +113,79 @@ Tools.takePhoto=function(that){
     // _this.visitorInfo.image = Tools.dataURLtoFile(image,'file')
     return Tools.dataURLtoFile(image,'file.png')
 },
+//上传图片格式
+Tools.beforeAvatarUpload=function(file) {                
+  let pic=file.name.substring(file.name.lastIndexOf('.')+1)  
+  let ext = pic.toLowerCase() 
+  let flag=false;            
+  if(ext=='png'||ext=='jpg'||ext=='jpeg'){
+      flag=true;
+  } 
+  return flag
+} 
+//rtsp视频播放
+Tools.streamedian=function(Vid, url,that) {
+  // url =
+  //   "rtsp://admin:abcdef00@hlstest.tpddns.cn:10554/Streaming/Channels/102";
+  let errHandler = function (err) {
+    console.log("errHandler", err.message);
+  };
 
+  var playerOptions = {
+    socket: "ws://148.70.230.200:9640/ws/",
+    redirectNativeMediaErrors: true,
+    bufferDuration: 30,
+    errorHandler: errHandler,
+    // infoHandler: infHandler
+  };
+
+  var html5Player = document.getElementById(Vid);
+  html5Player.src = url;
+  // var player = Streamedian.player(Vid, playerOptions);
+  that.playerRTSP = Streamedian.player(Vid, playerOptions);
+
+  var nativePlayer = document.getElementById(Vid);
+  nativePlayer.addEventListener("play", function () {
+    //监听播放
+    console.log("开始播放");
+    console.log(nativePlayer.currentTime, nativePlayer.buffered.end(0));
+    setTimeout(function () {
+      nativePlayer.currentTime = nativePlayer.buffered.end(0);
+    }, 500);
+  });
+  if (!!window.chrome) {
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") {
+        // for (i of that.videoLists) {
+        //   i.pause();
+        // }
+        // that.playerRTSP.pause()
+        nativePlayer.pause();
+      } else {
+        // for (i of that.videoLists) {
+        //   i.play();
+        // }
+        // that.playerRTSP.pause()
+        setTimeout(function () {
+          nativePlayer.currentTime = nativePlayer.buffered.end(0);
+        }, 3000); // Delay for a few seconds is required for the player has time to update the timeline.
+      }
+    });
+  }
+  // that.playerLists.push(player);
+  // that.videoLists.push(nativePlayer);
+},
+Tools.destroyRTSP=function (that) {
+    that.playerRTSP.destroy()
+    that.playerRTSP = null
+  // $(".four>div>div").empty();
+  // $(".nine>div>div").empty();
+  // $(".six>div>div").empty();
+  // if (that.playerLists.length > 0) {
+  //     for (i of that.playerLists) {
+  //         i.destroy();
+  //     }
+  //     that.playerLists = [];
+  // }
+},
 module.exports = Tools

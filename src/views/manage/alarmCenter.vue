@@ -10,12 +10,6 @@
         <el-tab-pane :label="item.name" :name="item.name" v-for="item in alarmStatusList" :key="item.code">
            <AlarmList v-if="item.name == alarmStatus" :alarmStatusList="alarmStatusList" :manageStatus="item.name" :staffList="staffList" :alarmTypeList="alarmTypeList"/>
         </el-tab-pane>
-        <!-- <el-tab-pane label="已处理" name="processed">
-           <AlarmList :manageStatus="manageStatus"/>
-        </el-tab-pane>
-        <el-tab-pane label="处理中" name="processing">
-           <AlarmList :manageStatus="manageStatus"/>
-        </el-tab-pane> -->
     </el-tabs>
     
   </div>

@@ -3,7 +3,7 @@ import store from '@/store'
 
 export function getAccessPersonList(params) {  
   params.enterpriseId = store.getters.enterpriseId
-  params.pageSize = 10
+  // params.pageSize = 10
       return request({
         url: '/faceAccessRecord/list',
         method: 'get',
@@ -12,7 +12,7 @@ export function getAccessPersonList(params) {
 }
 export function getAccessCarList(params) { 
   params.enterpriseId = store.getters.enterpriseId
-  params.pageSize = 10
+  // params.pageSize = 10
       return request({
         url: '/carAccessRecord/list',
         method: 'get',

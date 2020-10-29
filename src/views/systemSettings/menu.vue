@@ -3,7 +3,7 @@
     <header class="content-header">
       <p class="title">菜单管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-between">
         <div class="btn-box flex-start">
             <add-button @addShow="addMenu"/>
@@ -13,12 +13,10 @@
         <MenuList :list="list" @editMenu="editMenu" @deleteList="deleteList" />
       </div>
       <div class="flex-between mt20">
-        <!-- <p>双击进入详情页面</p>
-        <paging /> -->
       </div>
+    <Loading :loading="loading"/>
     </main>
     <AddMenu :isShow="isAdd" :isEdit="isEdit" :menuList="list" :editDetail="editDetail" @close="closeAdd"/>
-    <Loading :isLoading="loading"/>
     
   </div>
 </template>
@@ -50,7 +48,7 @@ export default {
         isAdd:false,
         isEdit:false,
         editDetail:{},
-        loading:true
+        loading:false
     }
   },
   created() {

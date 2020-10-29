@@ -3,11 +3,11 @@
     <header class="content-header">
       <p class="title">角色管理</p>
     </header>
-    <main class="content-main">
+    <main class="content-main relative">
       <div class="filter-box flex-between">
         <div class="btn-box flex-start">
             <add-button @addShow="addRole"/>
-            <el-button type="success" class="ml20" icon="el-icon-refresh" @click="refresh">刷新</el-button>
+            <!-- <el-button type="success" class="ml20" icon="el-icon-refresh" @click="refresh">刷新</el-button> -->
         </div>
       </div>
       <div class="all-table">
@@ -50,6 +50,7 @@
       <div class="flex-between mt20">
         <!-- <p>双击进入详情页面</p>
         <paging /> -->
+        <Loading :loading="loading" />
       </div>
     </main>
     <AddRole :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
@@ -64,13 +65,16 @@ import AddRole from '@/components/AddRole/index'
 import TreeRole from '@/components/TreeRole/index'
 import {getRoleList,deleteRole} from '@/api/roles'
 import {getList} from '@/api/menu'
+import Loading from "@/components/Loading/index";
+
 export default {
   name: 'Role',
   components: {
     AddButton,
     AddRole,
     Paging,
-    TreeRole
+    TreeRole,
+    Loading
   },
   inject: ['reload'],
   data() {
@@ -79,13 +83,14 @@ export default {
       roleId:null,
       pageDatas:{
           keyword:null,
-          pageIndex:0
+          pageIndex:1
       },
       list: [],
       isAdd:false,
       isEdit:false,
       editDetail:{},
-      menuList:[]
+      menuList:[],
+      loading:false
     }
   },
   created() {
@@ -103,8 +108,12 @@ export default {
     },
       getRoleList(){
         let that = this
+        that.loading = true
         getRoleList().then(res=>{
+          that.loading = false
            that.list = res.data.dataList
+        }).catch(error=>{
+          that.loading = false
         })
       },
       setRoles(id){
@@ -149,6 +158,7 @@ export default {
           }
           this.isAdd = item.isShow
           this.isEdit = item.isShow
+          this.editDetail = null
       },
       closeTree(item){
         if(item.isSuccess){
@@ -162,10 +172,6 @@ export default {
           menuIds.push(el.id)
         })
         this.menuIds = menuIds
-      },
-      refresh(){
-        // this.reload()
-        // location.reload()
       }
   }
 }

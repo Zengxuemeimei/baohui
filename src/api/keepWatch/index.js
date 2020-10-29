@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import store from '@/store'
 
 export function getKeepWatchPlanList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     return request({
       url: '/keepWatchPlanInfo/list',
       method: 'get',
@@ -18,7 +18,7 @@ export function getPlanDetailList(params) {
 }
 
 export function getKeepWatchPlaceList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     return request({
       url: '/keepWatchPlaceInfo/list',
       method: 'get',
@@ -35,7 +35,7 @@ export function getKeepWatchTaskDetail(params) {
 }
 
 export function getKeepWatchRecordList(params) { 
-    params.pageSize = 10
+    // params.pageSize = 10
     return request({
       url: '/keepWatchTaskInfo/list',
       method: 'get',

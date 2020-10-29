@@ -48,11 +48,6 @@ service.interceptors.response.use(
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== '200') {
-      Message({
-        message: res.msg || '网络故障，请稍后再试',
-        type: 'error',
-        duration: 5 * 1000
-      })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === '500') {
@@ -72,6 +67,11 @@ service.interceptors.response.use(
         })
       }
       if (res.code === '401') {
+        Message({
+          message: res.msg || '网络故障，请稍后再试',
+          type: 'error',
+          duration: 5 * 1000
+        })
         next(`/login?redirect=${this.$route.path}`)
       }
       return Promise.reject(new Error(res.msg || '网络故障，请稍后再试'))
