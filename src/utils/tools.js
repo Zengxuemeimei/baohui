@@ -14,6 +14,11 @@ Tools.verifyID=function(str) {
     var reg = /^[1-9][0-9]{5}(19|20)[0-9]{2}((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|30|31)|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]{3}([0-9]|x|X)$/;
     return reg.test(str);
 },
+Tools.isMobileUserAgent=function() {// 判断是pc端还是h5端
+  return /iphone|ipod|android|windows.*phone|blackberry.*mobile/i.test(
+    window.navigator.userAgent.toLowerCase()
+  );
+}
 //打开摄像头
 Tools.getCompetence=function(that,videoId,cancasId){
     //打开摄像头
@@ -128,7 +133,6 @@ Tools.streamedian=function(Vid, url,that) {
   // url =
   //   "rtsp://admin:abcdef00@hlstest.tpddns.cn:10554/Streaming/Channels/102";
   let errHandler = function (err) {
-    console.log("errHandler", err.message);
   };
 
   var playerOptions = {
@@ -136,12 +140,10 @@ Tools.streamedian=function(Vid, url,that) {
     redirectNativeMediaErrors: true,
     bufferDuration: 30,
     errorHandler: errHandler,
-    // infoHandler: infHandler
   };
 
   var html5Player = document.getElementById(Vid);
   html5Player.src = url;
-  // var player = Streamedian.player(Vid, playerOptions);
   that.playerRTSP = Streamedian.player(Vid, playerOptions);
 
   var nativePlayer = document.getElementById(Vid);
@@ -156,36 +158,17 @@ Tools.streamedian=function(Vid, url,that) {
   if (!!window.chrome) {
     document.addEventListener("visibilitychange", function () {
       if (document.visibilityState === "hidden") {
-        // for (i of that.videoLists) {
-        //   i.pause();
-        // }
-        // that.playerRTSP.pause()
         nativePlayer.pause();
       } else {
-        // for (i of that.videoLists) {
-        //   i.play();
-        // }
-        // that.playerRTSP.pause()
         setTimeout(function () {
           nativePlayer.currentTime = nativePlayer.buffered.end(0);
         }, 3000); // Delay for a few seconds is required for the player has time to update the timeline.
       }
     });
   }
-  // that.playerLists.push(player);
-  // that.videoLists.push(nativePlayer);
 },
 Tools.destroyRTSP=function (that) {
     that.playerRTSP.destroy()
     that.playerRTSP = null
-  // $(".four>div>div").empty();
-  // $(".nine>div>div").empty();
-  // $(".six>div>div").empty();
-  // if (that.playerLists.length > 0) {
-  //     for (i of that.playerLists) {
-  //         i.destroy();
-  //     }
-  //     that.playerLists = [];
-  // }
 },
 module.exports = Tools

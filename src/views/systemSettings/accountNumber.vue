@@ -123,6 +123,7 @@ export default {
         }
         that.isAdd = item.isShow
         that.isEdit = item.isShow
+        that.editDetail = null
       },
       editMenu(item){
         this.isAdd = true

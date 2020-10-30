@@ -5,7 +5,7 @@
         :visible.sync="isShow"
         :close-on-click-modal="false"
         :before-close="handleClose">
-        <div class="">
+        <div class="person-content" style="height:auto">
             <el-scrollbar style="height:100%">
                 <span class="person-info-title">地址信息</span>
                 <table class="person-table mb40 ml50" border="1">
@@ -19,6 +19,15 @@
                         <th>视频播放地址</th>
                         <td style="width:750px">
                           <input type="text"  class="input-form" v-model="videoInfo.videoUrl" />
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>部门</th>
+                        <td style="width:750px">
+                          <el-select clearable v-model="videoInfo.departmentId" placeholder="请选择">
+                            <DepartmentSelect :list="listDepartment"/>
+                          </el-select>
+                          <!-- <input type="text"  class="input-form" v-model="videoInfo.videoUrl" /> -->
                         </td>
                     </tr>
                     <tr>
@@ -40,9 +49,11 @@
 
 <script>
 import {saveOrUpdate} from '@/api/monitor/index'
+import DepartmentSelect from '@/components/Recursion/departmentSelect'
+
 export default {
   name: 'AddMonitor',
-  components: {},
+  components: {DepartmentSelect},
   props:{
     isShow:{
       type:Boolean
@@ -55,6 +66,9 @@ export default {
     },
     editDetail:{
       type:Object
+    },
+    listDepartment:{
+      type:Array
     }
   },
   data() {
@@ -63,6 +77,7 @@ export default {
           address: null,
           name:null,
           videoUrl: null,
+          departmentId:null
         },
         title:'新增地址'
 
@@ -118,5 +133,7 @@ export default {
 }
 </script>
 <style scoped>
-
+.el-select{
+  width: 100%;
+}
 </style>

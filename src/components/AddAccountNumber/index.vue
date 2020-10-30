@@ -28,8 +28,8 @@
                         <!-- <el-input v-model="ruleForm.roleInfoList"></el-input> -->
                         <el-select v-model="ruleForm.roleInfoList"  multiple placeholder="请选择">
                             <el-option
-                            v-for="item in roleList"
-                            :key="item.id"
+                            v-for="(item,index) in roleList"
+                            :key="index"
                             :label="item.remark"
                             :value="item.id">
                             </el-option>
@@ -60,6 +60,7 @@
 import { saveOrUpdate } from '@/api/user'
 import {getRoleList} from '@/api/roles'
 import moment from 'moment'
+import Tools from '@/utils/tools'
 export default {
   name: 'AddAccountNumber',
   components: {},
@@ -108,8 +109,8 @@ export default {
   },
   methods: {
     handleClose() {
-        this.empty()
         this.$emit('close',{isShow:false,isSuccess:false})
+        this.empty()
     },
     getRoleList(){
         let that = this
@@ -133,22 +134,26 @@ export default {
         that.$refs[formName].validate((valid) => {
           console.log(valid)
           if (valid) {
-                let date = new Date()
-                if(that.isEdit){
-                    that.ruleForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-                }else{
-                    that.ruleForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-                } 
-                let {roleInfoList} =that.ruleForm
+                
+                    // data = that.ruleForm
+                let {roleInfoList,loginName,name,password,status} =that.ruleForm
                 let list = []
                 roleInfoList.forEach(el=>{
                     list.push({
                         roleId:el 
                     })
                 })
-                that.ruleForm.roleInfoList = list
-                let data = that.ruleForm
-                console.log(that.ruleForm)
+                let data = {
+                    loginName: loginName,
+                    name: name,
+                    password: password,
+                    status: status,
+                    roleInfoList:list
+                }
+                if(that.isEdit){
+                    data.id = that.ruleForm.id
+                    // delete data.password
+                }
                 saveOrUpdate(data).then(res=>{
                     if(that.isEdit){
                         that.$message({
@@ -173,17 +178,32 @@ export default {
       isEdit(newVal){
           if(newVal){
             this.title = "编辑账号"
-            this.ruleForm={
-                id:this.editDetail.id,
-                loginName: this.editDetail.loginName,
-                name: this.editDetail.name,
-                password:this.editDetail.password,
-                status: this.editDetail.status,
-                roleInfoList: this.editDetail.roleId.split(",").map(Number)
-            }
-            console.log(this.ruleForm)
+            // this.ruleForm={
+            //     id:this.editDetail.id,
+            //     loginName: this.editDetail.loginName,
+            //     name: this.editDetail.name,
+            //     password:this.editDetail.password,
+            //     status: this.editDetail.status,
+            //     roleInfoList: this.editDetail.roleId.split(",").map(Number)
+            // }
+            // console.log(this.ruleForm)
           }
         
+      },
+      editDetail(newVal){
+          if(newVal){
+                this.ruleForm={
+                id:newVal.id,
+                loginName: newVal.loginName,
+                name: newVal.name,
+                password:newVal.password,
+                status: newVal.status,
+                roleInfoList:[]
+            }
+            if(!Tools.isEmpty(newVal.roleId)){
+                this.ruleForm.roleInfoList = newVal.roleId.split(",").map(Number)
+            }
+          }
       }
   }
 }

@@ -144,14 +144,12 @@ export default {
         that.$refs[formName].validate((valid) => {
           console.log(valid)
           if (valid) {
-            let date = new Date()
-            if(that.isEdit){
-                that.menuForm.updateTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-            }else{
-                that.menuForm.creatTime = moment(date).format('YYYY-MM-DD hh:mm:ss')
-            }  
             that.menuForm.parentId = that.parentId
             that.menuForm.meta.title = that.menuForm.title 
+            // that.menuForm.meta.affix = false
+            // that.menuForm.meta.noCache = true
+            // that.menuForm.meta.icon = "el-icon-date"
+            // delete that.menuForm.meta.affix
             that.menuForm.meta = JSON.stringify(that.menuForm.meta)
             if(that.parentId){
               that.menuForm.path = that.menuForm.name.replace(that.menuForm.name[0],that.menuForm.name[0].toLowerCase());

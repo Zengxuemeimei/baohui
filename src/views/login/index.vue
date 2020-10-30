@@ -17,7 +17,7 @@
                 <!-- <svg-icon icon-class="user" /> -->
                 <i class="el-icon-lock f30" />
               </span>
-              <input class="username" type="password" v-model="loginForm.password" placeholder="请输入密码"> 
+              <input class="username" type="password" @keydown.enter="login" v-model="loginForm.password" placeholder="请输入密码"> 
             </el-form-item>
             <el-button type="primary" @click="login" :loading="isLoading">登录</el-button>
           </el-form>

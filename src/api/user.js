@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 import store from '@/store'
 import Base64  from 'base-64';
+import Tools from '@/utils/tools';
 export function login(data) {
   data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
   console.log('密码',data)
@@ -35,7 +36,9 @@ export function getList(params) {
 }
 export function saveOrUpdate(data) {
   data.enterpriseId = store.getters.enterpriseId
-  if(!data.id){
+  // console.log('id',Tools.isEmpty(data.id))
+  // return
+  if(Tools.isEmpty(data.id)){
     data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
   }
   return request({

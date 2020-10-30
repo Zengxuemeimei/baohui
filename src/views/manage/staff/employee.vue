@@ -4,8 +4,11 @@
       <p class="title">员工管理-在职员工</p>
     </header>
     <main class="content-main relative">
-      <div class="key-words-box">
+      <div class="key-words-box  flex-start">
         <search-key @query="keyWordsQuery" :isClear="isClearKey" />
+         <div class="btn-box flex-start ml20">
+            <add-button @addShow="addShow" />
+          </div>
       </div>
       <div class="filter-box flex-between flex-wrap">
         <div class="flex-start flex-wrap">
@@ -37,9 +40,7 @@
             >
             </el-date-picker>
           </div>
-          <div class="btn-box flex-start ml20">
-            <add-button @addShow="addShow" />
-          </div>
+         
         </div>
       </div>
       <div class="all-table">
@@ -122,6 +123,7 @@ export default {
       pageData: {
         keyword: null,
         pageIndex: 1,
+        pageSize:10,
         departmentId: null,
         entryTimeStartTime: null,
         entryTimeEndTime: null,

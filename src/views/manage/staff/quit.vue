@@ -107,6 +107,7 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
+        pageSize:10,
         departmentId:null,
         quitTimeStartTime:null,
         quitTimeEndTime:null

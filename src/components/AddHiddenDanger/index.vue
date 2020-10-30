@@ -86,6 +86,7 @@
                         v-if="!isDetail"
                         action=""
                         multiple
+                        accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
                         ref="reportPic"
                         list-type="picture-card"
                         :on-change="changeReportPic"
@@ -160,6 +161,7 @@
                         v-if="!isDetail"
                         action=""
                         multiple
+                        accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG"
                         ref="managePic"
                         list-type="picture-card"
                         :on-change="changeManagePic"
@@ -293,12 +295,28 @@ export default {
         fd.append('reportStaffId',data.reportStaffId)
         fd.append('title',data.title)
         fd.append('manageStatus',data.manageStatus)
+        let flag = false
         this.reportFile.forEach(el=>{
-            fd.append('dangerReportFile ',el.raw) 
+            if(Tools.beforeAvatarUpload(el.raw)){
+                fd.append('dangerReportFile ',el.raw) 
+            }else{
+                flag = true
+            }
         })
         this.manageFile.forEach(el=>{
-            fd.append('dangerManageFile ',el.raw) 
+            if(Tools.beforeAvatarUpload(el.raw)){
+                fd.append('dangerManageFile ',el.raw) 
+            }else{
+                flag = true
+            }
         })
+        if(flag){
+            this.$message({
+              message: '上传图片格式不支持,请检查',
+              type: 'warning'
+            });
+          return
+        }
         if(this.isEdit){
             fd.append('id',data.id) 
         }

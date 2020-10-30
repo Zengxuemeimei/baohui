@@ -38,12 +38,16 @@ export const constantRoutes = [
 
     hidden: true
   },
-  // {
-  //   path: '/404',
-  //   component: () => import('@/views/404'),
-  //   // component:  (resolve) => require([`@/views/404`], resolve),
-  //   hidden: true
-  // },
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+  {
+    path: '/mobileVisitor',
+    component: () => import('@/views/mobileVisitor'),
+    hidden: true
+  },
   // {
   //   path: '/manage',
   //   component: Layout,

@@ -11,7 +11,7 @@
           </div>
           <div class="flex-start ml20">
             <label class="filter-label">部门：</label>
-            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=0;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
+            <el-select clearable v-model="pageData.departmentId" @change="pageData.pageIndex=1;pageData.keyword=null;isClearKey=true;getList()" placeholder="请选择">
               <DepartmentSelect :list="listDepartment"/>
             </el-select>
           </div>
@@ -64,7 +64,7 @@
       </div>
       <Loading :loading="loading" />
     </main>
-    <AddMonitor :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" @close="closeAdd"/>
+    <AddMonitor :isShow="isAdd" :isEdit="isEdit" :editDetail="editDetail" :listDepartment="listDepartment" @close="closeAdd"/>
   </div>
 </template>
 

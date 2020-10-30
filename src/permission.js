@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login','/mobileVisitor'] //免登录白名单
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -19,6 +19,7 @@ router.beforeEach(async(to, from, next) => {
 
   if (hasToken) {
     if (to.path === '/login') {
+      console.log('拦截，出现及时查看')
       next({ path: '/' })
       NProgress.done()
     } else {

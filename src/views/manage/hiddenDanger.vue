@@ -67,6 +67,8 @@
             label="处理描述">
           </el-table-column>
           <el-table-column
+          fixed="right"
+          width="200px"
             label="操作">
             <template slot-scope="scope">
                 <div class="flex-start">
@@ -173,8 +175,15 @@ export default {
           this.editDetail = res.data
       })
     },
-    changeStatus(){
-        
+    changeStatus(val){
+      if(val){
+        this.pageData.manageStatus = val
+      }else{
+        this.pageData.manageStatus = null
+      }
+        this.pageData.pageIndex = 1
+        this.getList()
+
     },
     getList(){
       let data = this.pageData
