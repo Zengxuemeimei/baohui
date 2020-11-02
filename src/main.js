@@ -19,6 +19,9 @@ import '@/permission' // permission control
 import LicenseKeyboard from 'vue-license-keyboard';
 import 'vue-license-keyboard/lib/vue-license-keyboard.css';
 Vue.use(LicenseKeyboard); //键盘车牌
+import Mint from 'mint-ui'; //shouji
+import 'mint-ui/lib/style.css'
+Vue.use(Mint);
 
 /**
  * If you don't want to use mock-server

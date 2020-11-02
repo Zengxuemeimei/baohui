@@ -23,13 +23,7 @@ export default {
   },
   mounted() {
     console.log('判断手机端',)
-    if(Tools.isMobileUserAgent()){
-      //手机端
-      var html = document.querySelector("html");
-        var body = document.querySelector("body");
-        html.style.fontSize = html.offsetWidth / 750 * 100 + "px";
-        html.style.background = '#ededed'
-    }
+  
   },
   methods: {
     reload() {
@@ -38,6 +32,21 @@ export default {
         this.isRouterAlice = true
       })
     },
+  },
+  watch:{
+    $route(to, from) {
+      if(!to.name){
+          if(Tools.isMobileUserAgent()){
+          //手机端
+          var html = document.querySelector("html");
+            var body = document.querySelector("body");
+            html.style.fontSize = html.offsetWidth / 750 * 100 + "px";
+            html.style.background = '#ededed'
+        }
+      }
+
+      console.log('路由',to.name)
+    }
   }
 }
 </script>

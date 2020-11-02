@@ -171,4 +171,63 @@ Tools.destroyRTSP=function (that) {
     that.playerRTSP.destroy()
     that.playerRTSP = null
 },
+//压缩图片，改变图片方向
+Tools.getImgData=function(img,dir,next){
+  var image=new Image();
+  image.src = img
+  image.onload=function(){
+      var degree=0,drawWidth,drawHeight,width,height;
+      drawWidth=this.width;
+      drawHeight=this.height;
+
+//以下改变一下图片大小
+      var maxSide = Math.max(drawWidth, drawHeight);
+      if (maxSide > 400) {
+          var minSide = Math.min(drawWidth, drawHeight);
+          minSide = minSide / maxSide * 400;
+          maxSide = 400;
+          if (drawWidth > drawHeight) {
+              drawWidth = maxSide;
+              drawHeight = minSide;
+          } else {
+              drawWidth = minSide;
+              drawHeight = maxSide;
+          }
+      }
+      var canvas=document.createElement('canvas');
+
+      canvas.width=drawWidth;
+      canvas.height=drawHeight;
+      width = drawWidth;
+      height = drawHeight
+      var context=canvas.getContext('2d');
+      if(dir.Orientation && dir.Orientation != 1){
+          switch(dir.Orientation){
+              case 3:
+                  context.rotate(Math.PI);
+                  context.drawImage(this, -drawWidth, -drawHeight, drawWidth, drawHeight);
+                  break;
+              case 6:
+                  if(width > height){
+                      canvas.width = height;
+                      canvas.height = width;
+                      context.rotate(Math.PI / 2);
+                      context.drawImage(this, 0, -drawHeight, drawWidth, drawHeight)
+                  }else {
+                      context.drawImage(this,0,0,drawWidth,drawHeight);
+                  }
+                  break;
+              case 8:
+                  canvas.width = drawHeight;
+                  canvas.height = drawWidth;
+                  context.rotate(3*Math.PI / 2);
+                  context.drawImage(this, -drawWidth, 0, drawWidth, drawHeight);
+                  break;
+          }
+      }else {
+          context.drawImage(this,0,0,drawWidth,drawHeight);
+      }
+      next(canvas.toDataURL("image/png",.8));
+  }
+}
 module.exports = Tools

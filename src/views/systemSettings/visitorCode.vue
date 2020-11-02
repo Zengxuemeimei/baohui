@@ -19,7 +19,7 @@ export default {
   components: {vueQr},
   data() {
     return {
-      url:"https://www.baidu.com/",
+      url:"http://192.168.1.120:9528/#/mobileVisitor",
       imgUrl:require("@/assets/yg.png")
     }
   },
