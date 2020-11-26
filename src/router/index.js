@@ -38,15 +38,21 @@ export const constantRoutes = [
 
     hidden: true
   },
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
+  // {
+  //   path: '/404',
+  //   component: () => import('@/views/404'),
+  //   hidden: true
+  // },
   {
     path: '/mobileVisitor',
     component: () => import('@/views/mobileVisitor'),
     hidden: true
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/views/dashboard'),
+    meta: { title: '宝汇展示页',icon:'dashboard'},
   },
   // {
   //   path: '/manage',

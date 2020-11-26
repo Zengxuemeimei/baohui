@@ -1,10 +1,12 @@
 import request from '@/utils/request'
 import store from '@/store'
 
-export function getDepartmentList() {  
+export function getDepartmentList(params) { 
+  params.enterpriseId =  store.getters.enterpriseId
     return request({
-      url: '/departmentInfo/list?enterpriseId=' + store.getters.enterpriseId,
+      url: '/departmentInfo/list',
       method: 'get',
+      params
     })
 }
 

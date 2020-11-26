@@ -176,6 +176,7 @@ export default {
           this.menuForm.path = this.editDetail.path
           this.menuForm.id = this.editDetail.id
           this.menuForm.component = this.editDetail.component
+          this.menuForm.orderNum = this.editDetail.orderNum
       }
 
       

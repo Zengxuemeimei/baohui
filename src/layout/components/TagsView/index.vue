@@ -164,7 +164,7 @@ export default {
         // you can adjust it according to your needs.
         if (view.name === 'Employee') {
           // to reload home page
-          this.$router.replace({ path: '/redirect' + view.fullPath })
+          this.$router.replace({ path: '/manage' })
         } else {
           this.$router.push('/manage')
         }

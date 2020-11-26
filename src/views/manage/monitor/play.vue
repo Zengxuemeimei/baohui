@@ -21,14 +21,20 @@
               v-for="item in list"
               :key="item.id"
               :label="item.name"
-              :value="item.videoUrl"
+              :value="item.id"
             >
             </el-option>
           </el-select>
         </div>
       </div>
       <div class="video-box">
-        <video id="test_video" controls autoplay></video>
+        <video id="test_video" controls autoplay>
+        </video>
+        <div class="progressV">
+          <input type="range" class="timeLine" min="0" max="100" value="100" style="width:100%;">
+          <div class="timeFloat">{{progressTime}}</div>
+        </div>
+        <!-- <div class="videoContent"></div> -->
       </div>
     </main>
   </div>
@@ -49,6 +55,7 @@ export default {
       playUrl:null,
       loading:false,
       list:[],
+      progressTime:null,
       pageData:{
         keyword:null,
         pageIndex:1,
@@ -71,10 +78,16 @@ export default {
       this.getList()
     },
     changeAddress(val){
-      if(this.playerRTSP){
-        Tools.destroyRTSP(this)
-      }
-      Tools.streamedian("test_video",val,this)
+      // if(this.playerRTSP){
+      //   Tools.destroyRTSP(this)
+      // }
+      this.list.forEach(el=>{
+        if(el.id == val){
+          // let url = 'rtsp://admin:zzxy2009@jtht.tpddns.cn:9683/Streaming/Channels/102'
+            Tools.streamedian("test_video",el.videoUrl,this)
+            // Tools.streamedian("test_video",url,this)
+        }
+      }) 
     },
     getList(){
       let data = this.pageData
@@ -82,6 +95,7 @@ export default {
       that.loading = true
       getMonitorList(data).then(res=>{
           that.list = res.data.dataList
+          Tools.streamedian("test_video",url,this)
           that.loading = false
           // that.total = res.data.total
       }).catch(error=>{
@@ -97,9 +111,34 @@ export default {
   width: 100%;
   height: 750px;
   /* background: #000000; */
+  position: relative;
 }
 .video-box video {
   width: 100%;
   height: 100%;
+}
+video::-webkit-media-controls-timeline {
+    /*display: none;*/
+    visibility: hidden !important;
+}
+.progressV{
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 100%;
+}
+.video-box:hover .progressV{
+  display: block;
+}
+.timeFloat{
+  line-height: 30px;
+  padding: 0 5px;
+  border-radius: 2px;
+  white-space: nowrap;
+  background: #fff;
+  position: absolute;
+  left: 30px;
+  top: -30px;
 }
 </style>

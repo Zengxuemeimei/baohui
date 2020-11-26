@@ -8,6 +8,23 @@
         :before-close="handleClose">
         <div class="">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                <el-form-item label="企业" prop="enterpriseId" v-permission="['superAdmin']">
+                    <div class="input-box">
+                    <el-select
+                    @change="changeRoles"
+                        v-model="ruleForm.enterpriseId"
+                        placeholder="请选择企业"
+                    >
+                        <el-option
+                        v-for="item in list"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        >
+                        </el-option>
+                    </el-select>
+                    </div>
+                </el-form-item>
                 <el-form-item label="姓名" prop="name">
                     <div class="input-box">
                         <el-input v-model="ruleForm.name" placeholder="请输入姓名"></el-input>
@@ -61,9 +78,18 @@ import { saveOrUpdate } from '@/api/user'
 import {getRoleList} from '@/api/roles'
 import moment from 'moment'
 import Tools from '@/utils/tools'
+import { getEnterpriseInfoList } from "@/api/enterprise";
+import permission from '@/directive/permission/index.js' 
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'AddAccountNumber',
   components: {},
+  computed: {
+    ...mapGetters([
+      'roles'
+    ])
+  },
   props:{
       isShow:{
           type:Boolean
@@ -83,9 +109,11 @@ export default {
             name: null,
             password: null,
             status: "启用",
-            roleInfoList:[]
+            roleInfoList:[],
+            enterpriseId:null
         },
         roleList:[],
+        list:[],
         rules: {
           name: [
               { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -106,17 +134,18 @@ export default {
   },
   mounted() {
       this.getRoleList()
+       this.getList();
   },
   methods: {
     handleClose() {
         this.$emit('close',{isShow:false,isSuccess:false})
         this.empty()
     },
-    getRoleList(){
-        let that = this
-        getRoleList().then(res=>{
-            that.roleList = res.data.dataList
-        })
+   getRoleList(enterpriseId) {
+      let that = this;
+      getRoleList({enterpriseId:enterpriseId}).then((res) => {
+        that.roleList = res.data.dataList;
+      });
     },
     empty(){
         this.ruleForm={
@@ -124,10 +153,20 @@ export default {
             name: null,
             password: null,
             status: "启用",
-            roleInfoList:[]
+            roleInfoList:[],
+            enterpriseId:null
         }
         this.title = "新增账号"
         this.$refs.ruleForm.resetFields();
+    },
+     changeRoles(val){
+      console.log('id',val)
+      this.getRoleList(val)
+    },
+    getList() {
+      getEnterpriseInfoList().then((res) => {
+        this.list = res.data.dataList;
+      });
     },
     addAccountNumber(formName){
         let that = this
@@ -136,7 +175,7 @@ export default {
           if (valid) {
                 
                     // data = that.ruleForm
-                let {roleInfoList,loginName,name,password,status} =that.ruleForm
+                let {roleInfoList,loginName,name,password,status,enterpriseId} =that.ruleForm
                 let list = []
                 roleInfoList.forEach(el=>{
                     list.push({
@@ -148,7 +187,8 @@ export default {
                     name: name,
                     password: password,
                     status: status,
-                    roleInfoList:list
+                    roleInfoList:list,
+                    enterpriseId:enterpriseId
                 }
                 if(that.isEdit){
                     data.id = that.ruleForm.id
@@ -198,7 +238,8 @@ export default {
                 name: newVal.name,
                 password:newVal.password,
                 status: newVal.status,
-                roleInfoList:[]
+                roleInfoList:[],
+                enterpriseId:newVal.enterpriseId
             }
             if(!Tools.isEmpty(newVal.roleId)){
                 this.ruleForm.roleInfoList = newVal.roleId.split(",").map(Number)

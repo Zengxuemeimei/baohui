@@ -96,7 +96,8 @@ export default {
          this.videoInfo={
           address: null,
           name:null,
-          videoUrl: null
+          videoUrl: null,
+          departmentId:null
         }
         this.title='新增地址'
       },
@@ -125,7 +126,8 @@ export default {
           address: newVal.address,
           name:newVal.name,
           videoUrl: newVal.videoUrl,
-          id:newVal.id
+          id:newVal.id,
+          departmentId:newVal.departmentId
         }
       }
     }

@@ -1,10 +1,15 @@
 import request from '@/utils/request'
 import store from '@/store'
 
-export function getRoleList() {
+export function getRoleList(params) {
+  if(store.getters.roles.indexOf('superAdmin') === -1){
+    params.enterpriseId = store.getters.enterpriseId
+  }
+  // console.log('咦',params)
     return request({
-      url: '/roleInfo/list?enterpriseId=' + store.getters.enterpriseId,
-      method: 'get'
+      url: '/roleInfo/list',
+      method: 'get',
+      params
     })
 }
 
@@ -17,7 +22,10 @@ export function setMenu(data) {
 }
 
 export function saveOrUpdate(data) {
-    data.enterpriseId=0
+  if(store.getters.roles.indexOf('superAdmin') === -1){
+
+    data.enterpriseId=store.getters.enterpriseId
+  }
     return request({
       url: '/roleInfo/saveOrUpdate',
       method: 'post',

@@ -22,7 +22,22 @@ Vue.use(LicenseKeyboard); //键盘车牌
 import Mint from 'mint-ui'; //shouji
 import 'mint-ui/lib/style.css'
 Vue.use(Mint);
+import $ from 'jquery'
 
+//qs模块引入(在post提交数据 的时候使用)
+import qs from 'qs'
+Vue.prototype.$qs = qs;
+
+//引入vue-seamless-scroll滚动插件
+import scroll from 'vue-seamless-scroll'
+Vue.use(scroll)
+
+//引入data-v插件
+import dataV from '@jiaminghi/data-view'
+Vue.use(dataV)
+
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

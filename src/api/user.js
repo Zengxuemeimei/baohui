@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 import store from '@/store'
-import Base64  from 'base-64';
+import Base64 from 'base-64';
 import Tools from '@/utils/tools';
 export function login(data) {
   data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
-  console.log('密码',data)
   return request({
     url: '/userInfo/login',
     method: 'post',
@@ -26,8 +25,10 @@ export function logout() {
   })
 }
 export function getList(params) {
-  // params.pageSize=10
-  params.enterpriseId = store.getters.enterpriseId
+  if(store.getters.roles.indexOf('superAdmin') === -1){
+    params.enterpriseId = store.getters.enterpriseId
+  }
+  console.log('params',params)
   return request({
     url: '/userInfo/list',
     method: 'get',
@@ -35,10 +36,11 @@ export function getList(params) {
   })
 }
 export function saveOrUpdate(data) {
-  data.enterpriseId = store.getters.enterpriseId
-  // console.log('id',Tools.isEmpty(data.id))
-  // return
-  if(Tools.isEmpty(data.id)){
+   if(store.getters.roles.indexOf('superAdmin') === -1){
+    data.enterpriseId = store.getters.enterpriseId
+  }
+  // data.enterpriseId = store.getters.enterpriseId
+  if (Tools.isEmpty(data.id)) {
     data.password = Base64.encode(data.password + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
   }
   return request({
@@ -53,5 +55,16 @@ export function deleteAccountNum(params) {
     url: '/userInfo/deleteById',
     method: 'get',
     params
+  })
+}
+//修改密码
+export function updatePassword(data) {
+  data.enterpriseId = store.getters.enterpriseId
+  data.oldPassword = Base64.encode(data.oldPassword + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
+  data.newPassword = Base64.encode(data.newPassword + 'V2FuZzkyNjQ1NGRTQkFQSUpXVA');
+  return request({
+    url: '/userInfo/updatePassword',
+    method: 'post',
+    data
   })
 }

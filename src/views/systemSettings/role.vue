@@ -34,6 +34,10 @@
             prop="creatTime">
             </el-table-column>
             <el-table-column
+            prop="enterpriseName"
+            label="所属企业">
+          </el-table-column>
+            <el-table-column
             label="操作"
             width="200"
             >
@@ -66,6 +70,7 @@ import TreeRole from '@/components/TreeRole/index'
 import {getRoleList,deleteRole} from '@/api/roles'
 import {getList} from '@/api/menu'
 import Loading from "@/components/Loading/index";
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Role',
@@ -75,6 +80,12 @@ export default {
     Paging,
     TreeRole,
     Loading
+  },
+  computed: {
+    ...mapGetters([
+      'menu',
+      'roles'
+    ])
   },
   inject: ['reload'],
   data() {
@@ -89,15 +100,19 @@ export default {
       isAdd:false,
       isEdit:false,
       editDetail:{},
-      menuList:[],
-      loading:false
+      loading:false,
+      menuList:[]
     }
   },
   created() {
   },
   mounted() {
       this.getRoleList()
-      this.getMenuList()
+  if(this.roles.indexOf('superAdmin') != -1){
+      this.getMenuList() 
+  }else{
+    this.menuList = this.menu
+  }
   },
   methods: {
     getMenuList(){
@@ -109,7 +124,7 @@ export default {
       getRoleList(){
         let that = this
         that.loading = true
-        getRoleList().then(res=>{
+        getRoleList({}).then(res=>{
           that.loading = false
            that.list = res.data.dataList
         }).catch(error=>{

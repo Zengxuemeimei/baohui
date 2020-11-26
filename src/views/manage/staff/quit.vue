@@ -181,7 +181,7 @@ export default {
     },
     getDepartmentList(){
         let that = this
-        getDepartmentList().then(res=>{
+        getDepartmentList({status: "启用"}).then(res=>{
           that.listDepartment=res.data
         })
     },

@@ -171,6 +171,7 @@ export default {
       });
     },
     detailItem(id) {
+      
       let that = this;
       that.isAdd = true;
       that.isDetail = true;

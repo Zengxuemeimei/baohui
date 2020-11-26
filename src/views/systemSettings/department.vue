@@ -120,7 +120,7 @@ export default {
     getList() {
       let that = this;
       that.loading = true
-      getDepartmentList().then((res) => {
+      getDepartmentList({}).then((res) => {
         that.loading = false
         that.list = res.data;
       }).catch(error=>{
