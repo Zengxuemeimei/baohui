@@ -73,7 +73,7 @@
               </div>
           </div>
       </div>
-      <p class="btn" id="sure" @click="addVisitor">完成</p>
+      <p class="btn" id="sure" @click="addVisitor" > <span class="el-icon-loading" v-show="loading"></span> 完成</p>
       <div class="mask" v-show="loading">
           <div class="loading-img-box">
               <div style="height: 100%;" class="column-center">

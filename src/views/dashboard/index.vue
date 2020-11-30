@@ -719,9 +719,6 @@ export default {
     },
     //播放器
     streamedian(id, Vname) {
-      // console.log('----------dian-----------');
-      // console.log(document.getElementById(id), Vname);
-      // console.log('---------------------');
       let url;
       for (let i in this.cameraData) {
         if (this.cameraData[i].name == Vname) {
@@ -756,11 +753,6 @@ export default {
       };
 
       var html5Player = document.getElementById(this.playerId);
-
-      // console.log('----------html5Player-----------');
-      // console.log(html5Player);
-      // console.log('---------------------');
-
       html5Player.src = url;
       var player = Streamedian.player(this.playerId, playerOptions);
       var nativePlayer = document.getElementById(this.playerId);
@@ -775,16 +767,9 @@ export default {
       if (!!window.chrome) {
         document.addEventListener("visibilitychange", function () {
           if (document.visibilityState === "hidden") {
-            // console.log("————————————————");
-            // console.log(document.visibilityState);
-            // // console.log(this.playerId);
-            // console.log(this.videoLists);
-            // console.log(player);
-            // console.log("————————————————");
             for (let i of this.videoLists) {
               i.pause();
             }
-            // nativePlayer.pause();
           } else {
             for (let i of this.videoLists) {
               i.play();
@@ -796,15 +781,8 @@ export default {
           }
         });
       }
-      // player.destroy();
-      // player = null;
-      // html5Player.src = url;
-      // player = Streamedian.player(this.playerId, playerOptions);
       this.playerLists.push(player);
       this.videoLists.push(nativePlayer);
-      // console.log("————————————————");
-      // console.log(this.playerList);
-      // console.log("————————————————");
     },
     //告警中心数据滚动
     scroll() {
@@ -1732,38 +1710,12 @@ export default {
         getHiddenDangerCount().then(res=>{
             this.dangerEchart(res.data);
         })
-    //   axios({
-    //     url: "index/getHiddenDangerCount",
-    //     method: "get",
-    //   }).then((res) => {
-    //     if (res.data.success) {
-    //       this.dangerEchart(res.data.data);
-    //       return;
-    //     }
-    //     this.$notify.error({
-    //       title: "失败",
-    //       message: res.data.msg,
-    //     });
-    //   });
     },
     //获取巡跟系统
     getKeepWatchPlaceCount() {
         getKeepWatchPlaceCount().then(res=>{
             this.patrolEchart(res.data);
         })
-    //   axios({
-    //     url: "index/getKeepWatchPlaceCount",
-    //     method: "get",
-    //   }).then((res) => {
-    //     if (res.data.success) {
-    //       this.patrolEchart(res.data.data);
-    //       return;
-    //     }
-    //     this.$notify.error({
-    //       title: "失败",
-    //       message: res.data.msg,
-    //     });
-    //   });
     },
     //获取出入记录
     accessCount(type, datax) {
@@ -1776,48 +1728,12 @@ export default {
           }
           this.accessEchart(datax, res.data, type);
       })
-    //   axios({
-    //     url: "index/accessCount",
-    //     method: "get",
-    //     params: {
-    //       enterpriseId: 2,
-    //       type,
-    //     },
-    //   }).then((res) => {
-    //     if (res.data.success) {
-    //       if (type == "month" && res.data.data.faceMonth.length > 0) {
-    //         for (let i in res.data.data.faceMonth) {
-    //           datax.push(res.data.data.faceMonth[i].date);
-    //         }
-    //       }
-    //       this.accessEchart(datax, res.data.data, type);
-    //       return;
-    //     }
-    //     this.$notify.error({
-    //       title: "失败",
-    //       message: res.data.msg,
-    //     });
-    //   });
     },
     //获取摄像头数据
     getCameraList() {
         getVideoInfoList().then(res=>{
             this.cameraData = res.data.dataList;
         })
-    //  axios({
-    //     url: "videoInfo/list",
-    //     method: "get",
-    //   }).then((res) => {
-    //     if (res.data.success) {
-    //       this.cameraData = res.data.data.dataList;
-    //       // this.getCameraInfo(this.cameraData);
-    //       return;
-    //     }
-    //     this.$notify.error({
-    //       title: "失败",
-    //       message: res.data.msg,
-    //     });
-    //   });
     },
     //添加摄像头-
     addCamera() {
@@ -1853,27 +1769,6 @@ export default {
             type: "success",
           });
       })
-    //  axios({
-    //     url: "videoInfo/saveOrUpdate",
-    //     method: "post",
-    //     // data: this.$qs.stringify({ _id: row._id })
-    //     data: this.formCamera,
-    //   }).then((res) => {
-    //     if (res.data.success) {
-    //       this.$notify({
-    //         title: "成功",
-    //         message: "更新成功",
-    //         type: "success",
-    //       });
-    //       this.addCameraShow = false;
-    //       this.getCameraList();
-    //       return;
-    //     }
-    //     this.$notify.error({
-    //       title: "失败",
-    //       message: res.data.info,
-    //     });
-    //   });
     },
     //编辑摄像头-
     cameraEdit(index, id) {

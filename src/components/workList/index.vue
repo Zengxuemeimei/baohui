@@ -297,7 +297,8 @@ export default {
         let that = this
         let data = {
           keyword:this.pageData.keyword,
-          pageIndex:this.pageData.pageIndex
+          pageIndex:this.pageData.pageIndex,
+          pageSize:50
         } 
         getStaffList(data).then(res=>{
             let {dataList} =res.data

@@ -34,7 +34,7 @@ export default {
 .loading-mask{
     width: 100%;
     height: 100%;
-    /* background: rgba(255, 255, 255, 0.87); */
+    background: rgba(255, 255, 255, 0.87);
     position: absolute;
     left: 0;
     top: 0;

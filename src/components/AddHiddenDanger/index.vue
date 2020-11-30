@@ -11,7 +11,7 @@
                 <span class="person-info-title">上报信息</span>
                 <table class="person-table mb40 ml50" border="1">
                      <tr>
-                        <th>上报人</th>
+                        <th><span class="red">*</span>  上报人</th>
                         <td>
                             <el-select
                                 :disabled="isDetail"
@@ -30,7 +30,7 @@
                                 </el-option>
                             </el-select>
                         </td>
-                        <th>上报时间</th>
+                        <th><span class="red">*</span> 上报时间</th>
                         <td>
                             <el-date-picker
                                 :disabled="isDetail"
@@ -39,7 +39,7 @@
                                 placeholder="选择日期">
                             </el-date-picker>
                         </td>
-                        <th>隐患级别</th>
+                        <th><span class="red">*</span> 隐患级别</th>
                         <td style="width:300px">
                             <el-select clearable :disabled="isDetail" v-model="hiddenDangerInfo.level"  placeholder="请选择">
                                 <DictionarySelect :list="hiddenDangerLevelList"/>
@@ -47,7 +47,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>标题</th>
+                        <th><span class="red">*</span> 标题</th>
                         <td colspan="5">
                             <input
                                 :disabled="isDetail"
@@ -58,7 +58,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>事件描述</th>
+                        <th><span class="red">*</span> 事件描述</th>
                         <td colspan="5">
                             <input
                                 :disabled="isDetail"
@@ -70,6 +70,7 @@
                     </tr>
                 </table>
                 <span class="person-info-title">图片资料</span>
+                <p class="mb20 ml20 red" v-show="!isDetail">*上传图片支持jpg,png,jpeg格式 </p> 
                 <div class="ml50 mb40 flex-start">
                     <div class="upload-img-box mr20 relative"  v-for="item in reportImgList" :key="item">
                         <el-image 
@@ -184,6 +185,7 @@ import {getStaffList} from '@/api/staff/index'
 import {saveOrUpdate} from '@/api/hiddenDanger'
 import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import moment from 'moment'
+import Tools from '@/utils/tools'
 
 export default {
   name: 'AddHiddenDanger',
@@ -279,11 +281,51 @@ export default {
     },
     addHiddenDanger(){
         let data = this.hiddenDangerInfo
+        if(Tools.isEmpty(data.reportStaffId)){
+            this.$message({
+              message: "请选择上报人",
+              type: "warning",
+            });
+            return
+        }
+        if(Tools.isEmpty(data.reportTime)){
+            this.$message({
+              message: "请选择上报时间",
+              type: "warning",
+            });
+            return
+        }
+        if(Tools.isEmpty(data.level)){
+            this.$message({
+              message: "请选择隐患级别",
+              type: "warning",
+            });
+            return
+        }
+        if(Tools.isEmpty(data.title)){
+            this.$message({
+              message: "请填写标题",
+              type: "warning",
+            });
+            return
+        }
+        if(Tools.isEmpty(data.eventDescribe)){
+            this.$message({
+              message: "请填写事件描述",
+              type: "warning",
+            });
+            return
+        }
         if(data.reportTime){
             data.reportTime = moment(data.reportTime).format('YYYY-MM-DD HH:mm:ss')
         }
         if(data.manageTime){
             data.manageTime = moment(data.manageTime).format('YYYY-MM-DD HH:mm:ss')
+        }else{
+              data.manageTime = ''
+        }
+        if(Tools.isEmpty(data.manageStaffId)){
+             data.manageStaffId = ''
         }
         let fd = new FormData()
         fd.append('eventDescribe',data.eventDescribe)
@@ -329,6 +371,7 @@ export default {
     getStaffList(){
         let that = this
         let data = this.pageData
+        data.pageSize = 50
         getStaffList(data).then(res=>{
             let {dataList} =res.data
             dataList.forEach((el,index)=>{

@@ -4,13 +4,13 @@ import { saveOrUpdate } from "@/api/staff/index";
 // const AddPersonUtils={}
 
 export function addPersonUtils(that){
-    if (!Tools.isPhone(that.personInfo.emergencyContactMobile)) {
-        that.$message({
-          message: "紧急联系人电话号码格式不正确",
-          type: "warning",
-        });
-        return;
-      }
+    // if (!Tools.isPhone(that.personInfo.emergencyContactMobile)) {
+    //     that.$message({
+    //       message: "紧急联系人电话号码格式不正确",
+    //       type: "warning",
+    //     });
+    //     return;
+    //   }
       if (!Tools.isPhone(that.personInfo.mobileNumber)) {
         that.$message({
           message: "电话号码格式不正确",
@@ -18,6 +18,27 @@ export function addPersonUtils(that){
         });
         return;
       }
+      if (Tools.isEmpty(that.personInfo.name)) {
+          that.$message({
+            message: "姓名不能为空",
+            type: "warning",
+          });
+        return;
+      }
+      if (Tools.isEmpty(that.personInfo.age)) {
+          that.$message({
+            message: "年龄不能为空",
+            type: "warning",
+          });
+        return;
+      }
+      if (Tools.isEmpty(that.personInfo.departmentId)) {
+        that.$message({
+          message: "部门不能为空",
+          type: "warning",
+        });
+      return;
+    }
       if (that.personInfo.entryTime) {
         that.personInfo.entryTime = moment(that.personInfo.entryTime).format(
           "YYYY-MM-DD HH:mm:ss"
@@ -157,6 +178,7 @@ export function emptyUtils(that){
     education: '',
     email: '',
     emergencyContact: '', //紧急联系人
+    emergencyContactMobile: "",
     entryTime: '',
     expireTime: '', //过期
     quitTime: '',

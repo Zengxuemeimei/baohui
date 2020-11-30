@@ -12,6 +12,7 @@ export function getVisitorList(params) {
 
 export function saveOrUpdate(data) { 
     data.enterpriseId = store.getters.enterpriseId
+    alert(data.enterpriseId)
     return request({
       url: '/visitorInfo/saveOrUpdate',
       method: 'post',

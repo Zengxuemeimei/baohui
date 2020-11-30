@@ -245,6 +245,20 @@ export default {
             });
         return
       }
+      if(Tools.isEmpty(data.name)){
+        that.$message({
+              message: "姓名不能为空",
+              type: "warning",
+            });
+        return
+      }
+      if(Tools.isEmpty(data.customerEnterpriseName)){
+        that.$message({
+              message: "公司名称不能为空",
+              type: "warning",
+            });
+        return
+      }
       fd.append('mobile',data.mobile)
       fd.append('idNumber',data.idNumber)
       fd.append('name',data.name)

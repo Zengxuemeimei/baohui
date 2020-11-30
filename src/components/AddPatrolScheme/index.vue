@@ -11,7 +11,7 @@
                 <span class="person-info-title">方案信息</span>
                 <table class="person-table mb20 ml50" border="1">
                     <tr>
-                        <th>方案名称</th>
+                        <th> <span class="red">*</span> 方案名称</th>
                         <td>
                             <input
                                 :disabled="isDetail"
@@ -21,13 +21,13 @@
                             />
                         </td>
                         
-                        <th>方案类型</th>
+                        <th><span class="red">*</span> 方案类型</th>
                         <td>
                             <el-select clearable :disabled="isDetail" v-model="keepWatchPlanInfo.type" placeholder="请选择">
                                 <DictionarySelect :list="caseTypeList"/>
                             </el-select>
                         </td>
-                        <th>方案状态</th>
+                        <th><span class="red">*</span> 方案状态</th>
                         <td style="width:300px">
                             <el-radio-group :disabled="isDetail" v-model="keepWatchPlanInfo.status">
                                 <el-radio label="启用">启用</el-radio>
@@ -36,13 +36,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>所属部门</th>
+                        <th><span class="red">*</span> 所属部门</th>
                         <td colspan="2">
                             <el-select :disabled="isDetail" v-model="keepWatchPlanInfo.departmentId" placeholder="请选择">
                                 <DepartmentSelect :list="listDepartment"/>
                             </el-select>
                         </td>
-                        <th>重复计划</th>
+                        <th><span class="red">*</span> 重复计划</th>
                         <td colspan="2" >
                             <div class="flex-start">
                                 <div style="width:50%">
@@ -63,7 +63,7 @@
                 </table>
                 <div class="ml50">
                     <div class="flex-start">
-                        <p>巡更点位设置</p>
+                        <p><span class="red">*</span> 巡更点位设置</p>
                         <div class="ml5" v-if="!isDetail">
                             <el-button class="el-icon-circle-plus-outline" @click="addPlace" type="text"> 新增</el-button>
                         </div>
@@ -138,6 +138,7 @@ import {getStaffList} from '@/api/staff/index'
 import DepartmentSelect from '@/components/Recursion/departmentSelect'
 import DictionarySelect from '@/components/Recursion/dictionarySelect'
 import moment from 'moment'
+import Tools from '@/utils/tools'
 
 export default {
   name: 'AddPatrolScheme',
@@ -239,7 +240,8 @@ export default {
     getPlaceList(){
         let data = {
             keyword:null,
-            pageIndex:1
+            pageIndex:1,
+            pageSize:20
         }
         getKeepWatchPlaceList(data).then(res=>{
                 this.placeList = res.data.dataList
@@ -275,16 +277,49 @@ export default {
       },
       addPatrolScheme(){
           let list = []
+          console.log(this.timePicker)
           this.timePicker.forEach((el,index)=>{
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = el.time[0].slice(0,el.time[0].length-1)
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = el.time[1].slice(0,el.time[1].length-1)
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs.forEach((item,num)=>{
-            this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs[num] = {
-                        staffId:item
-                }
-            })
+              
+              if(!Tools.isEmpty(el.time[0]) && !Tools.isEmpty(el.time[1])){
+                this.keepWatchPlanInfo.keepWatchPlanPlaces[index].startTime = el.time[0].slice(0,el.time[0].length-1)
+                this.keepWatchPlanInfo.keepWatchPlanPlaces[index].endTime = el.time[1].slice(0,el.time[1].length-1)
+                this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs.forEach((item,num)=>{
+                this.keepWatchPlanInfo.keepWatchPlanPlaces[index].keepWatchPlaceStaffs[num] = {
+                            staffId:item
+                    }
+                })
+              }
+           
           })
-          let data = this.keepWatchPlanInfo
+          let data = this.keepWatchPlanInfo,that = this
+            if(Tools.isEmpty(data.name)){
+              that.$message({
+              message: "方案名称不能为空",
+              type: "warning",
+            });
+            return
+          }
+          if(Tools.isEmpty(data.type)){
+              that.$message({
+              message: "方案类型不能为空",
+              type: "warning",
+            });
+            return
+          }
+          if(Tools.isEmpty(data.departmentId)){
+              that.$message({
+              message: "部门不能为空",
+              type: "warning",
+            });
+            return
+          }
+        //    if(Tools.isEmpty(data.keepWatchPlanPlaces[0].)){
+        //       that.$message({
+        //       message: "部门不能为空",
+        //       type: "warning",
+        //     });
+        //     return
+        //   }
           saveOrUpdatePlan(data).then(res=>{
               this.empty()
               this.$emit('close',{isShow:false,isSuccess:true})

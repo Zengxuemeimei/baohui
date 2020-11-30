@@ -12,7 +12,7 @@
           <span class="person-info-title">人员基本信息</span>
           <table class="person-table mb40 ml50" border="1">
             <tr>
-              <th>姓名</th>
+              <th> <span class="red">*</span> 姓名</th>
               <td>
                 <input
                   type="text"
@@ -21,14 +21,14 @@
                   v-model="personInfo.name"
                 />
               </td>
-              <th>性别</th>
+              <th><span class="red">*</span> 性别</th>
               <td>
                 <el-radio-group :disabled="isDetail" v-model="personInfo.sex">
                   <el-radio :label="true">女</el-radio>
                   <el-radio :label="false">男</el-radio>
                 </el-radio-group>
               </td>
-              <th>年龄</th>
+              <th><span class="red">*</span> 年龄</th>
               <td>
                 <input
                   type="text"
@@ -37,7 +37,7 @@
                   v-model="personInfo.age"
                 />
               </td>
-              <th>联系电话</th>
+              <th><span class="red">*</span> 联系电话</th>
               <td>
                 <input
                   type="text"
@@ -68,7 +68,7 @@
               </td>
             </tr>
             <tr>
-              <th>所属部门</th>
+              <th> <span class="red">*</span> 所属部门</th>
               <td>
                 <el-select
                   v-model="personInfo.departmentId"

@@ -150,7 +150,7 @@ Tools.streamedian = function (Vid, url, that) {
     //     </div>`).appendTo($(".video-box"));
     let errHandler = function (err) {};
     var playerOptions = {
-      socket: "ws://192.168.1.5:8080/ws/",
+      socket: "ws://192.168.10.250:9080/ws/",
       redirectNativeMediaErrors: true,
       bufferDuration: 30,
       errorHandler: errHandler,
@@ -179,7 +179,6 @@ Tools.streamedian = function (Vid, url, that) {
     that.timeLine.onmousedown = function () {
       that.timeLine.addEventListener("mousemove", timeShow, false);
       // $('.timeFloat').first().css("visibility", 'visible');
-      console.log('时间时间时间时间时间时间时间时间时间')
       that.mousemoveList.push(timeShow)
     }
     that.timeLine.onmouseup = function () {

@@ -19,13 +19,15 @@ export default {
   components: {vueQr},
   data() {
     return {
-      url:"http://192.168.1.120:9528/#/mobileVisitor",
+      url:"",
       imgUrl:require("@/assets/yg.png")
     }
   },
   created() {
   },
   mounted() {
+    this.url = window.location.protocol + "//" + window.location.host + '/#/mobileVisitor'
+    console.log(window.location.protocol)
   },
   methods: {
   }
