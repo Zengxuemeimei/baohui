@@ -9,6 +9,7 @@
           <label class="filter-label">播放地址：</label>
           <el-select
             v-model="playUrl"
+            clearable 
             filterable
             remote
             @change="changeAddress"
@@ -26,6 +27,7 @@
             </el-option>
           </el-select>
         </div>
+        <el-button class="ml20" v-show="isPlayback" type="danger" @click="jumpLive">跳转直播</el-button>
       </div>
       <div class="video-box">
         <video id="test_video" controls autoplay>
@@ -49,8 +51,7 @@ export default {
   data() {
     return {
       value: null,
-      // playerLists: [],
-      // videoLists: [],
+      isPlayback:false,
       playerRTSP:null,
       playUrl:null,
       loading:false,
@@ -73,21 +74,35 @@ export default {
     Tools.destroyRTSP(this)
   },
   methods: {
+    jumpLive(){
+      let that = this
+      document.getElementsByClassName('timeLine')[0].value = 100
+      this.list.forEach(el=>{
+            if(el.id == that.playUrl){
+                Tools.streamedian("test_video",el.videoUrl,that)
+            }
+          })
+    },
     changeMonitor(val){
       this.pageData.keyword = val
       this.getList()
     },
     changeAddress(val){
-      // if(this.playerRTSP){
-      //   Tools.destroyRTSP(this)
-      // }
-      this.list.forEach(el=>{
-        if(el.id == val){
-          // let url = 'rtsp://admin:zzxy2009@jtht.tpddns.cn:9683/Streaming/Channels/102'
-            Tools.streamedian("test_video",el.videoUrl,this)
-            // Tools.streamedian("test_video",url,this)
-        }
-      }) 
+      if(val){
+          this.isPlayback = false
+          document.getElementsByClassName('timeLine')[0].value = 100
+           this.list.forEach(el=>{
+            if(el.id == val){
+              // let url = 'rtsp://admin:zzxy2009@jtht.tpddns.cn:9683/Streaming/Channels/102'
+                Tools.streamedian("test_video",el.videoUrl,this)
+                // Tools.streamedian("test_video",url,this)
+            }
+          }) 
+      }else{
+        this.pageData.keyword = null
+        this.getList()
+      }
+     
     },
     getList(){
       let data = this.pageData

@@ -135,12 +135,12 @@ Tools.streamedian = function (Vid, url, that) {
     // url =
     //   "rtsp://admin:abcdef00@hlstest.tpddns.cn:10554/Streaming/Channels/102";
     //移除绑定事件
+    
     if (that.timeLine) {
       that.timeLine.removeEventListener('change', timeChange, false);
       that.timeLine.removeEventListener("mousemove", timeShow, false);
       that.timeLine = null;
     }
-    $('.videoContent').empty();
     that.playerId = 'test_video';
     // $(`<video id="test_video" muted controls autoplay></video>
     //     <p class="errorTip">播放链接出错或网络带宽不足！</p>
@@ -150,7 +150,8 @@ Tools.streamedian = function (Vid, url, that) {
     //     </div>`).appendTo($(".video-box"));
     let errHandler = function (err) {};
     var playerOptions = {
-      socket: "ws://192.168.10.250:9080/ws/",
+      // socket: "ws://192.168.10.250:9080/ws/",
+      socket: "ws://148.70.230.200:9640/ws/",
       redirectNativeMediaErrors: true,
       bufferDuration: 30,
       errorHandler: errHandler,
@@ -177,12 +178,13 @@ Tools.streamedian = function (Vid, url, that) {
     that.changeLists.push(timeChange);
 
     that.timeLine.onmousedown = function () {
+      that.isPlayback = true
       that.timeLine.addEventListener("mousemove", timeShow, false);
       // $('.timeFloat').first().css("visibility", 'visible');
       that.mousemoveList.push(timeShow)
     }
     that.timeLine.onmouseup = function () {
-
+      that.isPlayback = true
       that.timeLine.removeEventListener("mousemove", timeShow, false);
       // $('.timeFloat').first().css("visibility", 'hidden');
     }
@@ -214,17 +216,14 @@ Tools.streamedian = function (Vid, url, that) {
       firstTime = nowTime - distanceTime;
       startTime = parseInt(distanceTime * (Number(that.timeLine.value))) / 100 + firstTime;
       startTime = Tools.formatDate(startTime);
-      New_url = url.replace('Channels', 'tracks').slice(0, -1);
-      edit_url = New_url + '1?starttime=' + startTime
+      New_url = url.replace('Channels', 'tracks');
+      edit_url = New_url + '?starttime=' + startTime
       console.log('edit_url', edit_url);
 
       that.playerRTSP.destroy();
       that.playerRTSP = null;
       html5Player.src = edit_url;
       that.playerRTSP = Streamedian.player(that.playerId, playerOptions);
-
-      // module.state.playerLists.push(player);
-      // module.state.videoLists.push(nativePlayer);
     }
 
     if (!!window.chrome) {
