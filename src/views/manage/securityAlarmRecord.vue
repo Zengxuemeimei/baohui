@@ -1,7 +1,7 @@
 <template>
   <div class="content-box">
     <header class="content-header">
-      <p class="title">出入记录-车辆管理</p>
+      <p class="title">电子围栏</p>
     </header>
     <main class="content-main relative">
       <div class="key-words-box">
@@ -10,14 +10,14 @@
       <div class="filter-box flex-between relative">
         <div class="flex-start">
           <div>
-            <label class="filter-label">进/出：</label>
-            <el-select clearable v-model="pageData.directionType" @change="changeDirectionType" placeholder="请选择">
-              <el-option label="进" value="进"></el-option>
-              <el-option label="出" value="出"></el-option>
+            <label class="filter-label">报警类型：</label>
+            <el-select clearable v-model="pageData.alarmType" @change="changeDirectionType" placeholder="请选择">
+              <el-option label="攀爬" value="PAN_PA"></el-option>
+              <el-option label="占用消防通道" value="WEI_TING"></el-option>
             </el-select>
           </div>
           <div class="filter-time ml20">
-            <label class="filter-label">进出时间：</label>
+            <label class="filter-label">报警时间：</label>
             <el-date-picker
                clearable
               @change="changeTime"
@@ -59,27 +59,15 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="licensePlateNumber"
-            label="车牌号">
-          </el-table-column>
-          <!-- <el-table-column
-            prop="personName"
-            label="车主姓名">
-          </el-table-column>
-           <el-table-column
-            prop="idNumber"
-            label="车主身份证号">
-          </el-table-column> -->
-          <el-table-column
-            prop="department"
-            label="图片">
+            prop="alarmImage"
+            label="抓拍">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
                     <el-image 
                     fit="scale-down"
                     lazy
                     :preview-src-list="imgList"
-                    :src="scope.row.accessImage">
+                    :src="scope.row.alarmImage">
                     <div slot="error" class="image-slot " style="height:100%">
                       <i class="el-icon-picture-outline"></i>
                     </div>
@@ -87,29 +75,20 @@
                 </div>
              </template>
           </el-table-column>
-          <!-- <el-table-column
-            label="视频">
-            <div class="headPortrait-box flex-center">
-              <i class="el-icon-video-camera" />
-            </div>
-          </el-table-column> -->
           <el-table-column
-            prop="liveAddress"
-            label="出入地点">
+            prop="alarmTypeCn"
+            label="报警类型">
           </el-table-column>
           <el-table-column
-            prop="accessTime"
-            label="出入时间">
+            prop="alarmTime"
+            label="报警时间">
             <template slot-scope="scope">
-              {{scope.row.accessTime | dateFormat}}
+              {{scope.row.alarmTime | dateFormat}}
             </template>
           </el-table-column>
           <el-table-column
-            prop="accessStatus"
-            label="出入方向">
-            <template slot-scope="scope">
-              {{scope.row.accessStatus ? '出':'进'}}
-            </template>
+            prop="alarmLevel"
+            label="报警等级">
           </el-table-column>
         </el-table>
       </div>
@@ -128,11 +107,11 @@ import countTo from 'vue-count-to'
 import Paging from '@/components/Paging/index'
 import SearchKey from '@/components/searchKey/index'
 import AccessPerson from '@/components/AccessDetail/person'
-import {getAccessCarList} from '@/api/accessRecords/index'
+import {getSecurityAlarmRecordList} from '@/api/securityAlarmRecord'
 import Loading from "@/components/Loading/index";
 
 export default {
-  name: 'CarRecords',
+  name: 'SecurityAlarmRecord',
   components: {
       SearchKey,
       countTo,
@@ -145,7 +124,10 @@ export default {
       pageData:{
         keyword:null,
         pageIndex:1,
-        pageSize:10
+        pageSize:10,
+        alarmStartTime:null,
+        alarmEndTime:null,
+        alarmType:null
       },
       list:[],
       isDetail:false,
@@ -185,35 +167,35 @@ export default {
       },
       changeTime(val){
         if(val){
-          this.pageData.accessStartTime = new Date(val[0]).getTime()
-          this.pageData.accessEndTime = new Date(val[1]).getTime()
+          this.pageData.alarmStartTime = new Date(val[0]).getTime()
+          this.pageData.alarmEndTime = new Date(val[1]).getTime()
         }else{
-          this.pageData.accessStartTime = null
-          this.pageData.accessEndTime = null 
+          this.pageData.alarmStartTime = null
+          this.pageData.alarmEndTime = null 
         }
           this.getList()
       },
       changeDirectionType(val){
         if(val){
-          this.pageData.directionType = val
+          this.pageData.alarmType = val
         }else{
-          this.pageData.directionType = null
+          this.pageData.alarmType = null
         }
         this.pageData.pageIndex = 1
         this.getList()
       },
       getList(){
         let data = this.pageData
-        data.temporary = false
+        // data.temporary = false
         let that = this
         that.loading = true
-        getAccessCarList(data).then(res=>{
+        getSecurityAlarmRecordList(data).then(res=>{
             let {dataList,total} = res.data
           that.list = dataList
           that.total = total
           let img_list = []
           dataList.forEach(el=>{
-              img_list.push(el.accessImage)
+              img_list.push(el.alarmImage)
           })
           that.imgList = img_list
             that.loading = false

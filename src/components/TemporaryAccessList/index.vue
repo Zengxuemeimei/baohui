@@ -20,6 +20,8 @@
           style="width: 100%">
           <el-table-column label="序号" type="index" width="80">
           </el-table-column>
+          <el-table-column label="车牌号" prop="licensePlateNumber">
+          </el-table-column>
           <el-table-column prop="headPortrait" label="人员图片" width="120">
             <template slot-scope="scope">
                 <div class="headPortrait-box flex-center">
@@ -40,7 +42,11 @@
               {{scope.row.accessTime | dateFormat}}
             </template>
           </el-table-column>
-          <el-table-column prop="address" label="出入方向"> </el-table-column>
+          <el-table-column prop="accessStatus" label="出入方向">
+            <template slot-scope="scope">
+              {{scope.row.accessStatus ? '出':'进'}}
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="flex-between mt20">

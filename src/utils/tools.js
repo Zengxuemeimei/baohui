@@ -150,8 +150,8 @@ Tools.streamedian = function (Vid, url, that) {
     //     </div>`).appendTo($(".video-box"));
     let errHandler = function (err) {};
     var playerOptions = {
-      // socket: "ws://192.168.10.250:9080/ws/",
-      socket: "ws://148.70.230.200:9640/ws/",
+      socket: "ws://192.168.10.250:9080/ws/",
+      // socket: "ws://148.70.230.200:9640/ws/",
       redirectNativeMediaErrors: true,
       bufferDuration: 30,
       errorHandler: errHandler,
