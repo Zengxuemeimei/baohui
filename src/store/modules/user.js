@@ -1,14 +1,25 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import {
+  login,
+  logout,
+  getInfo
+} from '@/api/user'
+import {
+  getToken,
+  setToken,
+  removeToken
+} from '@/utils/auth'
+import {
+  resetRouter
+} from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
     menu: [],
-    roles:[],
-    enterpriseId:null
+    roles: [],
+    enterpriseId: null,
+    userId: null
   }
 }
 
@@ -27,6 +38,9 @@ const mutations = {
   SET_MENU: (state, menu) => {
     state.menu = menu
   },
+  SET_USERID: (state, userId) => {
+    state.userId = userId
+  },
   SET_ENTERPRISEID: (state, enterpriseId) => {
     state.enterpriseId = enterpriseId
   },
@@ -37,11 +51,21 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { loginName, password } = userInfo
+  login({
+    commit
+  }, userInfo) {
+    const {
+      loginName,
+      password
+    } = userInfo
     return new Promise((resolve, reject) => {
-      login({ loginName: loginName.trim(), password: password }).then(response => {
-        const { data } = response
+      login({
+        loginName: loginName.trim(),
+        password: password
+      }).then(response => {
+        const {
+          data
+        } = response
         commit('SET_TOKEN', data)
         setToken(data)
         resolve()
@@ -52,17 +76,34 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  getInfo({
+    commit,
+    state
+  }) {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
-        const { data } = response
+        const {
+          data
+        } = response
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-        const { name, menu,roles,enterpriseId} = data
+        const {
+          name,
+          menu,
+          roles,
+          enterpriseId,
+          id
+        } = data
+
+        console.log('-----------data----------');
+        console.log(data);
+        console.log('---------------------');
+
         commit('SET_NAME', name)
         commit('SET_MENU', menu)
         commit('SET_ROLES', roles)
+        commit('SET_USERID', id)
         commit('SET_ENTERPRISEID', enterpriseId)
         resolve(data)
       }).catch(error => {
@@ -72,7 +113,10 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({
+    commit,
+    state
+  }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
@@ -86,7 +130,9 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({
+    commit
+  }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       commit('RESET_STATE')
@@ -101,4 +147,3 @@ export default {
   mutations,
   actions
 }
-
