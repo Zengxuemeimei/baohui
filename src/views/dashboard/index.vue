@@ -17,9 +17,9 @@
                         <li v-for="(item, index) in items" :key="index">
                             <img src="@/assets/images/default/card_photo.jpg" alt="" />
                             <div class="accessInfo">
-                                <span style="color: yellow">{{ item.name }}</span>
-                                <span>{{ item.lastToLeaveTime }} &nbsp;&nbsp;
-                                    <span style="color: red">{{ item.accessType }}</span></span>
+                                <span style="color: yellow">{{ item.deviceName }}</span>
+                                <span>{{ item.alarmTime }} &nbsp;&nbsp;
+                                    <span style="color: red">{{ item.alarmTypeCn }}</span></span>
                             </div>
                         </li>
                     </ul>
@@ -260,18 +260,16 @@
         </dv-border-box-10>
         <dv-border-box-9 class="inpark">
             <div class="inpark_content">
-                <span @click="electronicFence()">电子围栏</span>
-                <span @click="parkCamera()">园区摄像头</span>
+                <span @click="electronicFence();eleflag=!eleflag">电子围栏</span>
+                <span @click="parkCamera();cameraShow=!cameraShow">园区摄像头</span>
             </div>
         </dv-border-box-9>
         <dv-loading class="loading" v-if="loadingShow">等待模型加载...</dv-loading>
-        <el-button type="primary" class="addCamera" @click="
-        getCameraList();
-        cameraList = true;
-      ">摄像头列表</el-button>
+        <el-button type="primary" class="addCamera" @click="getCameraList();cameraList = true;">摄像头列表</el-button>
         <div class="tableData" v-if="cameraList">
             <el-button type="primary" @click="cameraList = false;addCameraShow = false">关闭列表</el-button>
-            <el-table :data="cameraData" style="width: 100%" height="850">
+            <el-button size="mini" type="danger" @click="addCamera()">添加设备</el-button>
+            <el-table :data="cameraData" style="width:100%;" height="900">
                 <el-table-column label="摄像头名称" width="180">
                     <template slot-scope="scope">
                         <p>{{ scope.row.name }}</p>
@@ -302,37 +300,60 @@
                         <p>{{ scope.row.coordinateZ }}</p>
                     </template>
                 </el-table-column>
+                <el-table-column label="模型材质组" width="180">
+                    <template slot-scope="scope">
+                        <p>{{ scope.row.mesh }}</p>
+                    </template>
+                </el-table-column>
 
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button size="mini" @click="cameraEdit(scope.$index, scope.row.id)">编辑</el-button>
-                        <el-button size="mini" type="danger" @click="addCamera()">添加</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <el-form label-position="right" :model="formCamera" v-show="addCameraShow" class="formCamera">
-            <el-form-item label="摄像头名称">
-                <el-input v-model="formCamera.name"></el-input>
-            </el-form-item>
-            <el-form-item label="摄像头类型">
-                <el-input v-model="formCamera.cameraType"></el-input>
-            </el-form-item>
-            <el-form-item label="播放地址">
-                <el-input v-model="formCamera.videoUrl"></el-input>
-            </el-form-item>
-            <el-form-item label="摄像头X坐标">
-                <el-input v-model="formCamera.coordinateX"></el-input>
-            </el-form-item>
-            <el-form-item label="摄像头Y坐标">
-                <el-input v-model="formCamera.coordinateY"></el-input>
-            </el-form-item>
-            <el-form-item label="摄像头Z坐标">
-                <el-input v-model="formCamera.coordinateZ"></el-input>
-            </el-form-item>
-            <el-button type="primary" @click="updateCameraXYZ(formCamera.id)">完成</el-button>
-            <el-button type="primary" @click="addCameraShow = false">关闭</el-button>
-        </el-form>
+        <div class="formCamera" v-show="addCameraShow">
+            <el-form label-position="right" :model="formCamera" class="">
+                <el-form-item label="摄像头名称">
+                    <el-input v-model="formCamera.name"></el-input>
+                </el-form-item>
+                <el-form-item label="摄像头类型">
+                    <!-- <el-input v-model="formCamera.cameraType"></el-input> -->
+                    <el-select v-model="formCamera.cameraType" clearable placeholder="请选择摄像头类型">
+                        <el-option v-for="(item,index) in deviceType" :key="index" :value="item">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="播放地址">
+                    <el-input v-model="formCamera.videoUrl"></el-input>
+                </el-form-item>
+                <el-form-item label="摄像头X坐标">
+                    <el-input v-model="formCamera.coordinateX"></el-input>
+                </el-form-item>
+                <el-form-item label="摄像头Y坐标">
+                    <el-input v-model="formCamera.coordinateY"></el-input>
+                </el-form-item>
+                <el-form-item label="摄像头Z坐标">
+                    <el-input v-model="formCamera.coordinateZ"></el-input>
+                </el-form-item>
+                <el-form-item label="旋转中心经度">
+                    <el-input v-model="formCamera.centerLongitude"></el-input>
+                </el-form-item>
+                <el-form-item label="旋转中心纬度">
+                    <el-input v-model="formCamera.centerLatitude"></el-input>
+                </el-form-item>
+                <el-form-item label="旋转朝向度数">
+                    <el-input v-model="formCamera.heading"></el-input>
+                </el-form-item>
+                <el-form-item label="模型材质组">
+                    <el-input v-model="formCamera.mesh"></el-input>
+                </el-form-item>
+            </el-form>
+            <el-button type="info" @click="updateCameraXYZ(formCamera.id)">完成</el-button>
+            <el-button type="info" @click="addCameraShow = false">关闭</el-button>
+        </div>
+
         <el-button type="primary" class="backHome" @click="backHome()">返回</el-button>
     </div>
 </template>
@@ -340,7 +361,7 @@
 const THREE = mapvgl.THREE;
 import axios from 'axios';
 import store from '@/store';
-import { saveOrUpdate, getVideoInfoList, getAccessCount, getKeepWatchPlaceCount, getHiddenDangerCount, getTrafficCount } from '@/api/home'
+import { getDeviceType, saveOrUpdate, getVideoInfoList, getAccessCount, getKeepWatchPlaceCount, getHiddenDangerCount, getTrafficCount, getDayCount } from '@/api/home'
 export default {
     name: "Dashboard",
     data () {
@@ -357,12 +378,12 @@ export default {
             playerLists: [],
             percent: 0,
             loadingShow: true,
-            eleflag: true,
+            eleflag: false,
             enterCar: 0,
             outCar: 0,
             cameraList: false,
             requestId: null,
-            modelUrl: "/static/3Dmodules/2020-baohui/baohuiGltf/baohuimox.gltf",
+            modelUrl: "/static/3Dmodules/2020-baohui/baohuiGltf/baohui.gltf",
             formCamera: {
                 address: null,
                 cameraType: null,
@@ -374,56 +395,23 @@ export default {
                 name: null,
                 videoUrl: null,
                 id: null,
+                centerLongitude: null,
+                centerLatitude: null,
+                heading: null,
+                mesh: null
             },
-            cameraData: [
-                {
-                    address: null,
-                    cameraType: null,
-                    code: null,
-                    coordinateX: 0,
-                    coordinateY: 0,
-                    coordinateZ: 0,
-                    departmentId: null,
-                    id: 0,
-                    name: null,
-                    videoUrl: null,
-                },
-            ],
+            cameraData: [],
+            eleData: [],
             addCameraShow: false,
             resizeEchartIds: new Set(),
-            items: [
-                {
-                    name: "张三",
-                    img: "@/assets/images/default/card_photo.jpg",
-                    lastToLeaveTime: "2020-10-30 9:50:00",
-                    accessType: "离开",
-                },
-                {
-                    name: "张三",
-                    img: "@/assets/images/default/card_photo.jpg",
-                    lastToLeaveTime: "2020-10-30 9:50:00",
-                    accessType: "进入",
-                },
-                {
-                    name: "王五",
-                    img: "@/assets/images/default/card_photo.jpg",
-                    lastToLeaveTime: "2020-10-30 9:50:00",
-                    accessType: "离开",
-                },
-                {
-                    name: "李四",
-                    img: "@/assets/images/default/card_photo.jpg",
-                    lastToLeaveTime: "2020-10-30 9:50:00",
-                    accessType: "离开",
-                },
-                {
-                    name: "张三",
-                    img: "@/assets/images/default/card_photo.jpg",
-                    lastToLeaveTime: "2020-10-30 9:50:00",
-                    accessType: "进入",
-                },
-            ],
+            items: [],
             timeLine: null,
+            deviceType: [],
+            cameraShow: false,
+            eleGroup: [],
+            eleMaterial: [],
+            timerStop: null,
+            timerM: null,
         };
     },
     methods: {
@@ -437,8 +425,12 @@ export default {
             this.map.setMapStyleV2({
                 styleId: "1c32e130ab28977417d56e7f02cd5248",
             });
-            this.map.addEventListener("click", function (e) {
-                console.log("点击位置经纬度：" + e.point.lng + "," + e.point.lat);
+            this.map.addEventListener("click", e => {
+                console.log('点击位置墨卡托平面坐标：');
+                console.log(e.point.lng + ',' + e.point.lat);
+                console.log("墨卡托平面坐标转换为经纬度球体坐标:");
+                console.log(this.map.mercatorToLnglat(e.point.lng, e.point.lat));
+                console.log("————————————————");
             });
             this.map.disableDoubleClickZoom(); //阻止地图双击事件
             this.view = new mapvgl.View({
@@ -624,16 +616,24 @@ export default {
             this.threeLayer.add(axes, this.origin); //设置模型位置坐标
         },
         //摄像头数据处理
-        getCameraInfo () {
-            let data = this.cameraData;
+        getCameraInfo (data) {
+            // let data = this.cameraData;
+            //mercatorToLnglat  lnglatToMercator
+
             for (let i in data) {
+                data[i].coordinateX = this.map.lnglatToMercator(data[i].coordinateX, data[i].coordinateY)[0];
+                data[i].coordinateY = this.map.lnglatToMercator(data[i].coordinateX, data[i].coordinateY)[1];
                 this.imgLoad(
                     Number(data[i].coordinateX),
                     Number(data[i].coordinateY),
                     Number(data[i].coordinateZ),
                     data[i].cameraType,
-                    data[i].name
+                    data[i].deviceLdId
                 );
+
+                // console.log('----------' + i + '-----------');
+                // console.log(data[i].coordinateX, data[i].coordinateY);
+
             }
         },
         //摄像头加载
@@ -649,9 +649,11 @@ export default {
             let sprite = new THREE.Sprite(spriteMaterial);
             sprite.name = "sprite" + this.spriteName++;
             sprite.Vname = name;
+            sprite.Vtype = type;
             sprite.position.z = z;
             sprite.scale.x = 5;
             sprite.scale.y = 5;
+            sprite.visible = false;
             this.threeLayer.add(sprite, new BMapGL.Point(x, y));
             //视频盒子
             const label = this.create2DObject(sprite.name);
@@ -699,13 +701,22 @@ export default {
             let url;
             let that = this;
             for (let i in this.cameraData) {
-                if (this.cameraData[i].name == Vname) {
+                if (this.cameraData[i].deviceLdId == Vname) {
                     url = this.cameraData[i].videoUrl;
                 }
             }
 
+            console.log('----------url-----------');
+            console.log(url);
+            console.log('---------------------');
+
+
             if (!url) {
-                alert('播放地址不存在');
+                // alert('播放地址不存在');
+                this.$notify({
+                    message: '播放地址不存在',
+                    type: 'warning'
+                });
                 return;
             }
 
@@ -739,7 +750,7 @@ export default {
             };
 
             var playerOptions = {
-                socket: "ws://148.70.230.200:9640/ws/",
+                socket: "ws://192.168.10.250:9080/ws/",
                 redirectNativeMediaErrors: true,
                 bufferDuration: 30,
                 errorHandler: errHandler,
@@ -754,9 +765,9 @@ export default {
                 //监听播放
                 console.log("开始播放");
                 console.log(nativePlayer.currentTime, nativePlayer.buffered.end(0));
-                setTimeout(function () {
-                    nativePlayer.currentTime = nativePlayer.buffered.end(0);
-                }, 500);
+                // setTimeout(function () {
+                //     nativePlayer.currentTime = nativePlayer.buffered.end(0);
+                // }, 500);
             });
 
             //监听进度条
@@ -931,23 +942,35 @@ export default {
             this.chart1.setOption(option);
         },
         //数字流动
-        numberScroll () {
-            let data = {
-                person: [1, 2, 3, 4, 6],
-                car: [0, 7, 5, 8, 9],
-            };
+        numberScroll (data) {
+            // let data = {
+            //     faceAccessRecordDayCount: [1, 2, 3, 4, 6],
+            //     carAccessRecordDayCount: [0, 7, 5, 8, 9],
+            // };
+            let len1 = String(data.faceAccessRecordDayCount).length;
+            let len2 = String(data.carAccessRecordDayCount).length;
 
-            for (let i in data.person) {
-                data.person[i] = parseInt(Math.random() * 10);
+            data.faceAccessRecordDayCount = String(data.faceAccessRecordDayCount).split(',');
+            data.carAccessRecordDayCount = String(data.carAccessRecordDayCount).split(',');
+            for (let i = 0; i < 5 - len1; i++) {
+                data.faceAccessRecordDayCount.unshift(0);
+            }
+            for (let i = 0; i < 5 - len2; i++) {
+                data.carAccessRecordDayCount.unshift('0');
+            }
+
+            for (let i in data.faceAccessRecordDayCount) {
+                data.faceAccessRecordDayCount[i] = Number(data.faceAccessRecordDayCount[i]);
                 $(".person-stream>.num > ul > li")
                     .eq(i)
-                    .css("top", this.dealNumber(data.person[i]) + "vh");
+                    .css("top", this.dealNumber(data.faceAccessRecordDayCount[i]) + "vh");
             }
-            for (let i in data.car) {
-                data.car[i] = parseInt(Math.random() * 10);
+            for (let i in data.carAccessRecordDayCount) {
+                // data.car[i] = parseInt(Math.random() * 10);
+                data.carAccessRecordDayCount[i] = Number(data.carAccessRecordDayCount[i]);
                 $(".cars-stream>.num > ul > li")
                     .eq(i)
-                    .css("top", this.dealNumber(data.car[i]) + "vh");
+                    .css("top", this.dealNumber(data.carAccessRecordDayCount[i]) + "vh");
             }
         },
         //数字滚动规则
@@ -1581,96 +1604,111 @@ export default {
         //电子围栏
         electronicFence () {
             console.log("----------电子围栏-----------");
-            console.log(this.group, this.model1.name);
+            console.log(this.group, this.model1.name, this.eleflag);
             console.log("---------------------");
-
+            this.cameraShow = false;
+            this.clearCamera();
             let material = new THREE.MeshLambertMaterial({
                 color: 0xffff00,
                 transparent: true,
                 opacity: 0.8,
             });
-            if (this.eleflag) {
+
+            if (!this.eleflag) {
+
+                //显示电子围栏图标
+                for (let i in this.spriteList) {
+                    if (this.spriteList[i].Vtype == "eleFence") {
+                        this.spriteList[i].visible = true;
+                    }
+                }
+
+                //改变模型mesh
                 if (this.model1.name == "baohui") {
                     for (let i = 0; i < this.group.length; i++) {
-                        if (
-                            this.group[i].name == "Mesh1278 __3_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1044 __1_1 Model_1_1" ||
-                            this.group[i].name == "Mesh1094 __2_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1281 __3_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1280 __3_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1045 __1_1 Model_1_0"
+                        if (this.group[i].name == "Mesh1377 __1_1 Model_1_1" ||
+                            this.group[i].name == "Mesh1378 __1_1 Model_1_0" ||
+                            this.group[i].name == "Mesh49 Group2 Model_1_2" ||
+                            this.group[i].name == "Mesh50 Group2 Model_1_1" ||
+                            this.group[i].name == "Mesh25 Group1 Model_1_0" ||
+                            this.group[i].name == "Mesh24 Group1 Model_1_1" ||
+                            this.group[i].name == "Mesh96 Group3 Model_1_0" ||
+                            this.group[i].name == "Mesh98 Group3 Model_1_0" ||
+                            this.group[i].name == "Mesh162 Group4 Model_1_2" ||
+                            this.group[i].name == "Mesh233 Group5 Model_1_0" ||
+                            this.group[i].name == "Mesh276 Group6 Model_1_2" ||
+                            this.group[i].name == "Mesh333 Group8 Model_1_2" ||
+                            this.group[i].name == "Mesh308 Group7 Model_1_3"
                         ) {
                             let temporaryObj = {};
                             temporaryObj.material = this.group[i].material;
                             temporaryObj.index = i;
                             this.materialList.push(temporaryObj);
                             this.group[i].material = material;
-                            this.eleflag = false;
-                        }
-                    }
-                } else if (this.model1.name == "lenku") {
-                    for (let i = 0; i < this.group.length; i++) {
-                        if (
-                            this.group[i].name == "Mesh1273 __3_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1276 __3_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1087 __1_1 Model_1_1" ||
-                            this.group[i].name == "Mesh1088 __1_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1051 __2_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1275 __3_1 Model_1_0"
-                        ) {
-                            let temporaryObj = {};
-                            temporaryObj.material = this.group[i].material;
-                            temporaryObj.index = i;
-                            this.materialList.push(temporaryObj);
-                            this.group[i].material = material;
-                            this.eleflag = false;
-                        }
-                    }
-                } else if (this.model1.name == "changwen1") {
-                    for (let i = 0; i < this.group.length; i++) {
-                        if (
-                            this.group[i].name == "Mesh1087 __3_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1090 __3_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1198 __1_1 Model_1_1" ||
-                            this.group[i].name == "Mesh1199 __1_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1248 __2_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1089 __3_1 Model_1_0"
-                        ) {
-                            let temporaryObj = {};
-                            temporaryObj.material = this.group[i].material;
-                            temporaryObj.index = i;
-                            this.materialList.push(temporaryObj);
-                            this.group[i].material = material;
-                            this.eleflag = false;
-                        }
-                    }
-                } else if (this.model1.name == "changwen23") {
-                    for (let i = 0; i < this.group.length; i++) {
-                        if (
-                            this.group[i].name == "Mesh1203 __3_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1206 __3_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1314 __1_1 Model_1_1" ||
-                            this.group[i].name == "Mesh1315 __1_1 Model_1_0" ||
-                            this.group[i].name == "Mesh1364 __2_1 Model_1_2" ||
-                            this.group[i].name == "Mesh1205 __3_1 Model_1_0"
-                        ) {
-                            let temporaryObj = {};
-                            temporaryObj.material = this.group[i].material;
-                            temporaryObj.index = i;
-                            this.materialList.push(temporaryObj);
-                            this.group[i].material = material;
-                            this.eleflag = false;
                         }
                     }
                 }
+                // } else if (this.model1.name == "lenku") {
+                //     for (let i = 0; i < this.group.length; i++) {
+                //         if (
+                //             this.group[i].name == "Mesh1273 __3_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1276 __3_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1087 __1_1 Model_1_1" ||
+                //             this.group[i].name == "Mesh1088 __1_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1051 __2_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1275 __3_1 Model_1_0"
+                //         ) {
+                //             let temporaryObj = {};
+                //             temporaryObj.material = this.group[i].material;
+                //             temporaryObj.index = i;
+                //             this.materialList.push(temporaryObj);
+                //             this.group[i].material = material;
+                //         }
+                //     }
+                // } else if (this.model1.name == "changwen1") {
+                //     for (let i = 0; i < this.group.length; i++) {
+                //         if (
+                //             this.group[i].name == "Mesh1087 __3_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1090 __3_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1198 __1_1 Model_1_1" ||
+                //             this.group[i].name == "Mesh1199 __1_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1248 __2_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1089 __3_1 Model_1_0"
+                //         ) {
+                //             let temporaryObj = {};
+                //             temporaryObj.material = this.group[i].material;
+                //             temporaryObj.index = i;
+                //             this.materialList.push(temporaryObj);
+                //             this.group[i].material = material;
+                //         }
+                //     }
+                // } else if (this.model1.name == "changwen23") {
+                //     for (let i = 0; i < this.group.length; i++) {
+                //         if (
+                //             this.group[i].name == "Mesh1203 __3_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1206 __3_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1314 __1_1 Model_1_1" ||
+                //             this.group[i].name == "Mesh1315 __1_1 Model_1_0" ||
+                //             this.group[i].name == "Mesh1364 __2_1 Model_1_2" ||
+                //             this.group[i].name == "Mesh1205 __3_1 Model_1_0"
+                //         ) {
+                //             let temporaryObj = {};
+                //             temporaryObj.material = this.group[i].material;
+                //             temporaryObj.index = i;
+                //             this.materialList.push(temporaryObj);
+                //             this.group[i].material = material;
+                //         }
+                //     }
+                // }
             } else {
                 for (let i in this.materialList) {
                     this.group[this.materialList[i].index].material = this.materialList[
                         i
                     ].material;
-                    this.eleflag = true;
                 }
             }
+
+
 
             // console.log('---------this.materialList------------');
             // console.log(this.materialList);
@@ -1678,23 +1716,41 @@ export default {
         },
         //园区摄像头
         parkCamera () {
-            console.log("spriteList", this.spriteList);
-
-            if (this.spriteList.length > 0) {
-                this.clearCamera();
+            console.log("--spriteList--", this.spriteList);
+            this.clearCamera();
+            // if (!this.eleData) {
+            //     this.electronicFence();
+            //     this.eleData = true;
+            // } else {
+            //     this.eleData = false;
+            // }
+            // if (this.eleData) {
+            //     this.eleData = false;
+            //     this.electronicFence();
+            // }
+            this.eleData = false;
+            if (this.cameraShow) {
+                $(".label").css("display", "none");
             } else {
-                this.getCameraInfo();
+                for (let i in this.spriteList) {
+                    if (this.spriteList[i].Vtype == "eleFence") {
+                        this.spriteList[i].visible = false;
+                    } else {
+                        this.spriteList[i].visible = true;
+                    }
+                }
+
             }
         },
         //清除摄像头
         clearCamera () {
             //移除sprite图片和css2 div
-            for (let i in this.spriteList) {
-                this.threeLayer.remove(this.spriteList[i]);
-                this.threeLayer.remove(this.css2ObjList[i]);
+            for (let i of this.spriteList) {
+                i.visible = false;
+                // this.threeLayer.remove(this.css2ObjList[i]);
             }
-            this.spriteList = [];
-            this.css2ObjList = [];
+            // this.spriteList = [];
+            // this.css2ObjList = [];
             //清除播放器
             if (this.playerLists && this.playerLists.length > 0) {
                 for (let i of this.videoLists) {
@@ -1723,10 +1779,10 @@ export default {
             this.model1 = null;
             let name;
             if (index == 0) {
-                this.modelUrl = "/static/3Dmodules/2020-baohui/baohuiGltf/baohuimox.gltf";
+                this.modelUrl = "/static/3Dmodules/2020-baohui/baohuiGltf/baohui.gltf";
                 name = "baohui";
             } else if (index == 1) {
-                this.modelUrl = "/static/3Dmodules/2020-baohui/lenkuGltf/lenku.gltf";
+                this.modelUrl = "/static/3Dmodules/2020-baohui/lenkuGltf/lengku.gltf";
                 name = "lenku";
             } else if (index == 2) {
                 this.modelUrl = "/static/3Dmodules/2020-baohui/changwenGltf1/changwen1.gltf";
@@ -1792,8 +1848,26 @@ export default {
         },
         //获取摄像头数据
         getCameraList () {
+            this.eleData = [];
+            this.cameraData = [];
             getVideoInfoList().then(res => {
                 this.cameraData = res.data.dataList;
+                for (let i in res.data.dataList) {
+                    if (res.data.dataList[i].cameraType == "eleFence") {
+                        this.eleData.push(res.data.dataList[i])
+                    }
+                }
+                if (this.spriteList.length == 0) {
+                    this.getCameraInfo(this.cameraData);
+                }
+
+                console.log('----------eleData-----------');
+                console.log(this.eleData);
+                console.log('---------------------');
+
+            });
+            getDeviceType().then(res => {
+                this.deviceType = res.data;
             })
         },
         //添加摄像头-
@@ -1810,6 +1884,10 @@ export default {
                 name: null,
                 videoUrl: null,
                 id: null,
+                centerLongitude: null,
+                centerLatitude: null,
+                heading: null,
+                mesh: null
             };
         },
         //更新摄像头数据
@@ -1823,13 +1901,25 @@ export default {
                 console.log("添加");
                 console.log("---------------------");
             }
+            this.formCamera = this.trimDeal(this.formCamera);
             saveOrUpdate(this.formCamera).then(res => {
                 this.$notify({
                     title: "成功",
                     message: "更新成功",
                     type: "success",
                 });
+                this.addCameraShow = false;
+                this.getCameraList();
             })
+        },
+        //字符串空格处理
+        trimDeal (obj) {
+            for (let i in obj) {
+                if (typeof obj[i] == 'string') {
+                    obj[i] = obj[i].trim();
+                }
+            }
+            return obj
         },
         //编辑摄像头-
         cameraEdit (index, id) {
@@ -1878,7 +1968,11 @@ export default {
                         console.log(allData);
                         console.log('---------------------');
 
-                        _this.electronicFenceWarn(allData);
+                        _this.numberScroll(allData.data);
+                        // dealTime
+                        allData.data.securityAlarmRecordDataList[0].alarmTime = _this.dealTime(allData.data.securityAlarmRecordDataList[0].alarmTime);
+                        _this.items.push(allData.data.securityAlarmRecordDataList[0]);
+                        _this.electronicFenceWarn(allData.data.securityAlarmRecordDataList[0]);
                     }
                 }
                 //close
@@ -1926,6 +2020,99 @@ export default {
             console.log(data);
             console.log('---------------------');
 
+            let _this = this;
+
+            clearTimeout(this.timerStop);
+            clearInterval(this.timerM);
+            console.log("————————eleGroup————————");
+            console.log(this.spriteList);
+            console.log("————————————————");
+
+            data.mesh = data.mesh.split(',');
+
+            for (i in this.eleGroup) {
+                this.eleGroup[i].material = this.eleMaterial[i];
+            }
+            this.eleGroup = [];
+            this.eleMaterial = [];
+            var materialYellow = new THREE.MeshPhongMaterial({
+                color: 0xffff00,
+                opacity: 0.9
+            });
+            var materialRed = new THREE.MeshPhongMaterial({
+                color: 0xff0000,
+                opacity: 0.8
+            });
+
+
+            for (let j in this.spriteList) {
+                if (this.spriteList[j].Vname == data.deviceId) {
+                    // console.log("————————data————————");
+                    // console.log(data);
+                    // console.log(this.spriteList[j].Vname, data.deviceId);
+                    // console.log("————————————————");
+                    this.spriteList[j].visible = true;
+                    this.flag = null;
+                    //调整视图
+                    if (data.centerLongitude && data.centerLatitude) {
+                        this.map.centerAndZoom(new BMapGL.Point(data.centerLongitude, data.centerLatitude), 20);
+                        setTimeout(() => {
+                            // this.map.setHeading(220);
+                            this.map.setHeading(data.heading);
+                            this.map.setTilt(70);
+                        }, 500)
+                    }
+                    this.playerId = null;
+                    this.flag = null;
+                    //视频
+                    this.playVideo(this.spriteList[j].name, data.deviceId);
+
+                    // if (data.alarmType == "ELE_FENCE") {
+                    //     for (let i = 0; i < this.group.length; i++) {
+                    //         for (let j = 0; j < this.group.length; j++) {
+                    //             if (this.group[i].name == data.mesh[j]) {
+                    //                 this.eleGroup.push(this.group[i])
+                    //                 this.eleMaterial.push(this.group[i].material)
+                    //             }
+                    //         }
+
+                    //     }
+                    // }
+                }
+
+            }
+
+            this.timerM = setInterval(function () {
+                for (i in this.eleGroup) {
+                    this.eleGroup[i].material.opacity == 0.8 ? this.eleGroup[i].material = this.eleMaterial[i] : this.eleGroup[i].material = materialRed;
+                }
+            }, 500)
+
+            this.timerStop = setTimeout(() => {
+                // stopSound();
+                clearInterval(this.timerM);
+                for (let i in this.eleGroup) {
+                    this.eleGroup[i].material = this.eleMaterial[i];
+                }
+                console.log("————————stop————————");
+            }, 30000)
+
+        },
+        //查询当天数据
+        getAccessCount () {
+            getDayCount().then(res => {
+
+                this.numberScroll(res.data);
+                this.items = res.data.securityAlarmRecordDataList;
+                for (let i in this.items) {
+                    this.items[i].alarmTime = this.dealTime(this.items[i].alarmTime);
+                }
+
+            })
+        },
+        //时间戳处理
+        dealTime (nS) {
+            return new Date(parseInt(nS)).toLocaleString().replace(/:\d{1,2}$/, ' ');
         }
     },
     mounted () {
@@ -1955,10 +2142,11 @@ export default {
         this.getKeepWatchPlaceCount();
         this.accessCount();
         this.getCameraList();
+        this.getAccessCount();
         this.websocket();
-        setInterval(() => {
-            this.numberScroll();
-        }, 2000);
+        // setInterval(() => {
+        //     this.numberScroll();
+        // }, 2000);
         window.addEventListener("click", this.onMouseclickCamera, false);
         window.addEventListener("dblclick", this.onMouseclick, false);
         window.onresize = () => {
@@ -2428,28 +2616,22 @@ export default {
     right: 0;
     bottom: 0;
     margin: auto;
-    width: 24vw;
-    height: 65vh;
+    width: 36vw;
+    height: 56vh;
     padding: 1vh 2vw;
     z-index: 170;
     background: gainsboro;
-}
-.formCamera form {
-    width: 20vw;
-    /* height: 58vh; */
-    margin: 0vh auto 0;
-    font-size: 0.8vw;
-    color: white;
-    background: w;
     background-image: linear-gradient(
         to top,
         rgb(15, 28, 56, 0.8),
         rgb(15, 28, 56, 0.4),
         rgb(55, 55, 100, 0.1)
     );
-    color: white;
-    padding: 1vw;
-    box-sizing: border-box;
+}
+.formCamera form {
+    display: grid;
+    grid-template-columns: repeat(2, 45%);
+    justify-content: space-around;
 }
 .formCamera form label {
     color: white !important;
