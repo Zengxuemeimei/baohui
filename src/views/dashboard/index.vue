@@ -2170,7 +2170,7 @@ export default {
         //     this.numberScroll();
         // }, 2000);
         window.addEventListener("click", this.onMouseclickCamera, false);
-        window.addEventListener("dblclick", this.onMouseclick, false);
+        // window.addEventListener("dblclick", this.onMouseclick, false);
         window.onresize = () => {
             this.chart1.resize();
             this.chart2.resize();
