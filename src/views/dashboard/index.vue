@@ -309,6 +309,8 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button size="mini" @click="cameraEdit(scope.$index, scope.row.id)">编辑</el-button>
+                        <el-button size="mini" type="danger" @click="deleteById(scope.$index, scope.row.id)">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -361,7 +363,7 @@
 const THREE = mapvgl.THREE;
 import axios from 'axios';
 import store from '@/store';
-import { getDeviceType, saveOrUpdate, getVideoInfoList, getAccessCount, getKeepWatchPlaceCount, getHiddenDangerCount, getTrafficCount, getDayCount } from '@/api/home'
+import { deleteById, getDeviceType, saveOrUpdate, getVideoInfoList, getAccessCount, getKeepWatchPlaceCount, getHiddenDangerCount, getTrafficCount, getDayCount } from '@/api/home'
 export default {
     name: "Dashboard",
     data () {
@@ -408,10 +410,6 @@ export default {
             timeLine: null,
             deviceType: [],
             cameraShow: false,
-            eleGroup: [],
-            eleMaterial: [],
-            timerStop: null,
-            timerM: null,
         };
     },
     methods: {
@@ -628,6 +626,7 @@ export default {
                     Number(data[i].coordinateY),
                     Number(data[i].coordinateZ),
                     data[i].cameraType,
+                    data[i].name,
                     data[i].deviceLdId
                 );
 
@@ -637,7 +636,7 @@ export default {
             }
         },
         //摄像头加载
-        imgLoad (x, y, z, type, name) {
+        imgLoad (x, y, z, type, name, Vid) {
             let textured = new THREE.TextureLoader().load(
                 "/static/images/" + type + ".png"
             );
@@ -650,6 +649,7 @@ export default {
             sprite.name = "sprite" + this.spriteName++;
             sprite.Vname = name;
             sprite.Vtype = type;
+            sprite.Vid = Vid;
             sprite.position.z = z;
             sprite.scale.x = 5;
             sprite.scale.y = 5;
@@ -701,7 +701,7 @@ export default {
             let url;
             let that = this;
             for (let i in this.cameraData) {
-                if (this.cameraData[i].deviceLdId == Vname) {
+                if (this.cameraData[i].name == Vname) {
                     url = this.cameraData[i].videoUrl;
                 }
             }
@@ -720,7 +720,7 @@ export default {
                 return;
             }
 
-            if (document.getElementById(id).style.display == "none") {
+            if (document.getElementById(id) && document.getElementById(id).style.display == "none") {
                 console.log("已销毁播放器");
                 return;
             }
@@ -1912,6 +1912,21 @@ export default {
                 this.getCameraList();
             })
         },
+        //删除设备
+        deleteById (index, id) {
+
+            console.log('-----------id----------');
+            console.log(id);
+            console.log('---------------------');
+            deleteById({ id: id }).then(res => {
+                this.$notify({
+                    title: "成功",
+                    message: "删除成功",
+                    type: "success",
+                });
+                this.getCameraList();
+            })
+        },
         //字符串空格处理
         trimDeal (obj) {
             for (let i in obj) {
@@ -2025,12 +2040,12 @@ export default {
             clearTimeout(this.timerStop);
             clearInterval(this.timerM);
             console.log("————————eleGroup————————");
-            console.log(this.spriteList);
+            console.log(this.eleGroup, this.eleMaterial, this.group);
             console.log("————————————————");
 
-            data.mesh = data.mesh.split(',');
+            // data.mesh = data.mesh.split(',');
 
-            for (i in this.eleGroup) {
+            for (let i in this.eleGroup) {
                 this.eleGroup[i].material = this.eleMaterial[i];
             }
             this.eleGroup = [];
@@ -2046,7 +2061,7 @@ export default {
 
 
             for (let j in this.spriteList) {
-                if (this.spriteList[j].Vname == data.deviceId) {
+                if (this.spriteList[j].Vid == data.deviceId) {
                     // console.log("————————data————————");
                     // console.log(data);
                     // console.log(this.spriteList[j].Vname, data.deviceId);
@@ -2065,25 +2080,28 @@ export default {
                     this.playerId = null;
                     this.flag = null;
                     //视频
-                    this.playVideo(this.spriteList[j].name, data.deviceId);
+                    this.playVideo(this.spriteList[j].name, data.deviceName);
 
-                    // if (data.alarmType == "ELE_FENCE") {
-                    //     for (let i = 0; i < this.group.length; i++) {
-                    //         for (let j = 0; j < this.group.length; j++) {
-                    //             if (this.group[i].name == data.mesh[j]) {
-                    //                 this.eleGroup.push(this.group[i])
-                    //                 this.eleMaterial.push(this.group[i].material)
-                    //             }
-                    //         }
-
-                    //     }
-                    // }
+                    if (data.alarmType == "ELE_FENCE") {
+                        for (let i = 0; i < this.group.length; i++) {
+                            if (this.group[i].name == data.mesh) {
+                                console.log('匹配成功')
+                                this.eleGroup.push(this.group[i])
+                                this.eleMaterial.push(this.group[i].material)
+                            }
+                        }
+                    }
                 }
 
             }
 
-            this.timerM = setInterval(function () {
-                for (i in this.eleGroup) {
+            this.timerM = setInterval(() => {
+                // debugger;
+                // console.log('---------------------');
+                // console.log(this.eleGroup, this.eleMaterial);
+                // console.log('---------------------');
+
+                for (let i in this.eleGroup) {
                     this.eleGroup[i].material.opacity == 0.8 ? this.eleGroup[i].material = this.eleMaterial[i] : this.eleGroup[i].material = materialRed;
                 }
             }, 500)
@@ -2113,7 +2131,7 @@ export default {
         //时间戳处理
         dealTime (nS) {
             return new Date(parseInt(nS)).toLocaleString().replace(/:\d{1,2}$/, ' ');
-        }
+        },
     },
     mounted () {
         this.map;
@@ -2129,6 +2147,10 @@ export default {
         this.chart3;
         this.chart4;
         this.materialList = [];
+        this.eleGroup = [];
+        this.eleMaterial = [];
+        this.timerStop = null;
+        this.timerM = null;
         this.baiduMap();
         this.tLayer();
         this.loadModel(this.modelUrl, "baohui");

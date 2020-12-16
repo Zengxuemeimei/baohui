@@ -61,3 +61,11 @@ export function getDeviceType() {
     method: 'get',
   })
 }
+//删除设备
+export function deleteById(params) {
+  return request({
+    url: '/videoInfo/deleteById',
+    method: 'get',
+    params
+  })
+}
