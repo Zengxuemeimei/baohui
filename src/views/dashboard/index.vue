@@ -1960,11 +1960,9 @@ export default {
                 window.WebSocket = window.MozWebSocket;
             }
             var me = module;
-            var host;
-            if (host == '192.168.10.250:9092') {
-                host = window.location.host;
-            } else {
-                host = '192.168.1.108:9092';
+            var host = window.location.host;
+            if (host != '192.168.10.250:9092') {
+                host = '192.168.1.108:9092';//本地
             }
             // var host = '192.168.1.108:9092';
             var ws;
