@@ -742,7 +742,7 @@ export default {
             ).appendTo($("#" + id));
 
             // var n = parseInt(Math.random() * 10);
-            url = 'rtsp://admin:zzxy2009@jtht.tpddns.cn:9683/Streaming/Channels/102';
+            // url = 'rtsp://admin:zzxy2009@jtht.tpddns.cn:9683/Streaming/Channels/102';
             // this.videoN += 100;
 
             let errHandler = function (err) {
