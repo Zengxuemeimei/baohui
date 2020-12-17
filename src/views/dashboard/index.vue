@@ -12,7 +12,7 @@
                 <span class="head_top">
                     <img src="@/assets/images/baohui/1.png" alt="" /> &nbsp;告警中心
                 </span>
-                <vue-seamless-scroll :data="items" :class-option="classOption" id="content">
+                <vue-seamless-scroll :data="items" v-if="update" :class-option="classOption" id="content">
                     <ul>
                         <li v-for="(item, index) in items" :key="index">
                             <img src="@/assets/images/default/card_photo.jpg" alt="" />
@@ -400,7 +400,7 @@ export default {
                 centerLongitude: null,
                 centerLatitude: null,
                 heading: null,
-                mesh: null
+                mesh: null,
             },
             cameraData: [],
             eleData: [],
@@ -410,6 +410,8 @@ export default {
             timeLine: null,
             deviceType: [],
             cameraShow: false,
+            cloneList: [],
+            update: false
         };
     },
     methods: {
@@ -854,15 +856,15 @@ export default {
             return String(YY) + String(MM) + String(DD) + String(hh) + String(mm) + String(ss);
         },
         //告警中心数据滚动
-        scroll () {
-            this.animate = true; // 因为在消息向上滚动的时候需要添加css3过渡动画，所以这里需要设置true
-            setInterval(() => {
-                //  这里直接使用了es6的箭头函数，省去了处理this指向偏移问题，代码也比之前简化了很多
-                this.items.push(this.items[0]); // 将数组的第一个元素添加到数组的
-                this.items.shift(); //删除数组的第一个元素
-                this.animate = false; // margin-top 为0 的时候取消过渡动画，实现无缝滚动
-            }, 500);
-        },
+        // scroll () {
+        //     this.animate = true; // 因为在消息向上滚动的时候需要添加css3过渡动画，所以这里需要设置true
+        //     setInterval(() => {
+        //         //  这里直接使用了es6的箭头函数，省去了处理this指向偏移问题，代码也比之前简化了很多
+        //         this.items.push(this.items[0]); // 将数组的第一个元素添加到数组的末尾
+        //         this.items.shift(); //删除数组的第一个元素
+        //         this.animate = false; // margin-top 为0 的时候取消过渡动画，实现无缝滚动
+        //     }, 500);
+        // },
         //车流统计
         trafficEchart (a) {
             this.chart1 = this.$echarts.init(
@@ -950,8 +952,8 @@ export default {
             let len1 = String(data.faceAccessRecordDayCount).length;
             let len2 = String(data.carAccessRecordDayCount).length;
 
-            data.faceAccessRecordDayCount = String(data.faceAccessRecordDayCount).split(',');
-            data.carAccessRecordDayCount = String(data.carAccessRecordDayCount).split(',');
+            data.faceAccessRecordDayCount = String(data.faceAccessRecordDayCount).split('');
+            data.carAccessRecordDayCount = String(data.carAccessRecordDayCount).split('');
             for (let i = 0; i < 5 - len1; i++) {
                 data.faceAccessRecordDayCount.unshift(0);
             }
@@ -1794,9 +1796,18 @@ export default {
             }
             this.loadModel(this.modelUrl, name); //加载新模型
         },
+        //返回主页面
         backHome () {
             this.$router.push({ path: this.redirect || '/manage', query: this.otherQuery })
         },
+        //更新告警dom
+        setUpdate () {
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+            })
+        },
+
         /*接口调用*/
 
         //获取车流统计
@@ -1949,17 +1960,28 @@ export default {
                 window.WebSocket = window.MozWebSocket;
             }
             var me = module;
-            var host = window.location.host;
+            var host;
+            if (host == '192.168.10.250:9092') {
+                host = window.location.host;
+            } else {
+                host = '192.168.1.108:9092';
+            }
+            // var host = '192.168.1.108:9092';
             var ws;
             if (window.location.protocol == 'http:') {
                 console.log('----------http-----------');
                 ws = 'ws';
-                host = process.env.VUE_APP_BASE_API.split('http://')[1];
+                // host = process.env.VUE_APP_BASE_API.split('http://')[1];
             } else {
                 console.log('----------https-----------');
                 ws = 'wss';
-                host = process.env.VUE_APP_BASE_API.split('https://')[1];
+                // host = process.env.VUE_APP_BASE_API.split('https://')[1];
             }
+
+
+            console.log('----------host-----------');
+            console.log(host);
+            console.log('---------------------');
 
             if (window.WebSocket) {
                 socket = new WebSocket(ws + "://" + host + "/baohui/" + store.getters.userId);
@@ -1986,7 +2008,15 @@ export default {
                         _this.numberScroll(allData.data);
                         // dealTime
                         allData.data.securityAlarmRecordDataList[0].alarmTime = _this.dealTime(allData.data.securityAlarmRecordDataList[0].alarmTime);
+                        // _this.$nextTick(() => {
+                        //     setTimeout(() => {
                         _this.items.push(allData.data.securityAlarmRecordDataList[0]);
+                        _this.setUpdate();
+                        //     }, 500)
+                        // })
+                        // if (_this.items.length >= 4) {
+                        //     _this.scroll();
+                        // }
                         _this.electronicFenceWarn(allData.data.securityAlarmRecordDataList[0]);
                     }
                 }
@@ -2125,6 +2155,8 @@ export default {
                 for (let i in this.items) {
                     this.items[i].alarmTime = this.dealTime(this.items[i].alarmTime);
                 }
+                this.setUpdate();
+                // [...this.cloneList] = this.items;
 
             })
         },
@@ -2164,7 +2196,11 @@ export default {
         this.getKeepWatchPlaceCount();
         this.accessCount();
         this.getCameraList();
-        this.getAccessCount();
+        this.$nextTick(() => {
+            setTimeout(() => {
+                this.getAccessCount()//获取数据接口方法
+            }, 500)
+        })
         this.websocket();
         // setInterval(() => {
         //     this.numberScroll();
@@ -2185,12 +2221,18 @@ export default {
     },
     computed: {
         classOption () {
+            console.log('----------classOption-----------');
+            console.log(this.items);
+            console.log('---------------------');
             return {
                 direction: 1,
                 limitMoveNum: 4,
                 step: 0.5,
                 hoverStop: true,
             };
+
+
+
         },
     },
     beforeDestroy () {
@@ -2399,7 +2441,7 @@ export default {
     margin: auto;
     cursor: pointer;
 }
-.number {
+.map_m .number {
     position: fixed;
     right: 0.5vw;
     top: 5vh;
