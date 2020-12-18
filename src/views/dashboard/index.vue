@@ -265,7 +265,8 @@
             </div>
         </dv-border-box-9>
         <dv-loading class="loading" v-if="loadingShow">等待模型加载...</dv-loading>
-        <el-button type="primary" class="addCamera" @click="getCameraList();cameraList = true;">摄像头列表</el-button>
+        <el-button type="primary" v-if="superAdmin" class="addCamera" @click="getCameraList();cameraList = true;">摄像头列表
+        </el-button>
         <div class="tableData" v-if="cameraList">
             <el-button type="primary" @click="cameraList = false;addCameraShow = false">关闭列表</el-button>
             <el-button size="mini" type="danger" @click="addCamera()">添加设备</el-button>
@@ -364,6 +365,7 @@ const THREE = mapvgl.THREE;
 import axios from 'axios';
 import store from '@/store';
 import { deleteById, getDeviceType, saveOrUpdate, getVideoInfoList, getAccessCount, getKeepWatchPlaceCount, getHiddenDangerCount, getTrafficCount, getDayCount } from '@/api/home'
+import { mapGetters } from 'vuex'
 export default {
     name: "Dashboard",
     data () {
@@ -411,7 +413,8 @@ export default {
             deviceType: [],
             cameraShow: false,
             cloneList: [],
-            update: false
+            update: false,
+            superAdmin: false
         };
     },
     methods: {
@@ -867,6 +870,7 @@ export default {
         // },
         //车流统计
         trafficEchart (a) {
+
             this.chart1 = this.$echarts.init(
                 document.getElementById("trafficEchart")
             );
@@ -1300,6 +1304,13 @@ export default {
         },
         //出入记录
         accessEchart (datax, a, type) {
+
+
+            console.log('----------accessEchart-----------');
+            console.log(datax, a, type);
+            console.log('---------------------');
+
+
             var _this = this;
             this.chart4 = this.$echarts.init(document.getElementById("accessEchart"));
 
@@ -1321,50 +1332,47 @@ export default {
                 a2 = [];
 
             if (type == "day") {
-                if (a.faceDay.length > 0) {
-                    a1 = [
-                        a.faceDay[0].twentyFourOclock,
-                        a.faceDay[0].threeOclock,
-                        a.faceDay[0].sixOclock,
-                        a.faceDay[0].nineOclock,
-                        a.faceDay[0].twelveOclock,
-                        a.faceDay[0].fifteenOclock,
-                        a.faceDay[0].eighteenOclock,
-                        a.faceDay[0].twentyOneOclock,
-                    ];
+                if (a.carDay.length > 0) {
+                    a1 = [0, 0, 0, 0, 0, 0, 0, 0];
                     a2 = [
-                        a.carDay[0].twentyFourOclock,
-                        a.carDay[0].threeOclock,
-                        a.carDay[0].sixOclock,
-                        a.carDay[0].nineOclock,
-                        a.carDay[0].twelveOclock,
-                        a.carDay[0].fifteenOclock,
-                        a.carDay[0].eighteenOclock,
-                        a.carDay[0].twentyOneOclock,
+                        Number(a.carDay[0].twentyFourOclock),
+                        Number(a.carDay[0].threeOclock),
+                        Number(a.carDay[0].sixOclock),
+                        Number(a.carDay[0].nineOclock),
+                        Number(a.carDay[0].twelveOclock),
+                        Number(a.carDay[0].fifteenOclock),
+                        Number(a.carDay[0].eighteenOclock),
+                        Number(a.carDay[0].twentyOneOclock),
                     ];
                 } else {
-                    a1 = [0, 0, 0, 0, 0, 0, 0, 0];
-                    a2 = [0, 0, 0, 0, 0, 0, 0, 0];
+                    for (let i in datax) {
+                        a1.push(0);
+                        a2.push(0);
+                    }
                 }
             } else if (type == "month") {
-                if (a.faceMonth.length > 0) {
-                    for (let i in a.faceMonth) {
-                        a1.push(a.faceMonth[i].count);
+                if (a.carMonth.length > 0) {
+                    for (let i in a.carMonth) {
                         a2.push(a.carMonth[i].count);
+                        a1.push(0);
                     }
                 } else {
-                    a1 = [0, 0, 0, 0, 0];
-                    a2 = [0, 0, 0, 0, 0];
+                    for (let i in datax) {
+                        a1.push(0);
+                        a2.push(0);
+                    }
                 }
             } else {
-                if (a.faceYear.length > 0) {
-                    for (let i in a.faceYear) {
-                        a1.push(a.faceYear[i].count);
+                if (a.carYear.length > 0) {
+                    for (let i in a.carYear) {
+                        a1.push(0);
                         a2.push(a.carYear[i].count);
                     }
                 } else {
-                    a1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    a2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for (let i in datax) {
+                        a1.push(0);
+                        a2.push(0);
+                    }
                 }
             }
             for (let i in a1) {
@@ -1807,6 +1815,14 @@ export default {
                 this.update = true;
             })
         },
+        //判断账号权限
+        userPower () {
+            if (this.roles[0] == "superAdmin") {
+                this.superAdmin = true
+            } else {
+                this.superAdmin = false
+            }
+        },
 
         /*接口调用*/
 
@@ -1849,9 +1865,9 @@ export default {
         accessCount (type, datax) {
             type ? type : (type = "day");
             getAccessCount({ enterpriseId: 2, type: type }).then(res => {
-                if (type == "month" && res.data.faceMonth.length > 0) {
-                    for (let i in res.data.faceMonth) {
-                        datax.push(res.data.faceMonth[i].date);
+                if (type == "month" && res.data.carMonth.length > 0) {
+                    for (let i in res.data.carMonth) {
+                        datax.push(res.data.carMonth[i].date);
                     }
                 }
                 this.accessEchart(datax, res.data, type);
@@ -2181,6 +2197,7 @@ export default {
         this.eleMaterial = [];
         this.timerStop = null;
         this.timerM = null;
+        this.userPower();
         this.baiduMap();
         this.tLayer();
         this.loadModel(this.modelUrl, "baohui");
@@ -2213,7 +2230,7 @@ export default {
         };
 
         console.log('-----------userId----------');
-        console.log(store.getters.userId);
+        console.log(store.getters.userId, this.roles);
         console.log('---------------------');
 
     },
@@ -2228,10 +2245,10 @@ export default {
                 step: 0.5,
                 hoverStop: true,
             };
-
-
-
         },
+        ...mapGetters([
+            'roles'
+        ])
     },
     beforeDestroy () {
 
